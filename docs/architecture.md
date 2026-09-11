@@ -3,11 +3,11 @@
 ## Découpage cible
 
 - `src/domain` : documents, résolution des contenus, variantes, validation.
-- `src/editor` : future interface React/TypeScript.
+- `src/editor` : interface React/TypeScript et aperçu DOM/CSS provisoire (0.2).
 - `src/render` : future scène résolue commune à aperçu et export.
 - `src/export` : futurs adaptateurs PNG, JPEG, PDF et ZIP.
 - `src/storage` : import/export JSON, migrations explicites et ZIP implémentés ;
-  futurs adaptateurs IndexedDB puis service partagé.
+  adaptateur IndexedDB avec révisions et ressources atomiques (0.2) ; service partagé futur.
 - `catalog` : formats, templates et assets intégrés, versionnés dans GitHub.
 
 Ces dossiers futurs ne désignent pas des modules déjà implémentés.
@@ -47,3 +47,6 @@ médias/textes publiés. Jetons et programmation nécessiteront un service sépa
 des fonctions natives de plateforme. Aucun secret dans les campagnes exportées.
 Remotion pourra consommer les documents plus tard ; pas de dépendance initiale.
 
+
+Voir [éditeur 0.2](editor.md) pour le parcours, les conflits et les limites réelles
+de cet aperçu, distinct du moteur déterministe futur.

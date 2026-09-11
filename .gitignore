@@ -6,3 +6,6 @@ coverage/
 !.env.example
 *.local
 *.zip
+
+playwright-report/
+test-results/
