@@ -1075,6 +1075,12 @@
             "$ref": "#/definitions/AssetRef"
           }
         },
+        "logos": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AssetRef"
+          }
+        },
         "schemaVersion": {
           "type": "number",
           "const": 1
@@ -1131,6 +1137,9 @@
           "type": "string"
         },
         "rights": {
+          "type": "string"
+        },
+        "credit": {
           "type": "string"
         }
       },

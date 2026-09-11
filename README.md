@@ -28,6 +28,14 @@ porter des ajustements réinitialisables selon les capacités du template. Trois
 harmonies, des recettes locales exportables et un aperçu carré/story/affiche sont
 disponibles en React + Motion, sans serveur applicatif.
 
+## Branding et ressources
+
+Le [socle Branding](docs/branding.md) permet de définir une identité locale,
+associer palette, logos et polices par rôle, puis appliquer son instantané aux
+campagnes. Les ressources sont réutilisables entre supports et campagnes, avec
+stockage dédupliqué et migration des données existantes. ZIP d'identité disponible.
+Le rendu automatique de ces rôles par les templates reste à construire.
+
 ## Organisation validée
 
 **Branding / Éditorial / Médias / Campagnes** : voir les

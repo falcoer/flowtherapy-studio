@@ -509,6 +509,19 @@ export function validateCampaign(input: unknown): asserts input is Campaign {
       reference(c.brand.derivedFrom, "brand.derivedFrom");
     for (const ref of Object.values(c.brand.fonts))
       checkValue(ref, "brand.fonts", assetIds);
+    for (const ref of Object.values(c.brand.logos ?? {})) {
+      checkValue(ref, "brand.logos", assetIds);
+      requireThat(
+        c.assets.some(
+          (a) =>
+            a.id === ref.assetId &&
+            ["image/png", "image/jpeg"].includes(a.mimeType),
+        ),
+        "brand.logos",
+        "Un logo doit référencer une image PNG/JPEG.",
+        "REFERENCE",
+      );
+    }
   }
   const checkStyle = (style: Placement["style"]) => {
     for (const key of ["fill", "font"] as const) {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type {
+  Asset,
   Campaign,
   CreativeDirection,
   CreativeOverrides,
@@ -35,6 +36,8 @@ import {
 import type { History } from "./state.js";
 import { agenda, formats } from "./catalog.js";
 import { Preview } from "./Preview.js";
+import { Branding } from "./Branding.js";
+import { attachResource } from "../domain/branding.js";
 import { CreativeLab } from "./CreativeLab.js";
 
 const messageOf = (error: unknown) =>
@@ -79,11 +82,21 @@ function localDate() {
 }
 export function App() {
   const [view, setView] = useState(() =>
-    location.hash === "#campagne" ? "campaign" : "lab",
+    location.hash === "#branding"
+      ? "branding"
+      : location.hash === "#campagne"
+        ? "campaign"
+        : "lab",
   );
   useEffect(() => {
     const sync = () =>
-      setView(location.hash === "#campagne" ? "campaign" : "lab");
+      setView(
+        location.hash === "#branding"
+          ? "branding"
+          : location.hash === "#campagne"
+            ? "campaign"
+            : "lab",
+      );
     window.addEventListener("hashchange", sync);
     return () => window.removeEventListener("hashchange", sync);
   }, []);
@@ -110,6 +123,8 @@ export function App() {
     [layerId, setLayerId] = useState("");
   const [layout, setLayout] = useState("square"),
     [rights, setRights] = useState("");
+  const [resources, setResources] = useState<Asset[]>([]);
+  const [resourceHash, setResourceHash] = useState("");
   const store = useRef<IndexedDBCampaignStore | null>(null);
   const dirty = saved !== fingerprint(bundle);
   const support =
@@ -279,17 +294,25 @@ export function App() {
     bitmap.close();
     const id = crypto.randomUUID(),
       path = `assets/${id}.${file.type === "image/png" ? "png" : "jpg"}`;
-    const next = structuredClone(bundle),
-      s = next.campaign.supports.find((s) => s.id === support.id)!;
-    next.campaign.assets.push({
+    let asset: Asset = {
       id,
       path,
       mimeType: file.type,
       sha256: await sha256(bytes),
       source: file.name,
       rights: rights.trim(),
-    });
-    next.assets.set(path, bytes);
+    };
+    if (store.current) asset = await store.current.importResource(asset, bytes);
+    await placeImage(asset, bytes);
+  }
+  async function placeImage(asset: Asset, bytes: Uint8Array) {
+    if (!support) throw new Error("Sélectionnez un support.");
+    const next = structuredClone(bundle),
+      s = next.campaign.supports.find((s) => s.id === support.id)!;
+    const assetId = attachResource(next.campaign, asset);
+    const target = next.campaign.assets.find((a) => a.id === assetId)!;
+    next.assets.set(target.path, bytes);
+    const id = crypto.randomUUID();
     if (!s.template.id.startsWith("local:")) {
       s.template.derivedFrom = {
         id: s.template.id,
@@ -301,7 +324,7 @@ export function App() {
     s.template.layers.push({
       id,
       type: "image",
-      content: { value: { assetId: id } },
+      content: { value: { assetId } },
       editing: { move: true, resize: true, restyle: false, hide: true },
     });
     for (const l of s.template.layouts) {
@@ -355,10 +378,13 @@ export function App() {
       </header>
       <nav className="studio-navigation" aria-label="Espaces du studio">
         <button
-          disabled
-          title="Le socle Branding sera livré dans la suite du jalon 0.3."
+          aria-pressed={view === "branding"}
+          onClick={() => {
+            location.hash = "branding";
+            setView("branding");
+          }}
         >
-          Branding <small>Bientôt</small>
+          Branding
         </button>
         <button
           disabled
@@ -372,7 +398,14 @@ export function App() {
         >
           Médias <small>Bientôt</small>
         </button>
-        <button className="studio-root-active" aria-pressed="true">
+        <button
+          className={view !== "branding" ? "studio-root-active" : ""}
+          aria-pressed={view !== "branding"}
+          onClick={() => {
+            location.hash = "campagne";
+            setView("campaign");
+          }}
+        >
           Campagnes
         </button>
         <span className="studio-subnavigation">
@@ -396,6 +429,9 @@ export function App() {
           </button>
         </span>
       </nav>
+      <div hidden={view !== "branding"}>
+        <Branding bundle={bundle} onApply={commit} />
+      </div>
       <div hidden={view !== "lab"}>
         <CreativeLab
           campaign={campaign}
@@ -531,6 +567,12 @@ export function App() {
           <aside className="panel content-panel">
             <span className="eyebrow">01 / CONTENU COMMUN</span>
             <h2>La campagne</h2>
+            <p className="hint">
+              Identité :{" "}
+              {campaign.brand
+                ? `${campaign.brand.name} · r${campaign.brand.revision}`
+                : "Aucune identité appliquée"}
+            </p>
             <label>
               Nom de la campagne
               <input
@@ -959,6 +1001,48 @@ export function App() {
                   </>
                 )}
                 <div className="divider" />
+                <h3>Ressources partagées</h3>
+                <button
+                  onClick={() =>
+                    void run(async () => {
+                      if (!store.current)
+                        throw new Error("Stockage indisponible.");
+                      setResources(await store.current.listResources());
+                    })
+                  }
+                >
+                  Parcourir les ressources
+                </button>
+                <label>
+                  Image du studio
+                  <select
+                    value={resourceHash}
+                    onChange={(e) => setResourceHash(e.target.value)}
+                  >
+                    <option value="">Choisir une image…</option>
+                    {resources
+                      .filter((a) => a.mimeType.startsWith("image/"))
+                      .map((a) => (
+                        <option key={a.sha256} value={a.sha256}>
+                          {a.source}
+                        </option>
+                      ))}
+                  </select>
+                </label>
+                <button
+                  disabled={!resourceHash || !!validation}
+                  onClick={() =>
+                    void run(async () => {
+                      if (!store.current)
+                        throw new Error("Stockage indisponible.");
+                      const { asset, bytes } =
+                        await store.current.loadResource(resourceHash);
+                      await placeImage(asset, bytes);
+                    })
+                  }
+                >
+                  Utiliser cette image
+                </button>
                 <h3>Ajouter une image</h3>
                 <label>
                   Droits / autorisation
