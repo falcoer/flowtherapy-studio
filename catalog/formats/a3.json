@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "ft:a3",
+  "revision": 1,
+  "name": "A3",
+  "surface": {
+    "width": 297,
+    "height": 420,
+    "unit": "mm"
+  },
+  "zones": {
+    "bleed": {
+      "top": 3,
+      "right": 3,
+      "bottom": 3,
+      "left": 3
+    },
+    "safeInset": {
+      "top": 5,
+      "right": 5,
+      "bottom": 5,
+      "left": 5
+    }
+  },
+  "exports": [
+    {
+      "id": "pdf",
+      "name": "PDF",
+      "type": "pdf",
+      "area": "surface",
+      "background": "#ffffff",
+      "cropMarks": false,
+      "rasterDpi": 300
+    },
+    {
+      "id": "pdf-bleed",
+      "name": "PDF avec fond perdu",
+      "type": "pdf",
+      "area": "bleed",
+      "background": "#ffffff",
+      "cropMarks": false,
+      "rasterDpi": 300
+    }
+  ],
+  "defaultExportId": "pdf"
+}

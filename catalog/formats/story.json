@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": "ft:story",
+  "revision": 1,
+  "name": "STORY",
+  "surface": {
+    "width": 1080,
+    "height": 1920,
+    "unit": "px"
+  },
+  "zones": {
+    "bleed": {
+      "top": 0,
+      "right": 0,
+      "bottom": 0,
+      "left": 0
+    },
+    "safeInset": {
+      "top": 60,
+      "right": 60,
+      "bottom": 60,
+      "left": 60
+    }
+  },
+  "exports": [
+    {
+      "id": "png",
+      "name": "PNG",
+      "type": "raster",
+      "mimeType": "image/png",
+      "resolution": {
+        "mode": "scale",
+        "factor": 1
+      },
+      "area": "surface",
+      "background": null
+    },
+    {
+      "id": "jpg",
+      "name": "JPEG",
+      "type": "raster",
+      "mimeType": "image/jpeg",
+      "resolution": {
+        "mode": "scale",
+        "factor": 1
+      },
+      "area": "surface",
+      "background": "#ffffff",
+      "quality": 0.92
+    }
+  ],
+  "defaultExportId": "png"
+}

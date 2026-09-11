@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "id": "ft:agenda",
+  "revision": 1,
+  "name": "Agenda — fixture de conception",
+  "description": "Composition provisoire non validée visuellement, sans police de production.",
+  "fields": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Titre",
+      "required": true,
+      "defaultValue": "Nos prochains concerts"
+    },
+    {
+      "id": "events",
+      "type": "collection",
+      "label": "Événements",
+      "required": true,
+      "itemSchema": "core:event@1",
+      "minItems": 1
+    }
+  ],
+  "layers": [
+    {
+      "id": "title",
+      "type": "text",
+      "content": {
+        "field": "title"
+      },
+      "style": {
+        "fill": "#142b36",
+        "align": "center"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": true,
+        "hide": true
+      }
+    },
+    {
+      "id": "agenda",
+      "type": "event-list",
+      "source": {
+        "field": "events"
+      },
+      "style": {
+        "fill": "#142b36"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": true,
+        "hide": true
+      }
+    }
+  ],
+  "layouts": [
+    {
+      "id": "square",
+      "formatRef": {
+        "id": "ft:square",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 86.4,
+            "y": 86.4,
+            "width": 907.1999999999999,
+            "height": 162.0
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 59.4
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 41.58,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "agenda",
+          "frame": {
+            "x": 86.4,
+            "y": 324.0,
+            "width": 907.1999999999999,
+            "height": 648.0
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 32.67
+          },
+          "eventPresentation": {
+            "mode": "table",
+            "columns": [
+              {
+                "field": "date",
+                "width": 0.2
+              },
+              {
+                "field": "label",
+                "width": 0.45
+              },
+              {
+                "field": "location",
+                "width": 0.35
+              }
+            ],
+            "dateFormat": "day-month-year",
+            "rowGap": 21.6,
+            "overflow": "paginate",
+            "minFontSize": 23.76,
+            "minRowGap": 10.8
+          }
+        }
+      ]
+    },
+    {
+      "id": "portrait",
+      "formatRef": {
+        "id": "ft:portrait",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 86.4,
+            "y": 108.0,
+            "width": 907.1999999999999,
+            "height": 202.5
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 59.4
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 41.58,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "agenda",
+          "frame": {
+            "x": 86.4,
+            "y": 405.0,
+            "width": 907.1999999999999,
+            "height": 810.0
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 32.67
+          },
+          "eventPresentation": {
+            "mode": "table",
+            "columns": [
+              {
+                "field": "date",
+                "width": 0.2
+              },
+              {
+                "field": "label",
+                "width": 0.45
+              },
+              {
+                "field": "location",
+                "width": 0.35
+              }
+            ],
+            "dateFormat": "day-month-year",
+            "rowGap": 27.0,
+            "overflow": "paginate",
+            "minFontSize": 23.76,
+            "minRowGap": 13.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "story",
+      "formatRef": {
+        "id": "ft:story",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 86.4,
+            "y": 153.6,
+            "width": 907.1999999999999,
+            "height": 288.0
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 59.4
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 41.58,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "agenda",
+          "frame": {
+            "x": 86.4,
+            "y": 576.0,
+            "width": 907.1999999999999,
+            "height": 1152.0
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 32.67
+          },
+          "eventPresentation": {
+            "mode": "cards",
+            "columns": [
+              {
+                "field": "date",
+                "width": 0.2
+              },
+              {
+                "field": "label",
+                "width": 0.45
+              },
+              {
+                "field": "location",
+                "width": 0.35
+              }
+            ],
+            "dateFormat": "day-month-year",
+            "rowGap": 38.4,
+            "overflow": "paginate",
+            "minFontSize": 23.76,
+            "minRowGap": 19.2
+          }
+        }
+      ]
+    },
+    {
+      "id": "a4",
+      "formatRef": {
+        "id": "ft:a4",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 16.8,
+            "y": 23.76,
+            "width": 176.4,
+            "height": 44.55
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 11.55
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 8.085,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "agenda",
+          "frame": {
+            "x": 16.8,
+            "y": 89.1,
+            "width": 176.4,
+            "height": 178.2
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 6.352500000000001
+          },
+          "eventPresentation": {
+            "mode": "table",
+            "columns": [
+              {
+                "field": "date",
+                "width": 0.2
+              },
+              {
+                "field": "label",
+                "width": 0.45
+              },
+              {
+                "field": "location",
+                "width": 0.35
+              }
+            ],
+            "dateFormat": "day-month-year",
+            "rowGap": 5.94,
+            "overflow": "paginate",
+            "minFontSize": 4.62,
+            "minRowGap": 2.97
+          }
+        }
+      ]
+    },
+    {
+      "id": "a3",
+      "formatRef": {
+        "id": "ft:a3",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 23.76,
+            "y": 33.6,
+            "width": 249.48,
+            "height": 63.0
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 16.335
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 11.4345,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "agenda",
+          "frame": {
+            "x": 23.76,
+            "y": 126.0,
+            "width": 249.48,
+            "height": 252.0
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 8.984250000000001
+          },
+          "eventPresentation": {
+            "mode": "table",
+            "columns": [
+              {
+                "field": "date",
+                "width": 0.2
+              },
+              {
+                "field": "label",
+                "width": 0.45
+              },
+              {
+                "field": "location",
+                "width": 0.35
+              }
+            ],
+            "dateFormat": "day-month-year",
+            "rowGap": 8.4,
+            "overflow": "paginate",
+            "minFontSize": 6.534000000000001,
+            "minRowGap": 4.2
+          }
+        }
+      ]
+    }
+  ]
+}
