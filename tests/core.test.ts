@@ -99,6 +99,19 @@ test('migrations require an explicit path, operate on copies and validate the ou
   assert.throws(() => migrateCampaign({ ...c, schemaVersion: 0 }));
   assert.throws(() => migrateCampaign(legacy, [{ from: 1, to: 2, migrate: () => ({ schemaVersion: 2 }) }]));
 });
+test('format exclusions expose and validate complete frame geometry', () => {
+  const format = read('catalog/formats/a4.json') as Format;
+  format.zones.exclusions = [{
+    id: 'safe-logo',
+    label: 'Zone logo',
+    x: 12,
+    y: 18,
+    width: 40,
+    height: 24,
+  }];
+  validateFormat(format);
+});
+
 // A real, tiny PNG fixture; no personal media.
 const png = Uint8Array.from(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jv1kAAAAASUVORK5CYII=', 'base64'));
 async function withAsset() {
@@ -115,6 +128,22 @@ test('ZIP round trips campaign and binary assets; export is deterministic', asyn
   assert.deepEqual(await exportZIP(campaign, assets), bytes);
   const empty = fixture(); assert.deepEqual((await importZIP(await exportZIP(empty, new Map()))).campaign, empty);
 });
+test('ZIP accepts the alternate Apple TrueType sfnt signature', async () => {
+  const campaign = fixture();
+  const bytes = Uint8Array.from([116, 114, 117, 101]);
+  const asset = {
+    id: 'demo:font',
+    path: 'assets/font.ttf',
+    mimeType: 'font/ttf',
+    sha256: await sha256(bytes),
+    source: 'Generated test font',
+    rights: 'Test fixture',
+  };
+  campaign.assets = [asset];
+  const archive = await exportZIP(campaign, new Map([[asset.path, bytes]]));
+  assert.deepEqual((await importZIP(archive)).campaign, campaign);
+});
+
 test('ZIP rejects missing bytes, hash mismatch, unsupported SVG and MIME spoofing', async () => {
   const { campaign, assets } = await withAsset();
   await assert.rejects(exportZIP(campaign, new Map()), /count mismatch/);
