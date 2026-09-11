@@ -13,7 +13,31 @@ const canonical = value => Array.isArray(value)
   : value && typeof value === 'object'
     ? Object.fromEntries(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => [key, canonical(item)]))
     : value;
+const firstDiff = (actual, expected, at = '
+) => {
+  if (actual === expected) return null;
+  if (Array.isArray(actual) && Array.isArray(expected)) {
+    if (actual.length !== expected.length) return `${at}: array length ${actual.length} !== ${expected.length}`;
+    for (let i = 0; i < actual.length; i++) {
+      const difference = firstDiff(actual[i], expected[i], `${at}[${i}]`);
+      if (difference) return difference;
+    }
+    return `${at}: arrays differ`;
+  }
+  if (actual && expected && typeof actual === 'object' && typeof expected === 'object') {
+    const keys = [...new Set([...Object.keys(actual), ...Object.keys(expected)])].sort();
+    for (const key of keys) {
+      if (!Object.hasOwn(actual, key)) return `${at}.${key}: missing in committed schema`;
+      if (!Object.hasOwn(expected, key)) return `${at}.${key}: unexpected in committed schema`;
+      const difference = firstDiff(actual[key], expected[key], `${at}.${key}`);
+      if (difference) return difference;
+    }
+  }
+  return `${at}: ${JSON.stringify(actual)} !== ${JSON.stringify(expected)}`;
+};
 if (process.argv.includes('--check')) {
-  if (JSON.stringify(canonical(JSON.parse(readFileSync(path, 'utf8')))) !== JSON.stringify(canonical(schema)))
-    throw new Error('Schemas differ from TypeScript: npm run schemas');
+  const actual = canonical(JSON.parse(readFileSync(path, 'utf8')));
+  const expected = canonical(schema);
+  if (JSON.stringify(actual) !== JSON.stringify(expected))
+    throw new Error(`Schemas differ from TypeScript: ${firstDiff(actual, expected)}`);
 } else writeFileSync(path, text);
