@@ -35,7 +35,7 @@ const firstDiff = (actual, expected, at = '$') => {
       const difference = firstDiff(actual[i], expected[i], `${at}[${i}]`);
       if (difference) return difference;
     }
-    return `${at}: arrays differ`;
+    return null;
   }
   if (
     actual &&
