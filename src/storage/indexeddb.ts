@@ -1,6 +1,7 @@
 import type { Asset, Campaign, CampaignStore } from "../domain/model.js";
 import { validateCampaign } from "../domain/core.js";
 import { exportZIP } from "./archive.js";
+import { migrateCampaign } from "./json.js";
 
 export interface CampaignBundle {
   campaign: Campaign;
@@ -20,7 +21,7 @@ interface RecordValue {
 }
 function resourceDocument(assets: Asset[]): Campaign {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     id: "resources",
     revision: 1,
     name: "Resources",
@@ -63,8 +64,9 @@ export class IndexedDBCampaignStore implements CampaignStore {
           const row = cursor.result;
           if (!row) return;
           const old = row.value as CampaignBundle;
+          const campaign = migrateCampaign(old.campaign).campaign;
           const assetHashes = new Map<string, string>();
-          for (const asset of old.campaign.assets) {
+          for (const asset of campaign.assets) {
             const bytes = old.assets.get(asset.path);
             if (bytes) {
               blobs.put(bytes, asset.sha256);
@@ -72,7 +74,7 @@ export class IndexedDBCampaignStore implements CampaignStore {
               assetHashes.set(asset.path, asset.sha256);
             }
           }
-          row.update({ campaign: old.campaign, assetHashes });
+          row.update({ campaign, assetHashes });
           row.continue();
         };
       };
@@ -190,7 +192,7 @@ export class IndexedDBCampaignStore implements CampaignStore {
     // Reuse v1 MIME, signature, size and integrity controls for the supplied subset.
     await exportZIP(
       {
-        schemaVersion: 1,
+        schemaVersion: 2,
         id: "asset-check",
         revision: 1,
         name: "Asset check",
