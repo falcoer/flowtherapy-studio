@@ -1,20 +1,16 @@
-# Publication GitHub Pages — autorisée
+# Publication GitHub Pages — active
 
 La publication publique de l’application a été acceptée par le propriétaire
-le 11 septembre 2026. Le workflow publie main après les tests ; la première
-activation administrative de Pages reste nécessaire. Il complète le jalon 0.2 et ne change pas
+le 11 septembre 2026. Le workflow publie `main` après les tests et est actif.
+Il complète le jalon 0.2 et ne change pas
 le périmètre des exports graphiques.
 
 ## Décision de visibilité
 
-Le dépôt `falcoer/flowtherapy-studio` est privé et appartient à un compte personnel.
-GitHub Pages depuis un dépôt privé nécessite un forfait compatible, par exemple
-GitHub Pro pour un compte personnel ; le forfait actuel n'a pas été vérifié.
-Un dépôt privé ne rend pas son site Pages privé. L'option proposée ici publie
-l'application et son catalogue intégré en accès public, sans authentification.
-Cette exception à la consigne de confidentialité par défaut a été explicitement
-autorisée par le propriétaire. Aucun changement de visibilité du dépôt n’est prévu.
-Le lien ne sera pas diffusé, ce qui ne constitue pas un contrôle d’accès.
+Le dépôt `falcoer/flowtherapy-studio` est public et appartient à un compte personnel.
+GitHub Pages publie l'application et son catalogue intégré en accès public,
+sans authentification. Cette visibilité a été explicitement autorisée par le
+propriétaire ; les campagnes ne sont pas publiées.
 
 Les campagnes saisies et images importées restent dans IndexedDB côté navigateur :
 elles ne sont pas envoyées à GitHub. Les fichiers dist contiennent cependant le
@@ -28,24 +24,18 @@ autres projets du même domaine. Un domaine dédié sépare les stockages. Le pa
 du localhost au site hébergé, ou un changement de domaine, nécessite un export ZIP
 puis import pour retrouver une campagne.
 
-## Première activation
+## Fonctionnement actuel
 
-1. Les PR 0.1 et 0.2 sont intégrées ; intégrer la PR de publication sur main.
-2. Vérifier le forfait et choisir Settings → Pages → Source : GitHub Actions.
-   Conserver le dépôt privé. Si GitHub réclame un changement de forfait, ne pas
-   rendre le dépôt public pour contourner cette condition.
-3. Dans l'environnement github-pages, limiter les déploiements à main.
-4. Après activation, relancer le workflow de publication échoué, ou lancer
-   manuellement `Publish studio to GitHub Pages` sur main avec `accept_public_site`.
-   Les mises à jour suivantes de main déclencheront automatiquement les tests et la publication.
-5. Vérifier l'URL retournée par le job deploy et l'ouverture du studio ; effectuer
-   la recette de création/sauvegarde/rechargement depuis cette origine.
+1. `main` déclenche automatiquement les contrôles et la publication.
+2. Le workflow ne transmet que `dist/` à Pages, après `npm run check` et la
+   recette Chromium complète.
+3. L'application est accessible à l'adresse
+   `https://falcoer.github.io/flowtherapy-studio/`.
 
 Le workflow se déclenche sur les push de main et manuellement, jamais sur les PR.
 Le déclenchement manuel sur une autre branche ou sans acceptation ne lance pas
-les jobs. `configure-pages` ne crée pas automatiquement le site : l’action officielle
-exige un jeton administratif distinct pour la première activation. Le connecteur
-GitHub disponible ne propose pas cette opération administrative.
+les jobs. La première activation administrative de Pages a été effectuée ; le
+connecteur GitHub n'intervient ensuite que sur le dépôt et les workflows.
 
 ## Construction
 
