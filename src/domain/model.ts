@@ -1,4 +1,4 @@
-/** Contrats sérialisés v2 ; formats et templates restent des définitions v1. */
+/** Contrats sérialisés v1, stabilisés au jalon 0.1. */
 export interface Ref {
   id: string;
   revision: number;
