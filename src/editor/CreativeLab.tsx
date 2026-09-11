@@ -233,17 +233,22 @@ export function CreativeLab({
     !targetSupport || !!capabilities?.axes.includes(axis);
   const dominantEnabled = (dominant: CreativeRecipe["dominant"]) =>
     !targetSupport || !!capabilities?.dominants.includes(dominant);
-  const completePresetSupport =
-    !targetSupport ||
-    (!!capabilities &&
-      ["energy", "colorExpression", "density", "scale"].every((axis) =>
-        capabilities.axes.includes(axis as (typeof capabilities.axes)[number]),
-      ) &&
-      ["image", "text", "balanced"].every((dominant) =>
-        capabilities.dominants.includes(
-          dominant as (typeof capabilities.dominants)[number],
-        ),
-      ));
+  function canApplyRecipe(
+    next: CreativeRecipe,
+    selectedImageId = imageAssetId,
+  ) {
+    if (targetSupport && !capabilities) return false;
+    if (!capabilities) return next.dominant !== "image" || !!selectedImageId;
+    const changedAxes = (
+      ["energy", "colorExpression", "density", "scale"] as const
+    ).filter((axis) => next[axis] !== recipe[axis]);
+    return (
+      changedAxes.every((axis) => capabilities.axes.includes(axis)) &&
+      (next.dominant === recipe.dominant ||
+        capabilities.dominants.includes(next.dominant)) &&
+      (next.dominant !== "image" || !!selectedImageId)
+    );
+  }
   function persist(next: CreativeRecipe, selectedImageId = imageAssetId) {
     if (targetSupport && !capabilities) {
       setError("Ce support hérité ne déclare aucun ajustement créatif.");
@@ -261,8 +266,12 @@ export function CreativeLab({
         return false;
       }
     }
-    if (next.dominant === "image" && !selectedImageId) {
-      setError("La dominante Image requiert une ressource image.");
+    if (!canApplyRecipe(next, selectedImageId)) {
+      setError(
+        next.dominant === "image" && !selectedImageId
+          ? "La dominante Image requiert une ressource image."
+          : "Cette opération n’est pas prise en charge par le template.",
+      );
       return false;
     }
     setError("");
@@ -393,7 +402,11 @@ export function CreativeLab({
                 <button
                   key={r.name}
                   aria-label={r.name}
-                  disabled={!completePresetSupport}
+                  disabled={
+                    !canApplyRecipe(
+                      paletteLocked ? { ...r, harmony: recipe.harmony } : r,
+                    )
+                  }
                   onClick={() =>
                     choose(
                       paletteLocked ? { ...r, harmony: recipe.harmony } : r,
@@ -601,15 +614,17 @@ export function CreativeLab({
             </p>
             <button
               className="lab-surprise"
-              disabled={!completePresetSupport}
+              disabled={!!targetSupport && !capabilities}
               onClick={() => {
                 const n = crypto.getRandomValues(new Uint32Array(4));
                 choose({
                   ...recipe,
-                  energy: n[0] % 101,
-                  colorExpression: n[3] % 101,
-                  density: n[1] % 101,
-                  scale: n[2] % 101,
+                  energy: axisEnabled("energy") ? n[0] % 101 : recipe.energy,
+                  colorExpression: axisEnabled("colorExpression")
+                    ? n[3] % 101
+                    : recipe.colorExpression,
+                  density: axisEnabled("density") ? n[1] % 101 : recipe.density,
+                  scale: axisEnabled("scale") ? n[2] % 101 : recipe.scale,
                   harmony: paletteLocked
                     ? recipe.harmony
                     : recipes[n[3] % 3].harmony,
