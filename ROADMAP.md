@@ -45,9 +45,15 @@ Tranche suivante implémentée : [socle Branding et ressources locales](docs/bra
 identité par rôles, application explicite aux campagnes, stockage dédupliqué et
 migration IndexedDB v2.
 
+Complément implémenté : [préréglage du site Flow Therapy](docs/branding-flowtherapy.md),
+palettes claire/sombre, logo et polices issus du dépôt du site à un commit figé,
+contrôle des ressources, aperçu de l’identité et préservation des personnalisations.
+Ce complément ne constitue pas encore le rendu des rôles par les templates.
+
 Priorité suivante : catalogue de templates et scène résolue ; enrichissement
 progressif du Branding et de l’Éditorial. La persistance éditoriale partagée reste
 planifiée au jalon 0.6, après l’adaptateur authentifié, la gestion des droits et les
-conflits de révision ; aucune API cloud n’est livrée dans le jalon 0.3. L'identité et
-le rendu graphique définitifs restent à construire.
-Voir [décisions détaillées](docs/studio-organization.md) et [critère de sortie](docs/next-step.md).
+conflits de révision ; aucune API cloud n’est livrée dans le jalon 0.3. Le rendu
+graphique définitif reste à construire, à partir de l’identité du site désormais
+configurée. Voir [décisions détaillées](docs/studio-organization.md) et
+[critère de sortie](docs/next-step.md).

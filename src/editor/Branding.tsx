@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { Asset, Brand } from "../domain/model.js";
 import { applyBrand, attachResource } from "../domain/branding.js";
+import { websiteColorRoles } from "../domain/website-brand.js";
+import type { WebsiteBrandTheme } from "../domain/website-brand.js";
+import { loadWebsiteBrandPreset } from "../storage/website-brand.js";
+import { BrandSpecimen, WebsiteBrandPreset } from "./WebsiteBrandPreset.js";
 import { IndexedDBCampaignStore } from "../storage/indexeddb.js";
 import type { CampaignBundle } from "../storage/indexeddb.js";
 import {
@@ -84,17 +88,38 @@ export function Branding({
   async function refresh() {
     setResources(await store.listResources());
   }
+  async function readPreset(theme: WebsiteBrandTheme) {
+    const next = await loadWebsiteBrandPreset(theme, document.baseURI);
+    for (const asset of next.campaign.assets)
+      await store.importResource(asset, next.assets.get(asset.path)!);
+    return next;
+  }
+  async function installPreset(theme: WebsiteBrandTheme) {
+    const next = await readPreset(theme);
+    setDraft(next);
+    setDirty(true);
+    await refresh();
+    setNotice("Préréglage Flow Therapy chargé. Enregistrez l’identité avant de l’appliquer à une campagne.");
+  }
   async function reload() {
     const saved = await store.loadBrand();
     if (saved) {
       setDraft(saved);
       setExpected(saved.campaign.revision);
+      setDirty(false);
     } else {
-      setDraft(initial());
       setExpected(null);
+      try {
+        setDraft(await readPreset("light"));
+        setDirty(true);
+        setNotice("L’identité Flow Therapy du site est prête. Enregistrez-la pour la conserver dans ce navigateur.");
+      } catch (e) {
+        setDraft(initial());
+        setDirty(false);
+        setError(`Le préréglage Flow Therapy n’a pas pu être chargé. Vous pouvez réessayer ou personnaliser l’identité manuellement. ${String(e)}`);
+      }
     }
     await refresh();
-    setDirty(false);
     setReady(true);
   }
   useEffect(() => {
@@ -245,7 +270,7 @@ export function Branding({
               )
               .map((a) => (
                 <option key={a.sha256} value={a.sha256}>
-                  {a.source}
+                  {a.source.split("/").at(-1)}
                 </option>
               ))}
           </select>
@@ -300,6 +325,11 @@ export function Branding({
         {notice && <p role="status">{notice}</p>}
       </div>
       <fieldset disabled={!ready || busy} className="branding-fields">
+        <WebsiteBrandPreset onSelect={(theme) => {
+          if ((dirty || expected !== null) && !window.confirm("Remplacer le brouillon d’identité par le préréglage Flow Therapy ? L’identité enregistrée et les campagnes ne changent pas avant enregistrement et application explicites.")) return;
+          void run(() => installPreset(theme));
+        }} />
+        <BrandSpecimen bundle={draft} />
         <div className="branding-grid">
           <section className="branding-card">
             <h2>Palette par rôle</h2>
@@ -315,7 +345,7 @@ export function Branding({
               />
             </label>
             <div className="branding-swatches">
-              {Object.entries(colorRoles).map(([role, label]) => (
+              {Object.entries({ ...colorRoles, ...Object.fromEntries(Object.keys(brand.colors).map((role) => [role, websiteColorRoles[role] ?? role])) }).map(([role, label]) => (
                 <label key={role}>
                   {label}
                   <input
@@ -333,8 +363,10 @@ export function Branding({
               ))}
             </div>
             <p>
-              Ces couleurs forment le référentiel. Leur application graphique
-              aux templates viendra avec la scène résolue.
+              L’aperçu ci-dessus utilise cette palette. L’application graphique
+              aux templates viendra avec la scène résolue. Dans le préréglage du
+              site, Accent correspond au violet et Contraste à l’orange ; ces rôles
+              deviennent indépendants après personnalisation.
             </p>
           </section>
           <section className="branding-card">
@@ -349,8 +381,8 @@ export function Branding({
             <h2>Typographies</h2>
             {choices("fonts", fontRoles)}
             <p>
-              WOFF, WOFF2, TTF ou OTF. Les rôles sont sauvegardés ; les aperçus
-              utilisent encore les polices système.
+              WOFF, WOFF2, TTF ou OTF. Les polices sont chargées dans l’aperçu
+              de l’identité. Le rendu des campagnes reste provisoire.
             </p>
           </section>
         </div>
@@ -404,7 +436,7 @@ export function Branding({
                   <span>
                     {a.mimeType} · {a.credit || "Crédit non renseigné"}
                   </span>
-                  <span>{a.rights}</span>
+                  <details><summary>Droits d’utilisation</summary><p>{a.rights}</p></details>
                 </li>
               ))}
             </ul>
