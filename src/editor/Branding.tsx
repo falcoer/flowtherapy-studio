@@ -26,7 +26,7 @@ const logoRoles = {
 function initial(): CampaignBundle {
   return {
     campaign: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       id: "studio-brand",
       revision: 1,
       name: "Identité du studio",
