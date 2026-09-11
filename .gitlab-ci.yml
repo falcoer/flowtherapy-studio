@@ -1,0 +1,14 @@
+# Optional GitLab mirror: publish only the static application after verification.
+image: node:22
+stages: [deploy]
+create-pages:
+  stage: deploy
+  script:
+    - npm ci
+    - npm run check
+    - npx playwright install --with-deps chromium
+    - npm run test:e2e
+  pages:
+    publish: dist
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'

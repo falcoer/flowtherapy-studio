@@ -22,6 +22,7 @@ import { activate, adjust, edit, newCampaign, redo, undo } from "./state.js";
 import type { History } from "./state.js";
 import { agenda, formats } from "./catalog.js";
 import { Preview } from "./Preview.js";
+import { CreativeLab } from "./CreativeLab.js";
 
 const messageOf = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
@@ -40,6 +41,15 @@ function localDate() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 export function App() {
+  const [view, setView] = useState(() =>
+    location.hash === "#campagne" ? "campaign" : "lab",
+  );
+  useEffect(() => {
+    const sync = () =>
+      setView(location.hash === "#campagne" ? "campaign" : "lab");
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
   const [history, setHistory] = useState<History<CampaignBundle>>(() => ({
     past: [],
     present: newCampaign(),
@@ -306,7 +316,35 @@ export function App() {
         </div>
         <span className="local-indicator">● Espace local</span>
       </header>
-      <fieldset className="workspace-fieldset" disabled={busy}>
+      <nav className="studio-navigation" aria-label="Espaces du studio">
+        <span className="studio-section-label">CAMPAGNES</span>
+        <button
+          aria-pressed={view === "lab"}
+          onClick={() => {
+            location.hash = "laboratoire";
+            setView("lab");
+          }}
+        >
+          ✧ Laboratoire créatif
+        </button>
+        <button
+          aria-pressed={view === "campaign"}
+          onClick={() => {
+            location.hash = "campagne";
+            setView("campaign");
+          }}
+        >
+          Campagne
+        </button>
+      </nav>
+      <div hidden={view !== "lab"}>
+        <CreativeLab campaign={campaign} />
+      </div>
+      <fieldset
+        hidden={view !== "campaign"}
+        className="workspace-fieldset"
+        disabled={busy}
+      >
         <div className="toolbar">
           <div>
             <span className="eyebrow">VOTRE ATELIER DE CAMPAGNES</span>
