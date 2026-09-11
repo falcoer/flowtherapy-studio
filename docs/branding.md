@@ -1,9 +1,9 @@
 # Socle Branding et ressources locales — 0.3
 
 Accès par **Branding** ou `#branding`. Une identité locale peut être nommée,
-avec quatre couleurs par rôle (fond, texte, accent, contraste), trois références
-de logos et trois rôles typographiques. Les champs supplémentaires d'une identité
-importée sont conservés ; leur édition avancée reste à venir.
+avec couleurs par rôle, trois références de logos et trois rôles typographiques.
+Les rôles supplémentaires d’une identité importée sont conservés et éditables.
+Les anciennes couleurs `dark*` restent regroupées dans le thème sombre.
 
 ## Parcours
 
@@ -30,16 +30,23 @@ ou exporter le brouillon avant de le recharger.
 
 ## Préréglage du site Flow Therapy
 
-Le bouton **Charger la charte du site** préremplit l'identité avec la configuration
-du dépôt public `falcoer/flowtherapy-bio-website` : fond crème et bleu nuit,
-surfaces, texte, texte secondaire, violet, orange, rose et bleu, en déclinaisons
-claire et sombre. Les rôles typographiques sont référencés comme **Bangers** pour
-les titres, **Inter** pour le texte et **Kalam** pour les annotations.
+La première configuration de couleurs (PR #9) est prolongée par le
+[préréglage complet](branding-flowtherapy.md) : palettes claire/sombre, logo
+transparent, Bangers pour les titres, Inter pour le corps, Kalam pour les légendes.
+Le catalogue unique est `catalog/brands/flowtherapy-website.json` ;
+`src/editor/siteBrand.ts` reste une façade compatible, sans seconde copie des couleurs.
 
-Le préréglage est une copie locale versionnée dans
-`src/editor/siteBrand.ts`. Les fichiers binaires du logo et des polices ne
-sont pas embarqués automatiquement : leur import depuis l'écran Branding exige
-une provenance et des droits d'utilisation explicites.
+Les boutons **Charger Flow Therapy — clair/sombre** chargent un brouillon complet,
+avec les fichiers vérifiés et leurs licences. En l’absence d’identité enregistrée,
+le brouillon clair est proposé à l’ouverture. Une identité existante est conservée.
+Le bouton historique **Charger la charte du site** conserve son usage de rechargement
+des couleurs uniquement : il ne remplace pas les logos ou polices déjà associés.
+Ces substitutions sont confirmées, puis enregistrées et appliquées explicitement.
+
+Les fichiers du préréglage sont préparés avant dev/build à partir d’un commit figé
+du dépôt du site. Les provenances, empreintes et licences sont conservées. Aucune
+requête à GitHub ou Google Fonts n’est effectuée par le navigateur. L’import manuel
+reste disponible pour les autres fichiers, avec leurs droits d’utilisation.
 
 ## Stockage et migration
 
@@ -61,19 +68,20 @@ Le format de campagne et d'identité est v2 : `Brand.logos` et `Asset.credit` so
 facultatifs mais font partie du contrat versionné. Les campagnes v1 sont migrées
 explicitement vers v2 avant validation, export JSON/ZIP ou sauvegarde IndexedDB ; les
 anciennes versions du studio ne doivent pas importer ces documents v2. Le ZIP STORE
-reste inchangé.
+reste inchangé. Le préréglage n’introduit pas de nouveau schéma ni de migration.
 
 ## Limites explicites
 
-- Une seule identité locale éditable, une palette avec quatre rôles exposés.
+- Une seule identité locale éditable ; les préréglages claire/sombre sont des copies,
+  pas encore une gestion de palettes multiples dans un même document.
 - La liste des ressources expose nom, type, crédit et droits ; édition des
   métadonnées, suppression, recherche et miniatures restent à venir.
 - L'Éditorial partagé et les tiroirs Médias complets restent à construire.
-- Les couleurs, logos et polices sont associés et sauvegardés. Leur rendu automatique
-  par les templates, les zones de protection, tailles minimales, associations de
-  palettes et variantes typographiques appartiennent aux prochaines tranches.
-- Les aperçus restent provisoires avec polices système ; aucun SVG, export
-  PNG/JPEG/PDF ou serveur Supabase livré ici.
+- Les couleurs, logos et polices sont associés, sauvegardés et visibles dans le
+  spécimen de Branding. Leur rendu automatique par les templates, les zones de
+  protection, tailles minimales et variantes appartiennent aux prochaines tranches.
+- Les aperçus de campagne restent provisoires avec polices système ; aucun SVG,
+  export PNG/JPEG/PDF ou serveur Supabase livré ici.
 - Le ZIP d'identité ne sauvegarde que les ressources qui lui sont associées.
   La sauvegarde intégrale du catalogue de ressources reste à venir.
 
@@ -82,3 +90,5 @@ reste inchangé.
 `npm run check` et `npm run test:e2e` couvrent la migration v1, la déduplication,
 les conflits et écritures atomiques, l'isolation des instantanés, JSON/ZIP,
 l'application d'identité, l'insertion d'une ressource existante et le mobile.
+Les tests du préréglage complètent ces parcours : provenance, rôles, chargement
+réel des fichiers, absence de requêtes externes et protection des identités existantes.

@@ -39,6 +39,17 @@ sont réutilisables dans les supports. IndexedDB v2 déduplique les fichiers et 
 les campagnes existantes sans changer leurs révisions ni remplir leurs fichiers absents.
 Les instantanés de campagne restent isolés du référentiel.
 
+## Complément : identité du site Flow Therapy
+
+Voir [préréglage, provenance, préparation et limites](branding-flowtherapy.md).
+Le catalogue versionné reprend les palettes claire/sombre de `flowtherapy-bio-website`,
+Bangers / Inter / Kalam et le logo transparent. Les sources sont figées au commit
+`883712401d1a3cdf8961dede819b8ec8cbd7195d`, contrôlées puis préparées en ZIP locaux
+avant dev/build. Aucune dépendance distante dans le navigateur après sauvegarde.
+Une identité existante n’est jamais remplacée automatiquement. Un aperçu de marque
+charge les vrais fichiers ; ce n’est pas encore le moteur de rendu des campagnes.
+Alpagas et ornements restent des références documentées, non des assets importés.
+
 ## Persistance éditoriale partagée — planifiée
 
 La persistance partagée des contenus et ressources éditoriales n’est pas implémentée
@@ -48,6 +59,8 @@ aucun service cloud n’est activé.
 
 ## Priorité suivante du jalon 0.3
 
+- Relier les rôles du Branding à la scène résolue des templates et aux harmonies
+  de campagne, sans confondre identité stable et Direction créative.
 - Enrichir Branding : règles de logos, palettes multiples et variantes typographiques.
 - Compléter la médiathèque : miniatures, recherche, gestion des crédits/droits
   et sauvegarde intégrale ; relier les contenus Éditorial aux ressources communes.

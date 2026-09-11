@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": "catalog:flowtherapy-website",
+  "revision": 1,
+  "name": "Flow Therapy — identité du site",
+  "website": "https://flowtherapymusic.com",
+  "source": {
+    "repository": "falcoer/flowtherapy-bio-website",
+    "commit": "883712401d1a3cdf8961dede819b8ec8cbd7195d",
+    "files": ["styles.css", "assets-src/manifest.json", "assets-src/README.md"]
+  },
+  "themes": {
+    "light": {
+      "name": "Claire",
+      "colors": {
+        "background": "#fbf8f2", "surface": "#ffffff", "text": "#17171b",
+        "muted": "#54515b", "accent": "#7130c8", "contrast": "#ed7100",
+        "purple": "#7130c8", "orange": "#ed7100", "pink": "#e72f88",
+        "blue": "#168ad5", "line": "#ded6cc"
+      }
+    },
+    "dark": {
+      "name": "Sombre",
+      "colors": {
+        "background": "#07101d", "surface": "#101a2b", "text": "#fffaf1",
+        "muted": "#c7c1ca", "accent": "#9a48f0", "contrast": "#ff8a00",
+        "purple": "#9a48f0", "orange": "#ff8a00", "pink": "#ff3b9d",
+        "blue": "#19a7ef", "line": "#34304c"
+      }
+    }
+  },
+  "typography": {
+    "title": { "family": "Bangers", "assetId": "flowtherapy-font-bangers" },
+    "body": { "family": "Inter", "assetId": "flowtherapy-font-inter" },
+    "caption": { "family": "Kalam", "assetId": "flowtherapy-font-kalam" }
+  },
+  "logos": {
+    "primary": "flowtherapy-logo", "light": "flowtherapy-logo", "dark": "flowtherapy-logo"
+  },
+  "resources": [
+    {
+      "id": "flowtherapy-logo", "path": "assets/branding/flowtherapy-logo.png", "mimeType": "image/png",
+      "sourcePath": "assets-src/images/logo_transparent.png",
+      "sourceSha256": "18b67ce67598a12c7142bd63f3851061bb449b73cffc16e5171e3eadbe99be6d"
+    },
+    {
+      "id": "flowtherapy-font-bangers", "path": "assets/branding/bangers-regular.ttf", "mimeType": "font/ttf",
+      "sourcePath": "assets-src/fonts/bangers/Bangers-Regular.ttf",
+      "sourceSha256": "4160a7311de9342674cce9160cde9fcbb30f48190397d86ff1b70b455af65824",
+      "licensePath": "assets-src/fonts/bangers/OFL.txt",
+      "licenseGitBlob": "bf717d4be410cf7616b9bd345b40ab4817a26e6f"
+    },
+    {
+      "id": "flowtherapy-font-inter", "path": "assets/branding/inter-variable.ttf", "mimeType": "font/ttf",
+      "sourcePath": "assets-src/fonts/inter/Inter-Variable.ttf.gz",
+      "sourceSha256": "f70c5d2e6a784420e76aa12b7f81e9749c6583e42d7f2b7ce78d2ed38ca55b72",
+      "compression": "gzip",
+      "licensePath": "assets-src/fonts/inter/OFL.txt",
+      "licenseGitBlob": "21f6aff961064c2e429f570995e446bcdd555422"
+    },
+    {
+      "id": "flowtherapy-font-kalam", "path": "assets/branding/kalam-regular.ttf", "mimeType": "font/ttf",
+      "sourcePath": "assets-src/fonts/kalam/Kalam-Regular.ttf",
+      "sourceSha256": "57cecb63d4608019371954274ae1d8c397764debd5b19d4a33c1efa4dc923c0b",
+      "licensePath": "assets-src/fonts/kalam/OFL.txt",
+      "licenseGitBlob": "6dd809659a8ccace7ccee108d024d33cd4f936da"
+    }
+  ],
+  "graphicReferences": {
+    "status": "source-references-only",
+    "description": "Alpagas, filigrane urbain et ornements à la craie du site ; non importés dans les campagnes par ce préréglage.",
+    "paths": [
+      "assets-src/images/alpaga1-nu.png", "assets-src/images/alpaga2-nu.png", "assets-src/images/alpaga3-nu.png",
+      "assets-src/images/fond-urbain-transparent.png", "assets-src/decorations/chalk-arrow.svg",
+      "assets-src/decorations/chalk-heart.svg", "assets-src/decorations/chalk-paint-splash.svg",
+      "assets-src/decorations/chalk-spark.svg", "assets-src/decorations/chalk-star.svg",
+      "assets-src/decorations/chalk-swoosh.svg", "assets-src/decorations/chalk-underline.svg"
+    ]
+  }
+}

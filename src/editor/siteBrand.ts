@@ -1,43 +1,21 @@
 import type { Brand } from "../domain/model.js";
+import { websiteBrand } from "../domain/website-brand.js";
 
-/**
- * Palette and typography roles transcribed from the public Flow Therapy site
- * repository: falcoer/flowtherapy-bio-website/docs/brand/README.md.
- *
- * Binary logos and fonts are intentionally not bundled: they must be imported
- * through the Branding screen with their provenance and usage rights.
- */
+/** Compatibility with the first site preset: one catalogue, no second palette. */
+const darkColors = Object.fromEntries(
+  Object.entries(websiteBrand.themes.dark.colors).map(([role, value]) => [
+    `dark${role[0].toUpperCase()}${role.slice(1)}`, value,
+  ]),
+);
 export const flowTherapySiteBrand = {
   name: "Flow Therapy — Site internet",
-  description:
-    "Référentiel graphique du site flowtherapymusic.com, source : dépôt flowtherapy-bio-website.",
+  description: `Référentiel graphique de ${websiteBrand.website}, source : ${websiteBrand.source.repository}@${websiteBrand.source.commit}.`,
   tags: ["flow-therapy", "site", "musique", "bangers", "inter", "kalam"],
-  colors: {
-    background: "#FBF8F2",
-    surface: "#FFFFFF",
-    text: "#17171B",
-    muted: "#54515B",
-    accent: "#7130C8",
-    contrast: "#ED7100",
-    purple: "#7130C8",
-    orange: "#ED7100",
-    pink: "#E72F88",
-    blue: "#168AD5",
-    darkBackground: "#07101D",
-    darkSurface: "#101A2B",
-    darkText: "#FFFAF1",
-    darkMuted: "#C7C1CA",
-    darkAccent: "#9A48F0",
-    darkContrast: "#FF8A00",
-    darkPurple: "#9A48F0",
-    darkOrange: "#FF8A00",
-    darkPink: "#FF3B9D",
-    darkBlue: "#19A7EF",
-  },
+  colors: { ...websiteBrand.themes.light.colors, ...darkColors },
 } satisfies Pick<Brand, "name" | "description" | "tags" | "colors">;
 
 export const flowTherapySiteFonts = {
-  title: "Bangers",
-  body: "Inter",
-  caption: "Kalam",
+  title: websiteBrand.typography.title.family,
+  body: websiteBrand.typography.body.family,
+  caption: websiteBrand.typography.caption.family,
 } as const;
