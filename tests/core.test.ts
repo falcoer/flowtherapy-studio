@@ -63,7 +63,7 @@ test('deleted references and unknown identifiers fail without hiding overrides',
   reject(c => { c.supports[0].template.layers[0].style = { fill: 'brand:deleted' }; }, /Missing brand/);
 });
 test('invalid shapes, versions, duplicate IDs and numerical invariants are rejected', () => {
-  reject(c => { (c as unknown as { schemaVersion: number }).schemaVersion = 2; });
+  reject(c => { (c as unknown as { schemaVersion: number }).schemaVersion = 1; });
   reject(c => { c.revision = 0; });
   reject(c => { c.supports.push(structuredClone(c.supports[0])); });
   reject(c => { c.supports[0].variants[0].placementOverrides.title = { frame: { x: 0, y: 0, width: -1, height: 1 } }; });
@@ -88,7 +88,7 @@ test('snapshots are detached and frozen, and catalogue updates cannot erase cust
 });
 test('migrations require an explicit path, operate on copies and validate the output', () => {
   const c = fixture(); assert.deepEqual(migrateCampaign(c).campaign, c);
-  assert.throws(() => migrateCampaign({ ...c, schemaVersion: 2 }), /Unsupported version/);
+  assert.throws(() => migrateCampaign({ ...c, schemaVersion: 3 }), /Unsupported version/);
   assert.throws(() => migrateCampaign({ ...c, schemaVersion: 0 }), /No unique explicit migration/);
   const legacy = { ...c, schemaVersion: 1 };
   const result = migrateCampaign(legacy);
