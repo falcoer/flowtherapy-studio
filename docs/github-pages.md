@@ -1,18 +1,20 @@
-# Publication GitHub Pages — intégration préparée
+# Publication GitHub Pages — autorisée
 
-Le workflow `Publish studio to GitHub Pages` est prêt, mais aucun site n'est
-activé ou publié par cette intégration. Il complète le jalon 0.2 et ne change pas
+La publication publique de l’application a été acceptée par le propriétaire
+le 11 septembre 2026. Le workflow publie main après les tests ; la première
+activation administrative de Pages reste nécessaire. Il complète le jalon 0.2 et ne change pas
 le périmètre des exports graphiques.
 
-## Visibilité à décider avant activation
+## Décision de visibilité
 
 Le dépôt `falcoer/flowtherapy-studio` est privé et appartient à un compte personnel.
 GitHub Pages depuis un dépôt privé nécessite un forfait compatible, par exemple
 GitHub Pro pour un compte personnel ; le forfait actuel n'a pas été vérifié.
 Un dépôt privé ne rend pas son site Pages privé. L'option proposée ici publie
 l'application et son catalogue intégré en accès public, sans authentification.
-Cela nécessite une décision explicite par rapport à la consigne actuelle de
-conserver un studio privé. Aucun changement de visibilité du dépôt n'est prévu.
+Cette exception à la consigne de confidentialité par défaut a été explicitement
+autorisée par le propriétaire. Aucun changement de visibilité du dépôt n’est prévu.
+Le lien ne sera pas diffusé, ce qui ne constitue pas un contrôle d’accès.
 
 Les campagnes saisies et images importées restent dans IndexedDB côté navigateur :
 elles ne sont pas envoyées à GitHub. Les fichiers dist contiennent cependant le
@@ -26,21 +28,24 @@ autres projets du même domaine. Un domaine dédié sépare les stockages. Le pa
 du localhost au site hébergé, ou un changement de domaine, nécessite un export ZIP
 puis import pour retrouver une campagne.
 
-## Activation après décision
+## Première activation
 
-1. Intégrer successivement les PR 0.1, 0.2 puis cette intégration sur main.
+1. Les PR 0.1 et 0.2 sont intégrées ; intégrer la PR de publication sur main.
 2. Vérifier le forfait et choisir Settings → Pages → Source : GitHub Actions.
    Conserver le dépôt privé. Si GitHub réclame un changement de forfait, ne pas
    rendre le dépôt public pour contourner cette condition.
 3. Dans l'environnement github-pages, limiter les déploiements à main.
-4. Lancer manuellement `Publish studio to GitHub Pages` sur main en cochant
-   `accept_public_site` seulement après acceptation de la visibilité publique.
+4. Après activation, relancer le workflow de publication échoué, ou lancer
+   manuellement `Publish studio to GitHub Pages` sur main avec `accept_public_site`.
+   Les mises à jour suivantes de main déclencheront automatiquement les tests et la publication.
 5. Vérifier l'URL retournée par le job deploy et l'ouverture du studio ; effectuer
    la recette de création/sauvegarde/rechargement depuis cette origine.
 
-Le workflow est absent des déclenchements push et pull_request. Une fusion seule
-ne publie rien. Le déclenchement sur une autre branche ou sans la case cochée ne
-lance pas les jobs. `configure-pages` ne crée pas automatiquement le site.
+Le workflow se déclenche sur les push de main et manuellement, jamais sur les PR.
+Le déclenchement manuel sur une autre branche ou sans acceptation ne lance pas
+les jobs. `configure-pages` ne crée pas automatiquement le site : l’action officielle
+exige un jeton administratif distinct pour la première activation. Le connecteur
+GitHub disponible ne propose pas cette opération administrative.
 
 ## Construction
 

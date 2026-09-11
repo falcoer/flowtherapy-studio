@@ -1,7 +1,8 @@
 # Prochaine session
 
-0.1 fournit le noyau ; 0.2 fournit l'éditeur local minimal. Vérifier l'intégration
-successive des PR 0.1 puis 0.2 avant de baser la suite sur main.
+0.1 fournit le noyau ; 0.2 fournit l'éditeur local minimal. Les PR 0.1 et 0.2 sont intégrées sur main.
+La publication publique de l’application est autorisée (11 septembre 2026),
+avec workflow Pages après tests et activation administrative à effectuer.
 Lire `docs/editor.md`, `docs/core-api.md`, `docs/architecture.md` et `ROADMAP.md`.
 
 Objectif suivant : jalon 0.3, templates et formats multiples.
@@ -15,4 +16,4 @@ Objectif suivant : jalon 0.3, templates et formats multiples.
    révision et les échanges JSON/ZIP ; exécuter check et test:e2e.
 
 Le DOM/CSS de 0.2 est un aperçu d'édition, pas un moteur d'export déterministe.
-PNG/JPEG/PDF restent au jalon 0.4. Aucun hébergement public automatique.
+PNG/JPEG/PDF restent au jalon 0.4. Voir docs/github-pages.md pour le statut du déploiement.

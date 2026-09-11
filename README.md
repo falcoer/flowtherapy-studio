@@ -6,12 +6,12 @@ sociaux et l'impression.
 
 ## État
 
-Le noyau 0.1 et l'éditeur statique minimal 0.2 sont implémentés sur leurs branches
-respectives (PR à intégrer). Campagnes/événements, activation Agenda, déplacement,
+Le noyau 0.1 et l'éditeur statique minimal 0.2 sont intégrés sur main. Campagnes/événements, activation Agenda, déplacement,
 recadrage PNG/JPEG, annulation, IndexedDB et échanges JSON/ZIP sont disponibles.
 L'aperçu reste provisoire ; les exports graphiques et templates de production ne
 sont pas encore livrés. Aucun hébergement n'est activé. L’[intégration GitHub Pages](docs/github-pages.md)
-est préparée, avec publication manuelle après décision de visibilité.
+publie main après les tests. La visibilité publique de l’application a été acceptée
+le 11 septembre 2026 ; l’activation administrative de Pages reste à effectuer.
 
 ```sh
 npm ci
@@ -46,8 +46,9 @@ les tests du noyau, du stockage et les fixtures, puis le build statique.
 `npm run test:e2e` exécute la recette Chromium (voir docs/editor.md). ZIP v1 : STORE sans compression ; PNG/JPEG et
 polices acceptés, SVG refusés en attendant un nettoyage dédié.
 
-Le dépôt doit rester privé. Une protection de l'application hébergée est également
-nécessaire : la confidentialité du dépôt ne protège pas le site déployé.
+Le dépôt doit rester privé. La publication publique de l’application sur Pages est
+autorisée ; les campagnes et images importées restent dans le navigateur.
+La confidentialité du dépôt ne protège pas le site déployé.
 
 Aucune licence open source n'est attribuée à ce stade. Les droits des photos,
 logos, illustrations et polices devront être renseignés avant leur intégration.

@@ -1,7 +1,10 @@
 name: Publish studio to GitHub Pages
 
-# No push/PR deployment: public exposure requires an explicit decision.
+# Public application hosting approved by the owner on 2026-09-11.
+# Campaign documents and imported assets remain browser-local.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       accept_public_site:
@@ -22,7 +25,7 @@ jobs:
     permissions:
       contents: read
       pages: read
-    if: github.ref == 'refs/heads/main' && inputs.accept_public_site
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.accept_public_site)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
