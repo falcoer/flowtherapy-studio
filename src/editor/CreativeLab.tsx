@@ -239,7 +239,11 @@ export function CreativeLab({
       ["energy", "colorExpression", "density", "scale"].every((axis) =>
         capabilities.axes.includes(axis as (typeof capabilities.axes)[number]),
       ) &&
-      capabilities.dominants.length === 3);
+      ["image", "text", "balanced"].every((dominant) =>
+        capabilities.dominants.includes(
+          dominant as (typeof capabilities.dominants)[number],
+        ),
+      ));
   function persist(next: CreativeRecipe, selectedImageId = imageAssetId) {
     if (targetSupport && !capabilities) {
       setError("Ce support hérité ne déclare aucun ajustement créatif.");
@@ -389,6 +393,7 @@ export function CreativeLab({
                 <button
                   key={r.name}
                   aria-label={r.name}
+                  disabled={!completePresetSupport}
                   onClick={() =>
                     choose(
                       paletteLocked ? { ...r, harmony: recipe.harmony } : r,
