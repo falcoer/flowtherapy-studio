@@ -20,6 +20,13 @@ npm run dev
 
 Voir [l'éditeur local et ses limites](docs/editor.md). Le serveur écoute 127.0.0.1.
 
+## Laboratoire créatif
+
+Le [laboratoire](docs/creative-lab.md) ajoute une exploration énergie/densité,
+trois harmonies, des recettes locales exportables et un aperçu carré/story/affiche
+alimenté par la campagne. React + Motion, sans serveur applicatif. Les recettes
+ne sont pas encore appliquées aux variantes de production.
+
 ## Principes
 
 - Site statique, React/TypeScript ; édition et export dans le navigateur.
@@ -31,6 +38,7 @@ Voir [l'éditeur local et ses limites](docs/editor.md). Le serveur écoute 127.0
 
 ## Lire et poursuivre
 
+- [Organisation du studio](docs/studio-organization.md)
 - [Périmètre et parcours](docs/product.md)
 - [Architecture](docs/architecture.md)
 - [Modèle de données](docs/data-model.md)

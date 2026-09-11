@@ -55,3 +55,10 @@ Une [intégration GitHub Pages](github-pages.md) est préparée après 0.2 :
 publication de main après tests, build relatif au chemin, publication de dist uniquement.
 L’accès public du studio a été accepté le 11 septembre 2026 ; le dépôt reste privé.
 Les données de campagne ne sont pas publiées. Activation administrative de Pages requise.
+
+## Laboratoire créatif
+
+`src/domain/creative.ts` porte les recettes v1 et leur résolution pure.
+`src/editor/CreativeLab.tsx` fournit l’exploration React + Motion et un aperçu CSS.
+Ce complément ne modifie pas les contrats campagne v1 ni le pipeline d’export.
+Voir [contrats et limites](creative-lab.md).

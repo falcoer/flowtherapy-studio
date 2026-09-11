@@ -18,7 +18,7 @@ test.afterEach(async ({ page }) => {
 });
 
 async function compose(page: Page) {
-  await page.goto("/");
+  await page.goto("/#campagne");
   await page
     .getByLabel("Nom de la campagne", { exact: true })
     .fill("Campagne de recette");
@@ -143,7 +143,7 @@ test("image crop, binary reload, round trip and same-origin revision conflict", 
     id = restored.campaign.id;
   expect(restored.assets.size).toBe(1);
   const other = await context.newPage();
-  await other.goto("/");
+  await other.goto("/#campagne");
   other.on("dialog", (d) => d.accept());
   await other.getByLabel("Campagne enregistrée").selectOption(id);
   await other.getByRole("button", { name: "Ouvrir", exact: true }).click();

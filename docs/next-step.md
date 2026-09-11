@@ -17,3 +17,14 @@ Objectif suivant : jalon 0.3, templates et formats multiples.
 
 Le DOM/CSS de 0.2 est un aperçu d'édition, pas un moteur d'export déterministe.
 PNG/JPEG/PDF restent au jalon 0.4. Voir docs/github-pages.md pour le statut du déploiement.
+
+## Laboratoire créatif
+
+La branche feat/creative-lab introduit le laboratoire React + Motion et les
+recettes v1 séparées des campagnes (voir creative-lab.md). Après intégration :
+relier les recettes aux variantes via snapshots explicites, puis intégrer identité
+de marque, ressources, dominante et sélection de contenu au moteur 0.3.
+
+Organisation cible : [Branding, Ligne éditoriale, Campagnes](studio-organization.md).
+Le laboratoire appartient à Campagnes > Direction créative. Préserver la différence
+entre format, template, support et canal, ainsi que les statuts prévu/implémenté.
