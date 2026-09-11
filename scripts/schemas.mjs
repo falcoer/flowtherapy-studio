@@ -16,14 +16,14 @@ schema.$id = 'https://flowtherapymusic.com/studio/schemas/domain-v2.json';
 
 const text = JSON.stringify(schema, null, 2) + '\n';
 const path = 'schemas/domain.schema.json';
-const canonical = (value) =>
+const canonical = (value, key = '') =>
   Array.isArray(value)
-    ? value.map(canonical)
+    ? (key === 'required' ? [...value].sort() : value).map((item) => canonical(item))
     : value && typeof value === 'object'
       ? Object.fromEntries(
           Object.entries(value)
             .sort(([a], [b]) => a.localeCompare(b))
-            .map(([key, item]) => [key, canonical(item)]),
+            .map(([childKey, item]) => [childKey, canonical(item, childKey)]),
         )
       : value;
 const firstDiff = (actual, expected, at = '$') => {
