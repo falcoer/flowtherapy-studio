@@ -169,17 +169,20 @@ test("image crop, binary reload, round trip and same-origin revision conflict", 
 test("mobile and overflowing content remain accessible", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await compose(page);
-  await page
-    .getByLabel("Titre de la campagne")
-    .fill("Un très long titre de campagne ".repeat(30));
-  await expect(
-    page.getByRole("list", { name: "Avertissements de composition" }),
-  ).toContainText("contenu débordant");
+  const longTitle = "Un très long titre de campagne ".repeat(30);
+  await page.getByLabel("Titre de la campagne").fill(longTitle);
+  const warnings = page.getByRole("list", { name: "Avertissements de composition" });
+  await expect(warnings).toContainText("Texte trop grand même après ajustement");
+  await expect(warnings).toContainText("contenu intégral conservé");
+  // Resolved lines must preserve every character, not only the saved input.
+  expect(
+    await page.getByRole("button", { name: "Calque title", exact: true }).textContent(),
+  ).toBe(longTitle);
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   ).toBe(true);
   const json = importJSON((await exportData(page, "JSON")).toString());
-  expect((json.content.title as string).length).toBeGreaterThan(500);
+  expect(json.content.title).toBe(longTitle);
 });
