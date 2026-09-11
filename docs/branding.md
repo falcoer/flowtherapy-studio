@@ -44,10 +44,11 @@ validés avant transaction. Les métadonnées sont également conservées dans l
 instantanés pour des sauvegardes reproductibles. Supprimer une campagne ne supprime
 pas une ressource partagée. Aucune purge automatique n'est introduite.
 
-Le format de campagne reste v1 : `Brand.logos` et `Asset.credit` sont facultatifs.
-Tous les anciens documents restent acceptés par cette version du studio. Les
-anciennes versions du studio, strictes sur les propriétés, ne peuvent pas importer
-les documents contenant ces nouveaux champs. Le ZIP STORE reste inchangé.
+Le format de campagne et d'identité est v2 : `Brand.logos` et `Asset.credit` sont
+facultatifs mais font partie du contrat versionné. Les campagnes v1 sont migrées
+explicitement vers v2 avant validation, export JSON/ZIP ou sauvegarde IndexedDB ; les
+anciennes versions du studio ne doivent pas importer ces documents v2. Le ZIP STORE
+reste inchangé.
 
 ## Limites explicites
 
