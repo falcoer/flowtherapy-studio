@@ -6,13 +6,22 @@ sociaux et l'impression.
 
 ## État
 
-Jalon 0.1 : noyau TypeScript implémenté, contrats validés, résolution des contenus,
-snapshots et import/export JSON/ZIP avec contrôle des assets. L'éditeur et les
-exporteurs graphiques ne sont pas encore implémentés. Aucun hébergement activé.
+Le noyau 0.1 et l'éditeur statique minimal 0.2 sont implémentés sur leurs branches
+respectives (PR à intégrer). Campagnes/événements, activation Agenda, déplacement,
+recadrage PNG/JPEG, annulation, IndexedDB et échanges JSON/ZIP sont disponibles.
+L'aperçu reste provisoire ; les exports graphiques et templates de production ne
+sont pas encore livrés. Aucun hébergement n'est activé.
+
+```sh
+npm ci
+npm run dev
+```
+
+Voir [l'éditeur local et ses limites](docs/editor.md). Le serveur écoute 127.0.0.1.
 
 ## Principes
 
-- Site statique, React/TypeScript prévu ; édition et export dans le navigateur.
+- Site statique, React/TypeScript ; édition et export dans le navigateur.
 - Fonctionnement autonome : IndexedDB, import/export JSON et archive ZIP avec assets.
 - Catalogue commun versionné ; personnalisations locales, puis stockage partagé facultatif.
 - Campagnes multi-événements, supports et variantes de templates par format.
@@ -31,8 +40,9 @@ exporteurs graphiques ne sont pas encore implémentés. Aucun hébergement activ
 - [Prochaine étape](docs/next-step.md)
 - [Mise en place GitHub](docs/repository-setup.md)
 
-`npm ci` puis `npm run check` (Node >= 22) vérifient les schémas générés, le typage,
-les tests du noyau et les fixtures. ZIP v1 : STORE sans compression ; PNG/JPEG et
+`npm ci` puis `npm run check` (Node >= 22.12) vérifient les schémas générés, le typage,
+les tests du noyau, du stockage et les fixtures, puis le build statique.
+`npm run test:e2e` exécute la recette Chromium (voir docs/editor.md). ZIP v1 : STORE sans compression ; PNG/JPEG et
 polices acceptés, SVG refusés en attendant un nettoyage dédié.
 
 Le dépôt doit rester privé. Une protection de l'application hébergée est également
