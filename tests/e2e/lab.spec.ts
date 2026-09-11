@@ -42,7 +42,7 @@ test("creative exploration, keyboard, persistence and campaign continuity", asyn
     .getByRole("textbox", { name: "Titre de la campagne", exact: true })
     .fill("Le laboratoire en concert");
   await page
-    .getByRole("button", { name: "✧ Laboratoire créatif", exact: true })
+    .getByRole("button", { name: "✧ Direction créative", exact: true })
     .click();
   await expect(page.locator(".lab-poster h2")).toHaveText(
     "Le laboratoire en concert",
@@ -73,7 +73,7 @@ test("palette lock, nearby variants, overflow and mobile layout", async ({
     .getByRole("textbox", { name: "Titre de la campagne", exact: true })
     .fill("Un très long titre ".repeat(40));
   await page
-    .getByRole("button", { name: "✧ Laboratoire créatif", exact: true })
+    .getByRole("button", { name: "✧ Direction créative", exact: true })
     .click();
   await expect(
     page.getByText("Le contenu dépasse ce format.", { exact: false }),

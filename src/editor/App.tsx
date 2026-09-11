@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import type {
   Campaign,
+  CreativeDirection,
+  CreativeOverrides,
   EventRow,
   PlacementOverride,
   Value,
 } from "../domain/model.js";
 import { resolvePlacements, validateCampaign } from "../domain/core.js";
+import { campaignDirection, recipeToDirection } from "../domain/creative.js";
 import {
   ARCHIVE_LIMITS,
   exportZIP,
@@ -18,7 +21,17 @@ import {
   RevisionConflict,
 } from "../storage/indexeddb.js";
 import type { CampaignBundle } from "../storage/indexeddb.js";
-import { activate, adjust, edit, newCampaign, redo, undo } from "./state.js";
+import {
+  activate,
+  adjust,
+  adjustCreativeDirection,
+  edit,
+  newCampaign,
+  redo,
+  resetCreativeDirection,
+  setCreativeDirection,
+  undo,
+} from "./state.js";
 import type { History } from "./state.js";
 import { agenda, formats } from "./catalog.js";
 import { Preview } from "./Preview.js";
@@ -28,6 +41,30 @@ const messageOf = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
 const fingerprint = (b: CampaignBundle) =>
   JSON.stringify({ ...b.campaign, revision: 0 });
+function directionDiff(
+  direction: CreativeDirection,
+  inherited: CreativeDirection,
+): CreativeOverrides {
+  const result: CreativeOverrides = {};
+  for (const key of [
+    "energy",
+    "colorExpression",
+    "scale",
+    "density",
+    "dominant",
+    "harmony",
+    "imageAssetId",
+  ] as const) {
+    if (direction[key] !== inherited[key]) {
+      const value =
+        key === "imageAssetId"
+          ? (direction.imageAssetId ?? null)
+          : direction[key];
+      Object.assign(result, { [key]: value });
+    }
+  }
+  return result;
+}
 function download(data: BlobPart, name: string, type: string) {
   const url = URL.createObjectURL(new Blob([data], { type })),
     a = document.createElement("a");
@@ -312,33 +349,79 @@ export function App() {
           <div>
             FLOW THERAPY <strong>Studio</strong>
           </div>
-          <span className="version">0.2</span>
+          <span className="version">0.3</span>
         </div>
         <span className="local-indicator">● Espace local</span>
       </header>
       <nav className="studio-navigation" aria-label="Espaces du studio">
-        <span className="studio-section-label">CAMPAGNES</span>
         <button
-          aria-pressed={view === "lab"}
-          onClick={() => {
-            location.hash = "laboratoire";
-            setView("lab");
-          }}
+          disabled
+          title="Le socle Branding sera livré dans la suite du jalon 0.3."
         >
-          ✧ Laboratoire créatif
+          Branding <small>Bientôt</small>
         </button>
         <button
-          aria-pressed={view === "campaign"}
-          onClick={() => {
-            location.hash = "campagne";
-            setView("campaign");
-          }}
+          disabled
+          title="Le socle Éditorial sera livré dans la suite du jalon 0.3."
         >
-          Campagne
+          Éditorial <small>Bientôt</small>
         </button>
+        <button
+          disabled
+          title="Le catalogue Médias sera livré dans la suite du jalon 0.3."
+        >
+          Médias <small>Bientôt</small>
+        </button>
+        <button className="studio-root-active" aria-pressed="true">
+          Campagnes
+        </button>
+        <span className="studio-subnavigation">
+          <button
+            aria-pressed={view === "lab"}
+            onClick={() => {
+              location.hash = "laboratoire";
+              setView("lab");
+            }}
+          >
+            ✧ Direction créative
+          </button>
+          <button
+            aria-pressed={view === "campaign"}
+            onClick={() => {
+              location.hash = "campagne";
+              setView("campaign");
+            }}
+          >
+            Campagne
+          </button>
+        </span>
       </nav>
       <div hidden={view !== "lab"}>
-        <CreativeLab campaign={campaign} />
+        <CreativeLab
+          campaign={campaign}
+          assets={bundle.assets}
+          onChange={(recipe, targetSupportId, imageAssetId) =>
+            safe(() => {
+              const direction = recipeToDirection(recipe, imageAssetId);
+              const next = targetSupportId
+                ? adjustCreativeDirection(
+                    campaign,
+                    targetSupportId,
+                    directionDiff(direction, campaignDirection(campaign)),
+                  )
+                : setCreativeDirection(campaign, direction);
+              commit({ ...bundle, campaign: next });
+            })
+          }
+          onReset={(targetSupportId) =>
+            safe(() =>
+              commit({
+                ...bundle,
+                campaign: resetCreativeDirection(campaign, targetSupportId),
+              }),
+            )
+          }
+        />
       </div>
       <fieldset
         hidden={view !== "campaign"}

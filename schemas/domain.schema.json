@@ -869,12 +869,140 @@
         "status"
       ]
     },
+    "CreativeDominant": {
+      "enum": [
+        "balanced",
+        "image",
+        "text"
+      ],
+      "type": "string"
+    },
+    "CreativeAxis": {
+      "enum": [
+        "colorExpression",
+        "density",
+        "dominant",
+        "energy",
+        "scale"
+      ],
+      "type": "string"
+    },
+    "CreativeDirection": {
+      "type": "object",
+      "properties": {
+        "directionVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "energy": {
+          "type": "number"
+        },
+        "colorExpression": {
+          "type": "number"
+        },
+        "scale": {
+          "type": "number"
+        },
+        "density": {
+          "type": "number"
+        },
+        "dominant": {
+          "$ref": "#/definitions/CreativeDominant"
+        },
+        "harmony": {
+          "enum": [
+            "petrol",
+            "plum",
+            "solar"
+          ],
+          "type": "string"
+        },
+        "imageAssetId": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "colorExpression",
+        "density",
+        "directionVersion",
+        "dominant",
+        "energy",
+        "harmony",
+        "scale"
+      ]
+    },
+    "CreativeCapabilities": {
+      "type": "object",
+      "properties": {
+        "axes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CreativeAxis"
+          }
+        },
+        "dominants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CreativeDominant"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "axes",
+        "dominants"
+      ]
+    },
+    "CreativeOverrides": {
+      "type": "object",
+      "properties": {
+        "energy": {
+          "type": "number"
+        },
+        "colorExpression": {
+          "type": "number"
+        },
+        "scale": {
+          "type": "number"
+        },
+        "density": {
+          "type": "number"
+        },
+        "dominant": {
+          "enum": [
+            "balanced",
+            "image",
+            "text"
+          ],
+          "type": "string"
+        },
+        "harmony": {
+          "enum": [
+            "petrol",
+            "plum",
+            "solar"
+          ],
+          "type": "string"
+        },
+        "imageAssetId": {
+          "type": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "Template": {
       "type": "object",
       "properties": {
         "brandRef": {
           "description": "Contrats sérialisés v1, stabilisés au jalon 0.1.",
           "$ref": "#/definitions/Ref"
+        },
+        "creativeCapabilities": {
+          "$ref": "#/definitions/CreativeCapabilities"
         },
         "fields": {
           "type": "array",
@@ -1073,6 +1201,9 @@
             "$ref": "#/definitions/EventSelection"
           }
         },
+        "creativeOverrides": {
+          "$ref": "#/definitions/CreativeOverrides"
+        },
         "variants": {
           "type": "array",
           "items": {
@@ -1115,6 +1246,9 @@
           "additionalProperties": {
             "$ref": "#/definitions/Value"
           }
+        },
+        "creativeDirection": {
+          "$ref": "#/definitions/CreativeDirection"
         },
         "brand": {
           "$ref": "#/definitions/Brand"

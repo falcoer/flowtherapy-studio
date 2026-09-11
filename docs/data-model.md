@@ -33,6 +33,13 @@ Validation structurelle distincte de validation graphique (status draft/validate
 
 ## Campagne et résolution
 
+La campagne porte une `creativeDirection` v1 additive et rétrocompatible : quatre
+axes continus 0–100, une dominante, une harmonie et, si nécessaire, une référence
+d'image. Un document v1 antérieur sans direction reçoit les valeurs par défaut à
+la résolution sans réécriture silencieuse. Chaque support hérite de la direction ;
+ses `creativeOverrides` ne peuvent porter que les axes/dominantes déclarés dans
+`template.creativeCapabilities`. Supprimer ces overrides rétablit l'héritage.
+
 Pour chaque champ : override du support s'il existe (tester présence, pas vérité),
 sinon contenu lié, sinon défaut du template ; champ obligatoire absent = erreur.
 Puis sélection d'événements : all conserve l'ordre enregistré, ids respecte l'ordre
@@ -69,4 +76,3 @@ commun. Export contribution pour revue GitHub, pas d'écriture GitHub depuis le 
 Modèles de campagne regroupant supports, futures publications avec instantanés,
 destinations/capacités et statuts ; schémas à définir aux jalons correspondants.
 Pas de secrets sociaux, de fonctions JS ou d'expressions exécutables dans les JSON.
-

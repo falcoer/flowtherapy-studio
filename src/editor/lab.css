@@ -13,6 +13,22 @@
   background: #e7ecd8;
   color: #254739;
 }
+.studio-navigation .studio-root-active {
+  font-weight: 700;
+}
+.studio-navigation button small {
+  display: block;
+  margin-top: 2px;
+  color: #7b897f;
+  font-size: 8px;
+  font-weight: 500;
+}
+.studio-subnavigation {
+  display: flex;
+  gap: 6px;
+  padding-left: 8px;
+  border-left: 1px solid #dce2dc;
+}
 .creative-lab {
   max-width: 1800px;
   margin: auto;
@@ -236,6 +252,7 @@
   aspect-ratio: 1;
   container-type: inline-size;
   box-shadow: 0 12px 25px #203c3925;
+  filter: saturate(var(--color-intensity));
 }
 .lab-poster.story {
   aspect-ratio: 9/16;
@@ -253,6 +270,35 @@
   flex-direction: column;
   min-height: 100%;
   background: var(--paper);
+}
+.lab-poster-image {
+  width: 100%;
+  height: 28cqw;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border-radius: 1cqw;
+}
+.lab-poster-image.dominant-image {
+  height: 48cqw;
+}
+.lab-poster-content.dominant-image h2 {
+  font-size: 8cqw !important;
+}
+.lab-dominants {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+.lab-dominants button {
+  padding: 7px 4px;
+  font-size: 10px;
+}
+.lab-dominants button[aria-pressed="true"] {
+  color: #fff;
+  background: #204b4e;
+}
+.lab-target {
+  margin-top: 0;
 }
 .lab-poster-signature {
   display: flex;
@@ -487,6 +533,12 @@
   }
   .studio-navigation {
     padding: 10px 16px;
+  }
+  .studio-subnavigation {
+    width: 100%;
+    padding: 8px 0 0;
+    border-left: 0;
+    border-top: 1px solid #e3e7e1;
   }
 }
 

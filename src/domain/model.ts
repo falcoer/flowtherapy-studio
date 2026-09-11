@@ -1,5 +1,8 @@
 /** Contrats sérialisés v1, stabilisés au jalon 0.1. */
-export interface Ref { id: string; revision: number }
+export interface Ref {
+  id: string;
+  revision: number;
+}
 export interface Definition extends Ref {
   schemaVersion: 1;
   name: string;
@@ -7,8 +10,18 @@ export interface Definition extends Ref {
   tags?: string[];
   derivedFrom?: Ref;
 }
-export interface Insets { top: number; right: number; bottom: number; left: number }
-export interface Frame { x: number; y: number; width: number; height: number }
+export interface Insets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+export interface Frame {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 export interface Format extends Definition {
   surface: { width: number; height: number; unit: "px" | "mm" };
   zones: {
@@ -20,30 +33,45 @@ export interface Format extends Definition {
   defaultExportId: string;
 }
 export type ExportPreset = {
-  id: string; name: string; area: "surface" | "bleed";
-} & ({
-  type: "raster"; mimeType: "image/png" | "image/jpeg";
-  resolution: { mode: "scale"; factor: number } | { mode: "dpi"; value: number };
-  background: string | null; quality?: number;
-} | {
-  type: "pdf"; background: string; cropMarks: boolean; rasterDpi: number;
-});
+  id: string;
+  name: string;
+  area: "surface" | "bleed";
+} & (
+  | {
+      type: "raster";
+      mimeType: "image/png" | "image/jpeg";
+      resolution:
+        { mode: "scale"; factor: number } | { mode: "dpi"; value: number };
+      background: string | null;
+      quality?: number;
+    }
+  | {
+      type: "pdf";
+      background: string;
+      cropMarks: boolean;
+      rasterDpi: number;
+    }
+);
 export interface EventRow {
   id: string;
   date: string; // YYYY-MM-DD, date civile
   label: string;
   location: string;
 }
-export interface AssetRef { assetId: string }
+export interface AssetRef {
+  assetId: string;
+}
 export type Value = string | AssetRef | EventRow[];
 export type Field = { id: string; label: string; required: boolean } & (
-  { type: "text" | "date" | "url"; defaultValue?: string } |
-  { type: "image"; defaultValue?: AssetRef } |
-  { type: "collection"; itemSchema: "core:event@1"; minItems: number }
+  | { type: "text" | "date" | "url"; defaultValue?: string }
+  | { type: "image"; defaultValue?: AssetRef }
+  | { type: "collection"; itemSchema: "core:event@1"; minItems: number }
 );
 export type Source = { field: string } | { value: Value };
 export interface Style {
-  fill?: string; font?: string; fontSize?: number;
+  fill?: string;
+  font?: string;
+  fontSize?: number;
   align?: "left" | "center" | "right";
 }
 export type Layer = {
@@ -51,9 +79,9 @@ export type Layer = {
   style?: Style;
   editing: { move: boolean; resize: boolean; restyle: boolean; hide: boolean };
 } & (
-  { type: "text" | "image" | "vector" | "qr"; content: Source } |
-  { type: "shape"; shape: "rectangle" | "ellipse" } |
-  { type: "event-list"; source: { field: string } }
+  | { type: "text" | "image" | "vector" | "qr"; content: Source }
+  | { type: "shape"; shape: "rectangle" | "ellipse" }
+  | { type: "event-list"; source: { field: string } }
 );
 export interface Placement {
   layerId: string;
@@ -79,8 +107,35 @@ export interface Layout {
   status: "draft" | "validated";
   placements: Placement[]; // ordre de peinture arrière → avant
 }
+export type CreativeDominant = "image" | "text" | "balanced";
+export type CreativeAxis =
+  "energy" | "colorExpression" | "scale" | "density" | "dominant";
+export interface CreativeDirection {
+  directionVersion: 1;
+  energy: number;
+  colorExpression: number;
+  scale: number;
+  density: number;
+  dominant: CreativeDominant;
+  harmony: "petrol" | "solar" | "plum";
+  imageAssetId?: string;
+}
+export interface CreativeCapabilities {
+  axes: CreativeAxis[];
+  dominants: CreativeDominant[];
+}
+export interface CreativeOverrides {
+  energy?: number;
+  colorExpression?: number;
+  scale?: number;
+  density?: number;
+  dominant?: CreativeDominant;
+  harmony?: CreativeDirection["harmony"];
+  imageAssetId?: string | null;
+}
 export interface Template extends Definition {
   brandRef?: Ref;
+  creativeCapabilities?: CreativeCapabilities;
   fields: Field[];
   layers: Layer[];
   layouts: Layout[];
@@ -110,6 +165,7 @@ export interface Support {
   bindings: { [key: string]: string }; // champ template → clé contenu campagne
   overrides: { [key: string]: Value };
   eventSelections: { [fieldId: string]: EventSelection };
+  creativeOverrides?: CreativeOverrides;
   variants: Variant[];
 }
 export interface Campaign {
@@ -119,6 +175,7 @@ export interface Campaign {
   name: string;
   locale: string;
   content: { [key: string]: Value };
+  creativeDirection?: CreativeDirection;
   brand?: Brand; // snapshot
   assets: Asset[];
   supports: Support[];
@@ -130,11 +187,15 @@ export interface CampaignStore {
   delete(id: string, expectedRevision: number): Promise<void>;
 }
 
-
 /** ZIP v1: STORE entries, paths and hashes cover campaign.json and all assets. */
 export interface ArchiveManifest {
   archiveVersion: 1;
-  files: Array<{ path: string; size: number; sha256: string; mimeType: string }>;
+  files: Array<{
+    path: string;
+    size: number;
+    sha256: string;
+    mimeType: string;
+  }>;
 }
 
 export type EventSelection = { mode: "all" } | { mode: "ids"; ids: string[] };

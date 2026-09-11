@@ -3,25 +3,31 @@ import type { CSSProperties, PointerEvent } from "react";
 import { motion, MotionConfig } from "motion/react";
 import type { Campaign } from "../domain/model.js";
 import {
+  campaignDirection,
   clamp,
+  directionToRecipe,
   explore,
   harmonies,
   parseRecipe,
   recipes,
   resolveCreative,
+  resolveSupportDirection,
 } from "../domain/creative.js";
 import type { CreativeRecipe } from "../domain/creative.js";
 import "./lab.css";
 
-const storageKey = "ft-studio:creative-recipes:v1";
+const storageKey = "ft-studio:creative-recipes:v2";
+const legacyStorageKey = "ft-studio:creative-recipes:v1";
 function CreativePoster({
   recipe,
   campaign,
   format,
+  imageUrl,
 }: {
   recipe: CreativeRecipe;
   campaign: Campaign;
   format: string;
+  imageUrl?: string;
 }) {
   const design = resolveCreative(recipe);
   const host = useRef<HTMLDivElement>(null);
@@ -64,17 +70,25 @@ function CreativePoster({
             "--paper": design.background,
             "--ink": design.ink,
             "--accent": design.accent,
+            "--color-intensity": design.colorIntensity,
           } as CSSProperties
         }
       >
         <div
           ref={content}
-          className="lab-poster-content"
+          className={`lab-poster-content dominant-${design.dominant}`}
           style={{
             gap: `${design.gap / 4}cqw`,
             minHeight: `${format === "story" ? 1600 / 9 : format === "poster" ? 29700 / 210 : 100}cqw`,
           }}
         >
+          {imageUrl && design.dominant !== "text" && (
+            <img
+              className={`lab-poster-image dominant-${design.dominant}`}
+              src={imageUrl}
+              alt="Ressource visuelle de la direction créative"
+            />
+          )}
           <div className="lab-poster-signature">
             FLOW THERAPY <span>LIVE MUSIC</span>
           </div>
@@ -128,8 +142,29 @@ function CreativePoster({
     </div>
   );
 }
-export function CreativeLab({ campaign }: { campaign: Campaign }) {
-  const [recipe, setRecipe] = useState<CreativeRecipe>(recipes[1]);
+export function CreativeLab({
+  campaign,
+  assets,
+  onChange,
+  onReset,
+}: {
+  campaign: Campaign;
+  assets: Map<string, Uint8Array>;
+  onChange: (
+    recipe: CreativeRecipe,
+    supportId: string,
+    imageAssetId?: string,
+  ) => void;
+  onReset: (supportId: string) => void;
+}) {
+  const [targetSupportId, setTargetSupportId] = useState("");
+  const [recipe, setRecipe] = useState<CreativeRecipe>(() =>
+    directionToRecipe(campaignDirection(campaign)),
+  );
+  const [imageAssetId, setImageAssetId] = useState(
+    campaignDirection(campaign).imageAssetId ?? "",
+  );
+  const [imageUrl, setImageUrl] = useState("");
   const [saved, setSaved] = useState<CreativeRecipe[]>([]);
   const [variants, setVariants] = useState<CreativeRecipe[]>([]);
   const [past, setPast] = useState<CreativeRecipe[]>([]);
@@ -141,12 +176,16 @@ export function CreativeLab({ campaign }: { campaign: Campaign }) {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(storageKey);
+      const raw =
+        localStorage.getItem(storageKey) ??
+        localStorage.getItem(legacyStorageKey);
       if (raw) {
         const items: unknown = JSON.parse(raw);
         if (!Array.isArray(items) || items.length > 50)
           throw new Error("Collection invalide.");
-        setSaved(items.map(parseRecipe));
+        const migrated = items.map(parseRecipe);
+        setSaved(migrated);
+        localStorage.setItem(storageKey, JSON.stringify(migrated));
       }
     } catch {
       setError(
@@ -154,23 +193,74 @@ export function CreativeLab({ campaign }: { campaign: Campaign }) {
       );
     }
   }, []);
-  function choose(next: CreativeRecipe) {
-    setPast((p) => [...p.slice(-29), recipe]);
+  useEffect(() => {
+    const support = campaign.supports.find(
+      (item) => item.id === targetSupportId,
+    );
+    const direction = support
+      ? resolveSupportDirection(campaign, support)
+      : campaignDirection(campaign);
+    setRecipe(directionToRecipe(direction));
+    setImageAssetId(direction.imageAssetId ?? "");
+  }, [campaign.id, campaign.revision, targetSupportId]);
+  useEffect(() => {
+    const asset = campaign.assets.find((item) => item.id === imageAssetId);
+    const bytes = asset ? assets.get(asset.path) : undefined;
+    if (!asset || !bytes) {
+      setImageUrl("");
+      return;
+    }
+    const copy = new Uint8Array(bytes.byteLength);
+    copy.set(bytes);
+    const url = URL.createObjectURL(
+      new Blob([copy.buffer], { type: asset.mimeType }),
+    );
+    setImageUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [assets, campaign.assets, imageAssetId]);
+  const imageAssets = campaign.assets.filter((asset) =>
+    asset.mimeType.startsWith("image/"),
+  );
+  const targetSupport = campaign.supports.find(
+    (support) => support.id === targetSupportId,
+  );
+  function persist(next: CreativeRecipe, selectedImageId = imageAssetId) {
+    if (targetSupport && !targetSupport.template.creativeCapabilities) {
+      setError("Ce support hérité ne déclare aucun ajustement créatif.");
+      return false;
+    }
+    if (next.dominant === "image" && !selectedImageId) {
+      setError("La dominante Image requiert une ressource image.");
+      return false;
+    }
+    setError("");
+    onChange(next, targetSupportId, selectedImageId || undefined);
+    return true;
+  }
+  function apply(next: CreativeRecipe, remember = true) {
+    if (!persist(next)) return;
+    if (remember) setPast((p) => [...p.slice(-29), recipe]);
     setRecipe(next);
+  }
+  function choose(next: CreativeRecipe) {
+    apply(next);
   }
   function point(e: PointerEvent<HTMLDivElement>) {
     const box = e.currentTarget.getBoundingClientRect();
-    setRecipe((r) => ({
-      ...r,
+    const next = {
+      ...recipe,
       energy: Math.round(clamp(((e.clientX - box.left) / box.width) * 100)),
       density: Math.round(clamp(((box.bottom - e.clientY) / box.height) * 100)),
-    }));
+    };
+    if (persist(next)) setRecipe(next);
   }
   function finish(cancel = false) {
     if (gesture.current) {
       const previous = gesture.current;
-      if (cancel) setRecipe(previous);
-      else setPast((p) => [...p.slice(-29), previous]);
+      if (cancel) {
+        setRecipe(previous);
+        persist(previous);
+      } else setPast((p) => [...p.slice(-29), previous]);
       gesture.current = null;
     }
   }
@@ -225,8 +315,11 @@ export function CreativeLab({ campaign }: { campaign: Campaign }) {
           <button
             disabled={!past.length}
             onClick={() => {
-              setRecipe(past.at(-1)!);
-              setPast((p) => p.slice(0, -1));
+              const previous = past.at(-1)!;
+              if (persist(previous)) {
+                setRecipe(previous);
+                setPast((p) => p.slice(0, -1));
+              }
             }}
           >
             ↶ Revenir
@@ -234,6 +327,34 @@ export function CreativeLab({ campaign }: { campaign: Campaign }) {
         </div>
         <div className="lab-grid">
           <aside className="lab-controls">
+            <label className="lab-target">
+              Portée de la direction
+              <select
+                value={targetSupportId}
+                onChange={(event) => setTargetSupportId(event.target.value)}
+              >
+                <option value="">Campagne · réglage commun</option>
+                {campaign.supports.map((support) => (
+                  <option key={support.id} value={support.id}>
+                    {support.name} ·{" "}
+                    {support.variants.map((v) => v.format.name).join(", ")}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {targetSupportId && (
+              <button
+                className="wide"
+                onClick={() => {
+                  onReset(targetSupportId);
+                  const inherited = campaignDirection(campaign);
+                  setRecipe(directionToRecipe(inherited));
+                  setImageAssetId(inherited.imageAssetId ?? "");
+                }}
+              >
+                Réinitialiser les ajustements du support
+              </button>
+            )}
             <h2>Un point de départ</h2>
             <div className="lab-presets">
               {recipes.map((r) => (
@@ -310,6 +431,7 @@ export function CreativeLab({ campaign }: { campaign: Campaign }) {
             {(
               [
                 ["energy", "Énergie"],
+                ["colorExpression", "Expression colorée"],
                 ["density", "Densité"],
                 ["scale", "Échelle graphique"],
               ] as const
@@ -338,12 +460,67 @@ export function CreativeLab({ campaign }: { campaign: Campaign }) {
                     )
                       setPast((p) => [...p.slice(-29), recipe]);
                   }}
-                  onChange={(e) =>
-                    setRecipe((r) => ({ ...r, [key]: Number(e.target.value) }))
-                  }
+                  onChange={(e) => {
+                    const next = { ...recipe, [key]: Number(e.target.value) };
+                    if (persist(next)) setRecipe(next);
+                  }}
                 />
               </label>
             ))}
+            <div className="lab-control-heading">
+              <h2>Dominante</h2>
+            </div>
+            <div className="lab-dominants" role="group" aria-label="Dominante">
+              {(
+                [
+                  ["image", "Image"],
+                  ["text", "Texte"],
+                  ["balanced", "Équilibrée"],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  aria-pressed={recipe.dominant === value}
+                  disabled={value === "image" && !imageAssets.length}
+                  title={
+                    value === "image" && !imageAssets.length
+                      ? "Ajoutez d’abord une image à la campagne."
+                      : undefined
+                  }
+                  onClick={() => {
+                    const selected =
+                      imageAssetId ||
+                      (value === "image" ? (imageAssets[0]?.id ?? "") : "");
+                    const next = { ...recipe, dominant: value };
+                    if (persist(next, selected)) {
+                      if (selected !== imageAssetId) setImageAssetId(selected);
+                      setRecipe(next);
+                    }
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {imageAssets.length > 0 && (
+              <label>
+                Ressource image
+                <select
+                  value={imageAssetId}
+                  onChange={(event) => {
+                    if (persist(recipe, event.target.value))
+                      setImageAssetId(event.target.value);
+                  }}
+                >
+                  <option value="">Aucune</option>
+                  {imageAssets.map((asset) => (
+                    <option key={asset.id} value={asset.id}>
+                      {asset.source}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <div className="lab-control-heading">
               <h2>Une harmonie</h2>
               <button
@@ -383,6 +560,7 @@ export function CreativeLab({ campaign }: { campaign: Campaign }) {
                 choose({
                   ...recipe,
                   energy: n[0] % 101,
+                  colorExpression: n[3] % 101,
                   density: n[1] % 101,
                   scale: n[2] % 101,
                   harmony: paletteLocked
@@ -418,6 +596,7 @@ export function CreativeLab({ campaign }: { campaign: Campaign }) {
                 recipe={recipe}
                 campaign={campaign}
                 format={format}
+                imageUrl={imageUrl || undefined}
               />
             </div>
             <p className="lab-caption">
@@ -473,8 +652,9 @@ export function CreativeLab({ campaign }: { campaign: Campaign }) {
               </label>
             </div>
             <p className="hint">
-              Les recettes sont distinctes des sauvegardes de campagne.
-              Exportez-les pour les transférer.
+              La direction courante est incluse dans la campagne. Les recettes
+              restent des préréglages indépendants à exporter pour les
+              transférer.
             </p>
             {notice && (
               <p role="status" className="lab-notice">
