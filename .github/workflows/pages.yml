@@ -1,0 +1,61 @@
+name: Publish studio to GitHub Pages
+
+# Public application hosting approved by the owner on 2026-09-11.
+# Campaign documents and imported assets remain browser-local.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      accept_public_site:
+        description: 'Publish the studio publicly (campaigns remain in each browser)'
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    permissions:
+      contents: read
+      pages: read
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.accept_public_site)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Read Pages configuration
+        uses: actions/configure-pages@v5
+        with:
+          enablement: false
+      - name: Upload only the static application
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish verified artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

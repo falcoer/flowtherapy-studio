@@ -50,3 +50,8 @@ Remotion pourra consommer les documents plus tard ; pas de dépendance initiale.
 
 Voir [éditeur 0.2](editor.md) pour le parcours, les conflits et les limites réelles
 de cet aperçu, distinct du moteur déterministe futur.
+
+Une [intégration GitHub Pages](github-pages.md) est préparée après 0.2 :
+publication de main après tests, build relatif au chemin, publication de dist uniquement.
+L’accès public du studio a été accepté le 11 septembre 2026 ; le dépôt reste privé.
+Les données de campagne ne sont pas publiées. Activation administrative de Pages requise.

@@ -3,8 +3,8 @@
 | Jalon | Objectif | Critère de sortie | État |
 |---|---|---|---|
 | 0.0 | Cadrage, contrats et exemples | Décisions consultables, exemples contrôlés | Socle initial |
-| 0.1 | Contrats validés et noyau campagne | Schémas runtime, migrations, round-trip JSON/ZIP sans perte, sélection d'événements | Implémenté — PR à intégrer |
-| 0.2 | Éditeur statique minimal | Créer une campagne et une variante ; saisir, déplacer, recadrer, annuler, sauvegarder | Implémenté — PR à intégrer |
+| 0.1 | Contrats validés et noyau campagne | Schémas runtime, migrations, round-trip JSON/ZIP sans perte, sélection d'événements | Intégré |
+| 0.2 | Éditeur statique minimal | Créer une campagne et une variante ; saisir, déplacer, recadrer, annuler, sauvegarder | Intégré |
 | 0.3 | Templates et formats multiples | Catalogue, variantes, personnalisations, débordements et pagination | À faire |
 | 0.4 | Exports | PNG/JPEG/PDF, fidélité texte, dimensions physiques, exports groupés | À faire |
 | 0.5 | Studio privé utilisable | Assets autorisés, trois templates validés, accès groupe, recette A4/A3/social | À faire |
@@ -20,3 +20,7 @@ ZIP STORE uniquement ; SVG non acceptés. Aucun éditeur ni export graphique liv
 
 0.2 : voir [éditeur local](docs/editor.md). Aperçu DOM/CSS provisoire, IndexedDB
 et sauvegardes JSON/ZIP ; aucun export graphique ni hébergement.
+
+Complément 0.2 : intégration [GitHub Pages](docs/github-pages.md) préparée ;
+publication de main après tests, visibilité publique acceptée le 11 septembre 2026 ;
+activation administrative de Pages encore nécessaire.
