@@ -20,6 +20,8 @@ const colorGroups = [
       surface: "Surface",
       text: "Texte",
       muted: "Texte secondaire",
+      accent: "Accent",
+      contrast: "Contraste",
       purple: "Violet",
       orange: "Orange",
       pink: "Rose",
