@@ -1085,7 +1085,7 @@
           }
         },
         "derivedFrom": {
-          "description": "Contrats sérialisés v1, stabilisés au jalon 0.1.",
+          "description": "Contrats sérialisés v2 ; formats et templates restent des définitions v1.",
           "$ref": "#/definitions/Ref"
         },
         "id": {
