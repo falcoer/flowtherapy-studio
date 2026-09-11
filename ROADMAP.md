@@ -20,3 +20,6 @@ ZIP STORE uniquement ; SVG non acceptés. Aucun éditeur ni export graphique liv
 
 0.2 : voir [éditeur local](docs/editor.md). Aperçu DOM/CSS provisoire, IndexedDB
 et sauvegardes JSON/ZIP ; aucun export graphique ni hébergement.
+
+Complément 0.2 : intégration [GitHub Pages](docs/github-pages.md) préparée ;
+publication manuelle, désactivée par défaut, visibilité publique à accepter.

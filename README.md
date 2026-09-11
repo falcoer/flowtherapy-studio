@@ -10,7 +10,8 @@ Le noyau 0.1 et l'éditeur statique minimal 0.2 sont implémentés sur leurs bra
 respectives (PR à intégrer). Campagnes/événements, activation Agenda, déplacement,
 recadrage PNG/JPEG, annulation, IndexedDB et échanges JSON/ZIP sont disponibles.
 L'aperçu reste provisoire ; les exports graphiques et templates de production ne
-sont pas encore livrés. Aucun hébergement n'est activé.
+sont pas encore livrés. Aucun hébergement n'est activé. L’[intégration GitHub Pages](docs/github-pages.md)
+est préparée, avec publication manuelle après décision de visibilité.
 
 ```sh
 npm ci

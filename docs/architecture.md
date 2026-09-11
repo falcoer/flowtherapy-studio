@@ -50,3 +50,7 @@ Remotion pourra consommer les documents plus tard ; pas de dépendance initiale.
 
 Voir [éditeur 0.2](editor.md) pour le parcours, les conflits et les limites réelles
 de cet aperçu, distinct du moteur déterministe futur.
+
+Une [intégration GitHub Pages](github-pages.md) est préparée après 0.2 :
+workflow manuel, build relatif au chemin, publication de dist uniquement.
+Son activation attend une décision explicite sur l’accès public du studio.
