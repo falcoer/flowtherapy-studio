@@ -1,4 +1,4 @@
-/** Contrats provisoires 0.0 ; validation runtime et migrations prévues en 0.1. */
+/** Contrats sérialisés v1, stabilisés au jalon 0.1. */
 export interface Ref { id: string; revision: number }
 export interface Definition extends Ref {
   schemaVersion: 1;
@@ -86,8 +86,8 @@ export interface Template extends Definition {
   layouts: Layout[];
 }
 export interface Brand extends Definition {
-  colors: Record<string, string>;
-  fonts: Record<string, AssetRef>;
+  colors: { [key: string]: string };
+  fonts: { [key: string]: AssetRef };
 }
 export interface Asset {
   id: string;
@@ -101,15 +101,15 @@ export interface Variant {
   id: string;
   layoutId: string;
   format: Format; // snapshot
-  placementOverrides: Record<string, Partial<Omit<Placement, "layerId">>>;
+  placementOverrides: { [layerId: string]: PlacementOverride };
 }
 export interface Support {
   id: string;
   name: string;
   template: Template; // snapshot
-  bindings: Record<string, string>; // champ template → clé contenu campagne
-  overrides: Record<string, Value>;
-  eventSelections: Record<string, { mode: "all" } | { mode: "ids"; ids: string[] }>;
+  bindings: { [key: string]: string }; // champ template → clé contenu campagne
+  overrides: { [key: string]: Value };
+  eventSelections: { [fieldId: string]: EventSelection };
   variants: Variant[];
 }
 export interface Campaign {
@@ -118,7 +118,7 @@ export interface Campaign {
   revision: number; // concurrence de stockage, distincte de schemaVersion
   name: string;
   locale: string;
-  content: Record<string, Value>;
+  content: { [key: string]: Value };
   brand?: Brand; // snapshot
   assets: Asset[];
   supports: Support[];
@@ -128,4 +128,22 @@ export interface CampaignStore {
   load(id: string): Promise<Campaign>;
   save(campaign: Campaign, expectedRevision: number | null): Promise<Campaign>;
   delete(id: string, expectedRevision: number): Promise<void>;
+}
+
+
+/** ZIP v1: STORE entries, paths and hashes cover campaign.json and all assets. */
+export interface ArchiveManifest {
+  archiveVersion: 1;
+  files: Array<{ path: string; size: number; sha256: string; mimeType: string }>;
+}
+
+export type EventSelection = { mode: "all" } | { mode: "ids"; ids: string[] };
+export interface PlacementOverride {
+  frame?: Frame;
+  rotation?: number;
+  visible?: boolean;
+  style?: Style;
+  imageFit?: Placement["imageFit"];
+  textFit?: Placement["textFit"];
+  eventPresentation?: Placement["eventPresentation"];
 }

@@ -1,13 +1,17 @@
 # Prochaine session
 
-Objectif : implémenter 0.1, le noyau de données, avant l'éditeur complet.
+Le noyau 0.1 est implémenté. Lire `docs/core-api.md` et `docs/archive-format.md`.
+Objectif suivant : jalon 0.2, éditeur statique minimal.
 
-1. Lire les décisions et contrats ; stabiliser champs optionnels et références.
-2. Ajouter validation runtime JSON Schema ou équivalent et schémas exportables.
-3. Implémenter résolution bindings/overrides, sélection et snapshots autonomes.
-4. Implémenter import/export JSON ; définir l'archive ZIP et les contrôles d'assets.
-5. Tester round-trip, dates civiles, références supprimées, versions inconnues,
-   absence d'écrasement des personnalisations et sélection ordonnée.
-6. Mettre à jour roadmap et docs puis proposer une PR.
+1. Préparer React/TypeScript sans API ni hébergement public automatique.
+2. Permettre création et édition d'une campagne et de sa collection d'événements.
+3. Activer un template et une variante via les snapshots du noyau.
+4. Ajouter déplacement, recadrage et annulation/rétablissement des ajustements locaux.
+5. Implémenter IndexedDB derrière CampaignStore avec révision attendue et gestion
+   explicite des conflits ; intégrer les sauvegardes/imports JSON et ZIP existants.
+6. Vérifier le parcours dans le navigateur et conserver les contrôles `npm run check`.
 
-Ne pas annoncer un studio utilisable sur la seule base de ce socle documentaire.
+Les templates actuels restent des fixtures non validées graphiquement. Mesure du
+texte, débordements/pagination, choix du moteur et exports PNG/JPEG/PDF restent à
+implémenter. Le ZIP v1 accepte seulement STORE et rejette les SVG (voir contrat).
+Aucun studio utilisable ni export graphique ne doit être annoncé sur le seul noyau.

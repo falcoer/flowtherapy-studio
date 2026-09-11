@@ -1,7 +1,7 @@
-# Modèle de données v0.0
+# Modèle de données v1 (jalon 0.1)
 
-Contrats : `src/domain/model.ts`. Leur stabilisation et leur validation runtime sont
-le travail du jalon 0.1. Les exemples servent de fixtures, pas de templates graphiques validés.
+Contrats : `src/domain/model.ts`, schémas exportables dans `schemas/domain.schema.json`.
+Validation runtime et résolution : `src/domain/core.ts`. Les exemples servent de fixtures, pas de templates graphiques validés.
 
 ## Identité et versions
 
@@ -69,3 +69,4 @@ commun. Export contribution pour revue GitHub, pas d'écriture GitHub depuis le 
 Modèles de campagne regroupant supports, futures publications avec instantanés,
 destinations/capacités et statuts ; schémas à définir aux jalons correspondants.
 Pas de secrets sociaux, de fonctions JS ou d'expressions exécutables dans les JSON.
+

@@ -6,7 +6,8 @@
 - `src/editor` : future interface React/TypeScript.
 - `src/render` : future scène résolue commune à aperçu et export.
 - `src/export` : futurs adaptateurs PNG, JPEG, PDF et ZIP.
-- `src/storage` : futurs adaptateurs IndexedDB puis service partagé.
+- `src/storage` : import/export JSON, migrations explicites et ZIP implémentés ;
+  futurs adaptateurs IndexedDB puis service partagé.
 - `catalog` : formats, templates et assets intégrés, versionnés dans GitHub.
 
 Ces dossiers futurs ne désignent pas des modules déjà implémentés.
@@ -23,7 +24,8 @@ non pris en charge. Ne pas promettre PDF/X ou CMJN via une simple option JSON.
 IndexedDB stocke les documents et blobs localement. JSON seul transporte les données
 avec références ; ZIP transporte document + ressources + manifeste de sommes SHA-256.
 À l'import : schéma, taille, chemins sûrs, types MIME, références et intégrité.
-SVG importés nettoyés, aucun script/HTML arbitraire évalué. Futures versions inconnues
+SVG actuellement refusés par le ZIP v1 ; nettoyage dédié requis pour les accepter.
+Aucun script/HTML arbitraire évalué. Futures versions inconnues
 refusées proprement ; migrations sur copie avec conservation de l'original.
 
 Une interface de dépôt async list/load/save/delete isole la persistance ; save doit
@@ -44,3 +46,4 @@ Module facultatif avec destinations et capacités négociées, état et instanta
 médias/textes publiés. Jetons et programmation nécessiteront un service séparé ou
 des fonctions natives de plateforme. Aucun secret dans les campagnes exportées.
 Remotion pourra consommer les documents plus tard ; pas de dépendance initiale.
+
