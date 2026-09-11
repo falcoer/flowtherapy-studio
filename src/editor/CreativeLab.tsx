@@ -217,7 +217,7 @@ export function CreativeLab({
       return;
     }
     const url = URL.createObjectURL(
-      new Blob([bytes], { type: selectedImageMime }),
+      new Blob([bytes.slice().buffer], { type: selectedImageMime }),
     );
     setImageUrl(url);
     return () => URL.revokeObjectURL(url);
