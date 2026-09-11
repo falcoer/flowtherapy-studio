@@ -51,3 +51,13 @@ GitLab Pages doit être configuré sur une instance auto-hébergée.
 `npm run check` valide le domaine et le build. `npm run test:e2e` couvre aussi le
 laboratoire, le clavier, le retour, les recettes persistées, la continuité de
 campagne, le verrouillage de palette, le débordement et le viewport mobile.
+
+## Décision cible validée après le prototype
+
+Le laboratoire édite la Direction créative de la campagne : énergie, expression
+colorée, échelle graphique, densité et dominante. La campagne doit enregistrer
+cette direction et la transmettre à ses supports avec ajustements locaux explicites.
+Les recettes servent à réutiliser les réglages. Le prototype ci-dessus n'implémente
+pas encore cette persistance ni les cinq axes complets.
+L'apparence du studio et des médias reste provisoire.
+Voir [les décisions de référence](studio-organization.md#direction-créative--modèle-retenu).

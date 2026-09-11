@@ -35,8 +35,8 @@ Les campagnes restent des données utilisateur hors dépôt source.
 
 ## Confidentialité et hébergement
 
-Build statique, hébergement gratuit envisagé. Cloudflare est un candidat, à confirmer
-au déploiement selon les offres et la protection du domaine et des URL alternatives.
+Build statique publié sur GitHub Pages ; l'accès public a été autorisé.
+GitLab Pages dispose d'une configuration facultative, sans miroir créé.
 Authentification et droits côté service pour une future API ; aucune clé admin client.
 Stockage local soumis à effacement navigateur ; export explicite comme sauvegarde.
 
@@ -51,10 +51,10 @@ Remotion pourra consommer les documents plus tard ; pas de dépendance initiale.
 Voir [éditeur 0.2](editor.md) pour le parcours, les conflits et les limites réelles
 de cet aperçu, distinct du moteur déterministe futur.
 
-Une [intégration GitHub Pages](github-pages.md) est préparée après 0.2 :
+L'[intégration GitHub Pages](github-pages.md) est active après 0.2 :
 publication de main après tests, build relatif au chemin, publication de dist uniquement.
-L’accès public du studio a été accepté le 11 septembre 2026 ; le dépôt reste privé.
-Les données de campagne ne sont pas publiées. Activation administrative de Pages requise.
+Le dépôt et l’application sont publics avec l’accord du propriétaire.
+Les données de campagne ne sont pas publiées. Le laboratoire a été déployé le 11 septembre 2026.
 
 ## Laboratoire créatif
 
@@ -62,3 +62,17 @@ Les données de campagne ne sont pas publiées. Activation administrative de Pag
 `src/editor/CreativeLab.tsx` fournit l’exploration React + Motion et un aperçu CSS.
 Ce complément ne modifie pas les contrats campagne v1 ni le pipeline d’export.
 Voir [contrats et limites](creative-lab.md).
+
+## Organisation métier validée
+
+Les quatre tiroirs sont Branding / Éditorial / Médias / Campagnes ; ils sont des
+vues métier, pas quatre silos de fichiers. Les ressources sont centralisées et
+référencées depuis l'identité, les contenus et les campagnes. Médias porte formats,
+templates et canaux, indépendamment du catalogue de contenus éditoriaux.
+
+La Direction créative appartient à la campagne ; le laboratoire en est l'éditeur.
+Ses cinq axes sont persistés dans le modèle cible et hérités par les supports.
+Les ajustements restent locaux et explicites ; les recettes sont des préréglages
+réutilisables. Cette cible exige encore une évolution des contrats et du stockage,
+avec migrations explicites et round-trips sans perte.
+Voir [organisation et décisions](studio-organization.md).

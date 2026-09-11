@@ -9,9 +9,9 @@ sociaux et l'impression.
 Le noyau 0.1 et l'éditeur statique minimal 0.2 sont intégrés sur main. Campagnes/événements, activation Agenda, déplacement,
 recadrage PNG/JPEG, annulation, IndexedDB et échanges JSON/ZIP sont disponibles.
 L'aperçu reste provisoire ; les exports graphiques et templates de production ne
-sont pas encore livrés. Aucun hébergement n'est activé. L’[intégration GitHub Pages](docs/github-pages.md)
-publie main après les tests. La visibilité publique de l’application a été acceptée
-le 11 septembre 2026 ; l’activation administrative de Pages reste à effectuer.
+sont pas encore livrés. L’[intégration GitHub Pages](docs/github-pages.md)
+publie main après les tests. Le laboratoire (PR #4) est intégré et publié depuis
+le 11 septembre 2026, avec l’accord du propriétaire.
 
 ```sh
 npm ci
@@ -26,6 +26,15 @@ Le [laboratoire](docs/creative-lab.md) ajoute une exploration énergie/densité,
 trois harmonies, des recettes locales exportables et un aperçu carré/story/affiche
 alimenté par la campagne. React + Motion, sans serveur applicatif. Les recettes
 ne sont pas encore appliquées aux variantes de production.
+
+## Organisation validée
+
+**Branding / Éditorial / Médias / Campagnes** : voir les
+[décisions de référence](docs/studio-organization.md).
+Les ressources sont partagées sans duplication. Médias regroupe formats, templates
+et canaux. Le laboratoire est l’éditeur de la Direction créative d’une campagne :
+les cinq axes et leur persistance dans la campagne restent à compléter.
+L’apparence du studio et des médias est provisoire.
 
 ## Principes
 
@@ -54,8 +63,8 @@ les tests du noyau, du stockage et les fixtures, puis le build statique.
 `npm run test:e2e` exécute la recette Chromium (voir docs/editor.md). ZIP v1 : STORE sans compression ; PNG/JPEG et
 polices acceptés, SVG refusés en attendant un nettoyage dédié.
 
-Le dépôt doit rester privé. La publication publique de l’application sur Pages est
-autorisée ; les campagnes et images importées restent dans le navigateur.
+Le dépôt et l’application sur Pages sont publics avec l’accord du propriétaire ;
+les campagnes et images importées restent dans le navigateur.
 La confidentialité du dépôt ne protège pas le site déployé.
 
 Aucune licence open source n'est attribuée à ce stade. Les droits des photos,

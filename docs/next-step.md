@@ -1,30 +1,46 @@
 # Prochaine session
 
-0.1 fournit le noyau ; 0.2 fournit l'éditeur local minimal. Les PR 0.1 et 0.2 sont intégrées sur main.
-La publication publique de l’application est autorisée (11 septembre 2026),
-avec workflow Pages après tests et activation administrative à effectuer.
-Lire `docs/editor.md`, `docs/core-api.md`, `docs/architecture.md` et `ROADMAP.md`.
+## Références et état
 
-Objectif suivant : jalon 0.3, templates et formats multiples.
+Lire README.md, ROADMAP.md, architecture.md, studio-organization.md,
+creative-lab.md, editor.md et core-api.md.
+Les décisions validées sont dans [Organisation du studio](studio-organization.md).
 
-1. Gestion des variantes au sein d'un même support et catalogue personnalisable.
-2. Formulaires des bindings, overrides et sélections ordonnées d'événements.
-3. Stabiliser une scène résolue commune et les mesures typographiques avec polices.
-4. Débordements explicites, compactage et pagination sans perte de contenu.
-5. Valider graphiquement les templates et zones de sécurité par format.
-6. Conserver le stockage local, l'isolation des ajustements, le contrôle de
-   révision et les échanges JSON/ZIP ; exécuter check et test:e2e.
+Le noyau 0.1, l'éditeur 0.2 et le laboratoire (PR #4) sont intégrés sur main.
+GitHub Pages est actif ; publication publique autorisée et déploiement du laboratoire
+réussi le 11 septembre 2026. Les campagnes restent locales.
 
-Le DOM/CSS de 0.2 est un aperçu d'édition, pas un moteur d'export déterministe.
-PNG/JPEG/PDF restent au jalon 0.4. Voir docs/github-pages.md pour le statut du déploiement.
+## Priorité : aligner le studio sur les décisions validées
 
-## Laboratoire créatif
+1. Rattacher la Direction créative à la campagne : cinq axes (énergie, expression
+   colorée, échelle graphique, densité, dominante), sauvegarde/restauration et JSON/ZIP.
+   Définir des migrations explicites pour toute évolution incompatible, en conservant
+   les campagnes et recettes v1 existantes.
+2. Compléter le laboratoire : expression colorée distincte du choix de palette,
+   dominante Image/Texte/Équilibrée et ressource image sélectionnée lorsque nécessaire.
+3. Faire hériter les supports de la direction de campagne ; ajustements locaux
+   explicites, réinitialisables, avec capacités déclarées par template.
+   Une recette copie des réglages vers une campagne, sans dépendance mutable implicite.
+4. Poser la navigation Branding / Éditorial / Médias / Campagnes.
+   Le laboratoire se trouve dans Campagnes > campagne > Direction créative.
+   Ne pas présenter les tiroirs futurs comme des fonctions déjà disponibles.
 
-La branche feat/creative-lab introduit le laboratoire React + Motion et les
-recettes v1 séparées des campagnes (voir creative-lab.md). Après intégration :
-relier les recettes aux variantes via snapshots explicites, puis intégrer identité
-de marque, ressources, dominante et sélection de contenu au moteur 0.3.
+Critère de validation : modifier la direction sur deux supports de formats
+différents, sauvegarder puis rouvrir la campagne et retrouver les réglages.
+Vérifier aussi le round-trip JSON/ZIP, l'isolation des ajustements locaux et
+l'absence de perte silencieuse des informations obligatoires.
 
-Organisation cible : [Branding, Ligne éditoriale, Campagnes](studio-organization.md).
-Le laboratoire appartient à Campagnes > Direction créative. Préserver la différence
-entre format, template, support et canal, ainsi que les statuts prévu/implémenté.
+## Suite du jalon 0.3
+
+- Socle Branding : ressources identifiées, logos, palettes et typographies par rôle.
+- Ressources centralisées, référencées sans duplication depuis Branding, Éditorial
+  et Campagnes ; fichiers, crédits et droits communs, usages locaux distincts.
+- Éditorial : contenus et médiathèque liés ; Ligne éditoriale en sous-section.
+- Médias : formats, templates et canaux transversaux.
+- Catalogue et variantes personnalisables ; bindings, overrides et sélections ordonnées.
+- Scène résolue commune, mesure typographique, débordements, compactage et pagination.
+- Validation graphique des templates et zones de sécurité par format.
+
+Préserver le domaine indépendant de React, l'autonomie statique, les révisions
+et les échanges JSON/ZIP. Exécuter npm run check et npm run test:e2e pour l'implémentation.
+Le rendu actuel est provisoire ; PNG/JPEG/PDF restent au jalon 0.4.
