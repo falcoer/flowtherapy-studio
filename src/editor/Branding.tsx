@@ -361,7 +361,7 @@ export function Branding({
                       {label}
                       <input
                         type="color"
-                        aria-label={`${group.label} — ${label}`}
+                        aria-label={role === "accent" || role === "contrast" ? label : `${group.label} — ${label}`}
                         value={brand.colors[role] ?? "#000000"}
                         onChange={(e) =>
                           update((b) => {
