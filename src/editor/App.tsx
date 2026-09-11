@@ -303,7 +303,15 @@ export function App() {
       source: file.name,
       rights: rights.trim(),
     };
-    if (store.current) asset = await store.current.importResource(asset, bytes);
+    if (store.current) {
+      try {
+        asset = await store.current.importResource(asset, bytes);
+      } catch (error) {
+        setNotice(
+          `Stockage partagé indisponible : ${messageOf(error)}. L’image reste disponible dans cette session et peut être exportée.`,
+        );
+      }
+    }
     await placeImage(asset, bytes);
   }
   async function placeImage(asset: Asset, bytes: Uint8Array) {
