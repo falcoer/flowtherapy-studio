@@ -17,15 +17,15 @@ Ces choix sont pérennisés ; ils ne signifient pas que tous les écrans sont li
 
 ### Identité visuelle
 
-| Ressource | Informations et règles |
-|---|---|
-| Logos | Variantes, fonds compatibles, zone de protection, taille minimale, version principale |
-| Photos | Sujet, crédit, droits d'utilisation, point focal, recadrages autorisés |
-| Illustrations, icônes, ornements | Famille graphique, couleurs autorisées, recoloration et composition |
-| Palettes | Rôles fond/texte/accent/contraste, associations autorisées |
-| Polices | Fichiers, graisses, rôles typographiques, polices de remplacement |
-| Composants | Structure, paramètres, contenu attendu, variantes, contraintes |
-| Mises en page | Zones, hiérarchie, formats compatibles, règles d'adaptation |
+| Ressource                        | Informations et règles                                                                |
+| -------------------------------- | ------------------------------------------------------------------------------------- |
+| Logos                            | Variantes, fonds compatibles, zone de protection, taille minimale, version principale |
+| Photos                           | Sujet, crédit, droits d'utilisation, point focal, recadrages autorisés                |
+| Illustrations, icônes, ornements | Famille graphique, couleurs autorisées, recoloration et composition                   |
+| Palettes                         | Rôles fond/texte/accent/contraste, associations autorisées                            |
+| Polices                          | Fichiers, graisses, rôles typographiques, polices de remplacement                     |
+| Composants                       | Structure, paramètres, contenu attendu, variantes, contraintes                        |
+| Mises en page                    | Zones, hiérarchie, formats compatibles, règles d'adaptation                           |
 
 Les mises en page expriment la grammaire visuelle de la marque ; les templates
 les mobilisent pour une intention de communication. Droits, versions et statuts
@@ -61,11 +61,11 @@ Médias regroupe les moyens transversaux : **formats, templates et canaux**.
 Ce tiroir est à côté du Branding ; il n'en est ni un parent ni un sous-ensemble.
 Le nom Médias ne désigne pas ici la collection de fichiers photo/vidéo de la médiathèque.
 
-| Objet | Rôle | Relation à la marque |
-|---|---|---|
-| Format | Dimensions, ratio, unités, zones de sécurité et contraintes de sortie | Généralement indépendant de la marque |
-| Template | Intention, champs attendus, composants, composition et variantes par format | Générique ou lié à une identité |
-| Canal | Destination et contraintes de communication | Configuration de destinations propres à la marque |
+| Objet    | Rôle                                                                        | Relation à la marque                              |
+| -------- | --------------------------------------------------------------------------- | ------------------------------------------------- |
+| Format   | Dimensions, ratio, unités, zones de sécurité et contraintes de sortie       | Généralement indépendant de la marque             |
+| Template | Intention, champs attendus, composants, composition et variantes par format | Générique ou lié à une identité                   |
+| Canal    | Destination et contraintes de communication                                 | Configuration de destinations propres à la marque |
 
 Canaux envisagés : réseaux sociaux, site, mailing, impression, téléphone.
 Instagram est un canal ; le compte Flow Therapy est une destination configurée.
@@ -95,13 +95,13 @@ Le laboratoire est **l'interface d'édition de la Direction créative d'une camp
 Il n'est pas un espace métier autonome. Accès cible : Campagnes > campagne >
 Direction créative.
 
-| Axe | Réglage | Effets attendus |
-|---|---|---|
-| Énergie | Calme → Explosive | Inclinaison, contraste des tailles, rythme des espacements, intensité des ornements |
-| Expression colorée | Sobre → Vibrante | Étendue de palette utilisée, saturation dans les limites autorisées, place des accents |
-| Échelle graphique | Délicate → Monumentale | Taille relative du titre, de la photo et du symbole principal |
-| Densité | Aérée → Compacte | Espacement, détails affichés et nombre de blocs selon des règles explicites |
-| Dominante | Image / Texte / Équilibrée | Répartition de l'espace et priorité visuelle |
+| Axe                | Réglage                    | Effets attendus                                                                        |
+| ------------------ | -------------------------- | -------------------------------------------------------------------------------------- |
+| Énergie            | Calme → Explosive          | Inclinaison, contraste des tailles, rythme des espacements, intensité des ornements    |
+| Expression colorée | Sobre → Vibrante           | Étendue de palette utilisée, saturation dans les limites autorisées, place des accents |
+| Échelle graphique  | Délicate → Monumentale     | Taille relative du titre, de la photo et du symbole principal                          |
+| Densité            | Aérée → Compacte           | Espacement, détails affichés et nombre de blocs selon des règles explicites            |
+| Dominante          | Image / Texte / Équilibrée | Répartition de l'espace et priorité visuelle                                           |
 
 Choix de palette et expression colorée sont distincts. Les éléments obligatoires
 restent présents ; la densité ne supprime ni ne tronque arbitrairement du contenu.
@@ -120,17 +120,17 @@ Références, snapshots et versions doivent préserver la reproductibilité.
 Le noyau 0.1, l'éditeur 0.2 et le prototype de laboratoire sont intégrés sur main.
 La PR #4 a été fusionnée et publiée sur GitHub Pages le 11 septembre 2026.
 
-Disponible : campagne locale, laboratoire énergie/densité/échelle, harmonies,
-recettes séparées en localStorage et aperçu multiformat.
+Disponible : campagne locale, cinq axes de direction persistés, harmonies, recettes
+v2 avec migration v1, héritage et ajustements de support réinitialisables, ressource
+image de direction et aperçu multiformat.
 Non livré : tiroirs complets, ressources centralisées, contenus éditoriaux partagés,
-expression colorée, dominante, direction persistée dans la campagne, héritage vers
-les supports, application aux templates de production et exports graphiques.
+scène graphique commune, templates de production et exports graphiques.
 
 Le rendu du studio et des médias est provisoire : palettes exploratoires,
 polices système et compositions de prototype. Les interactions validées ne figent
 pas la finition graphique. Celle-ci s'appuiera sur l'identité et des templates
 travaillés par format.
 
-Priorité : aligner modèle, persistance et navigation sur ces décisions, compléter
-les cinq axes et vérifier leur application à deux supports de formats différents.
+Priorité : construire le socle Branding et les ressources centralisées, puis relier
+le catalogue de Médias et la scène résolue aux directions déjà persistées.
 Voir [prochaine étape](next-step.md) et [limites du laboratoire actuel](creative-lab.md).

@@ -22,18 +22,18 @@ Voir [l'éditeur local et ses limites](docs/editor.md). Le serveur écoute 127.0
 
 ## Laboratoire créatif
 
-Le [laboratoire](docs/creative-lab.md) ajoute une exploration énergie/densité,
-trois harmonies, des recettes locales exportables et un aperçu carré/story/affiche
-alimenté par la campagne. React + Motion, sans serveur applicatif. Les recettes
-ne sont pas encore appliquées aux variantes de production.
+Le [laboratoire](docs/creative-lab.md) édite les cinq axes de la Direction créative
+persistée avec la campagne. Les supports héritent de cette direction et peuvent
+porter des ajustements réinitialisables selon les capacités du template. Trois
+harmonies, des recettes locales exportables et un aperçu carré/story/affiche sont
+disponibles en React + Motion, sans serveur applicatif.
 
 ## Organisation validée
 
 **Branding / Éditorial / Médias / Campagnes** : voir les
 [décisions de référence](docs/studio-organization.md).
 Les ressources sont partagées sans duplication. Médias regroupe formats, templates
-et canaux. Le laboratoire est l’éditeur de la Direction créative d’une campagne :
-les cinq axes et leur persistance dans la campagne restent à compléter.
+et canaux. Le laboratoire est l’éditeur de la Direction créative d’une campagne.
 L’apparence du studio et des médias est provisoire.
 
 ## Principes
@@ -53,7 +53,8 @@ L’apparence du studio et des médias est provisoire.
 - [Modèle de données](docs/data-model.md)
 - [API du noyau](docs/core-api.md)
 - [Format d’archive ZIP](docs/archive-format.md)
-- [Décisions](docs/decisions/0001-static-campaign-studio.md)
+- [Décisions : studio statique](docs/decisions/0001-static-campaign-studio.md)
+- [Décisions : Supabase et sous-domaine](docs/decisions/0002-supabase-and-studio-domain.md)
 - [Roadmap](ROADMAP.md)
 - [Prochaine étape](docs/next-step.md)
 - [Mise en place GitHub](docs/repository-setup.md)
@@ -69,4 +70,3 @@ La confidentialité du dépôt ne protège pas le site déployé.
 
 Aucune licence open source n'est attribuée à ce stade. Les droits des photos,
 logos, illustrations et polices devront être renseignés avant leur intégration.
-

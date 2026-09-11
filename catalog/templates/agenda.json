@@ -4,6 +4,10 @@
   "revision": 1,
   "name": "Agenda — fixture de conception",
   "description": "Composition provisoire non validée visuellement, sans police de production.",
+  "creativeCapabilities": {
+    "axes": ["energy", "colorExpression", "scale", "density", "dominant"],
+    "dominants": ["image", "text", "balanced"]
+  },
   "fields": [
     {
       "id": "title",

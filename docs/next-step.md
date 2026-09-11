@@ -10,27 +10,27 @@ Le noyau 0.1, l'éditeur 0.2 et le laboratoire (PR #4) sont intégrés sur main.
 GitHub Pages est actif ; publication publique autorisée et déploiement du laboratoire
 réussi le 11 septembre 2026. Les campagnes restent locales.
 
-## Priorité : aligner le studio sur les décisions validées
+## Tranche réalisée : direction créative persistée
 
-1. Rattacher la Direction créative à la campagne : cinq axes (énergie, expression
+1. Direction créative rattachée à la campagne : cinq axes (énergie, expression
    colorée, échelle graphique, densité, dominante), sauvegarde/restauration et JSON/ZIP.
-   Définir des migrations explicites pour toute évolution incompatible, en conservant
-   les campagnes et recettes v1 existantes.
-2. Compléter le laboratoire : expression colorée distincte du choix de palette,
+   La structure de campagne v1 reste rétrocompatible ; les recettes v1 sont
+   migrées explicitement vers v2.
+2. Laboratoire complété : expression colorée distincte du choix de palette,
    dominante Image/Texte/Équilibrée et ressource image sélectionnée lorsque nécessaire.
-3. Faire hériter les supports de la direction de campagne ; ajustements locaux
+3. Supports héritant de la direction de campagne ; ajustements locaux
    explicites, réinitialisables, avec capacités déclarées par template.
    Une recette copie des réglages vers une campagne, sans dépendance mutable implicite.
-4. Poser la navigation Branding / Éditorial / Médias / Campagnes.
+4. Navigation Branding / Éditorial / Médias / Campagnes posée.
    Le laboratoire se trouve dans Campagnes > campagne > Direction créative.
    Ne pas présenter les tiroirs futurs comme des fonctions déjà disponibles.
 
-Critère de validation : modifier la direction sur deux supports de formats
-différents, sauvegarder puis rouvrir la campagne et retrouver les réglages.
+Critère couvert par les tests de domaine : modifier la direction sur deux supports
+de formats différents, sérialiser puis rouvrir la campagne et retrouver les réglages.
 Vérifier aussi le round-trip JSON/ZIP, l'isolation des ajustements locaux et
 l'absence de perte silencieuse des informations obligatoires.
 
-## Suite du jalon 0.3
+## Priorité suivante du jalon 0.3
 
 - Socle Branding : ressources identifiées, logos, palettes et typographies par rôle.
 - Ressources centralisées, référencées sans duplication depuis Branding, Éditorial

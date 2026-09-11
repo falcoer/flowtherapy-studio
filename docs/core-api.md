@@ -21,6 +21,10 @@ Aucune interface graphique ni persistance IndexedDB n'est livrée par ce jalon.
   définitions à la révision exacte ; seuls les formats activés sont nécessaires.
 - `snapshotCampaign(campaign)` : copie détachée, gelée récursivement. Une révision
   du catalogue ne modifie jamais une campagne ou ses overrides existants.
+- `campaignDirection` et `resolveSupportDirection` : direction commune rétrocompatible,
+  puis overrides locaux autorisés par les capacités du template.
+- `parseRecipe` : validation stricte des recettes v2 et migration explicite des
+  anciennes recettes v1 ; `recipeToDirection` copie le préréglage dans une campagne.
 
 Les erreurs sont des `DomainError` avec `code`, `path` et message. Les catégories
 incluent SCHEMA, REFERENCE, VERSION, JSON, SIZE, ARCHIVE, ASSET et INTEGRITY.
@@ -55,9 +59,9 @@ et unique ; version future, sortie invalide ou saut incohérent sont refusés.
 ## Exemple d'utilisation
 
 ```ts
-import { resolveSupport } from '../src/domain/core.js';
-import { importJSON, exportJSON } from '../src/storage/json.js';
-import { importZIP, exportZIP } from '../src/storage/archive.js';
+import { resolveSupport } from "../src/domain/core.js";
+import { importJSON, exportJSON } from "../src/storage/json.js";
+import { importZIP, exportZIP } from "../src/storage/archive.js";
 
 const campaign = importJSON(jsonText);
 const resolved = resolveSupport(campaign, campaign.supports[0].id);

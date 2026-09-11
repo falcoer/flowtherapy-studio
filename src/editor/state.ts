@@ -3,8 +3,17 @@ import {
   resolvePlacements,
   validateCampaign,
 } from "../domain/core.js";
+import {
+  recipeToDirection,
+  resolveSupportDirection,
+  supportedOverrides,
+  validateCreativeDirection,
+} from "../domain/creative.js";
+import type { CreativeRecipe } from "../domain/creative.js";
 import type {
   Campaign,
+  CreativeDirection,
+  CreativeOverrides,
   Format,
   PlacementOverride,
   Template,
@@ -50,11 +59,69 @@ export function newCampaign(): CampaignBundle {
       name: "Nouvelle campagne",
       locale: "fr-FR",
       content: { title: "Nos prochains concerts", events: [] },
+      creativeDirection: recipeToDirection({
+        recipeVersion: 2,
+        name: "Funk électrique",
+        energy: 65,
+        colorExpression: 60,
+        density: 45,
+        scale: 65,
+        dominant: "balanced",
+        harmony: "petrol",
+      }),
       assets: [],
       supports: [],
     },
     assets: new Map(),
   };
+}
+export function setCreativeDirection(
+  campaign: Campaign,
+  direction: CreativeDirection,
+): Campaign {
+  const next = structuredClone(campaign);
+  validateCreativeDirection(direction, next);
+  next.creativeDirection = structuredClone(direction);
+  validateCampaign(next);
+  return next;
+}
+export function applyCreativeRecipe(
+  campaign: Campaign,
+  recipe: CreativeRecipe,
+): Campaign {
+  const current = campaign.creativeDirection;
+  const fallback = campaign.assets.find((asset) =>
+    asset.mimeType.startsWith("image/"),
+  );
+  const imageAssetId = current?.imageAssetId ?? fallback?.id;
+  return setCreativeDirection(
+    campaign,
+    recipeToDirection(recipe, imageAssetId),
+  );
+}
+export function adjustCreativeDirection(
+  campaign: Campaign,
+  supportId: string,
+  overrides: CreativeOverrides,
+): Campaign {
+  const next = structuredClone(campaign);
+  const support = next.supports.find((item) => item.id === supportId);
+  if (!support) throw new Error("Support introuvable.");
+  support.creativeOverrides = supportedOverrides(support, overrides);
+  validateCreativeDirection(resolveSupportDirection(next, support), next);
+  validateCampaign(next);
+  return next;
+}
+export function resetCreativeDirection(
+  campaign: Campaign,
+  supportId: string,
+): Campaign {
+  const next = structuredClone(campaign);
+  const support = next.supports.find((item) => item.id === supportId);
+  if (!support) throw new Error("Support introuvable.");
+  delete support.creativeOverrides;
+  validateCampaign(next);
+  return next;
 }
 export function activate(
   c: Campaign,

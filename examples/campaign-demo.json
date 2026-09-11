@@ -4,6 +4,15 @@
   "revision": 1,
   "name": "Campagne de démonstration — événements fictifs",
   "locale": "fr-FR",
+  "creativeDirection": {
+    "directionVersion": 1,
+    "energy": 65,
+    "colorExpression": 60,
+    "scale": 65,
+    "density": 45,
+    "dominant": "balanced",
+    "harmony": "petrol"
+  },
   "content": {
     "title": "Nos prochains concerts",
     "events": [
@@ -32,6 +41,10 @@
         "revision": 1,
         "name": "Agenda — fixture de conception",
         "description": "Composition provisoire non validée visuellement, sans police de production.",
+        "creativeCapabilities": {
+          "axes": ["energy", "colorExpression", "scale", "density", "dominant"],
+          "dominants": ["image", "text", "balanced"]
+        },
         "fields": [
           {
             "id": "title",

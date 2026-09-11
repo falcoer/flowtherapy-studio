@@ -30,7 +30,9 @@ refusées proprement ; migrations sur copie avec conservation de l'original.
 
 Une interface de dépôt async list/load/save/delete isole la persistance ; save doit
 accepter une révision attendue pour prévenir les écrasements en stockage partagé.
-DB JSON + stockage objet possibles, pas de DB obligatoire ni table événement imposée.
+Supabase (PostgreSQL, Auth, RLS et Storage privé) est la cible retenue pour le futur
+adaptateur partagé, sans devenir une dépendance du domaine. Aucune DB n'est obligatoire
+en fonctionnement local ni table événement imposée.
 Les campagnes restent des données utilisateur hors dépôt source.
 
 ## Confidentialité et hébergement
@@ -47,7 +49,6 @@ médias/textes publiés. Jetons et programmation nécessiteront un service sépa
 des fonctions natives de plateforme. Aucun secret dans les campagnes exportées.
 Remotion pourra consommer les documents plus tard ; pas de dépendance initiale.
 
-
 Voir [éditeur 0.2](editor.md) pour le parcours, les conflits et les limites réelles
 de cet aperçu, distinct du moteur déterministe futur.
 
@@ -55,6 +56,8 @@ L'[intégration GitHub Pages](github-pages.md) est active après 0.2 :
 publication de main après tests, build relatif au chemin, publication de dist uniquement.
 Le dépôt et l’application sont publics avec l’accord du propriétaire.
 Les données de campagne ne sont pas publiées. Le laboratoire a été déployé le 11 septembre 2026.
+Le frontal utilisera à terme `studio.flowtherapymusic.com` ; voir
+[ADR 0002](decisions/0002-supabase-and-studio-domain.md).
 
 ## Laboratoire créatif
 
