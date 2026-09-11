@@ -1,4 +1,4 @@
-# Modèle de données v1 (jalon 0.1)
+# Modèle de données v2 (jalon 0.3)
 
 Contrats : `src/domain/model.ts`, schémas exportables dans `schemas/domain.schema.json`.
 Validation runtime et résolution : `src/domain/core.ts`. Les exemples servent de fixtures, pas de templates graphiques validés.
@@ -33,7 +33,7 @@ Validation structurelle distincte de validation graphique (status draft/validate
 
 ## Campagne et résolution
 
-La campagne porte une `creativeDirection` v1 additive et rétrocompatible : quatre
+La campagne v2 porte une `creativeDirection` v1 additive et rétrocompatible : quatre
 axes continus 0–100, une dominante, une harmonie et, si nécessaire, une référence
 d'image. Un document v1 antérieur sans direction reçoit les valeurs par défaut à
 la résolution sans réécriture silencieuse. Chaque support hérite de la direction ;

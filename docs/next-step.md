@@ -30,11 +30,27 @@ de formats différents, sérialiser puis rouvrir la campagne et retrouver les r�
 Vérifier aussi le round-trip JSON/ZIP, l'isolation des ajustements locaux et
 l'absence de perte silencieuse des informations obligatoires.
 
+## Tranche réalisée : socle Branding et ressources locales
+
+Voir [parcours, stockage et limites](branding.md). L'écran Branding expose une
+identité locale, palette par rôle, logos et références de polices ; application
+explicite aux campagnes et sauvegarde/restauration d'identité ZIP. Les ressources
+sont réutilisables dans les supports. IndexedDB v2 déduplique les fichiers et migre
+les campagnes existantes sans changer leurs révisions ni remplir leurs fichiers absents.
+Les instantanés de campagne restent isolés du référentiel.
+
+## Persistance éditoriale partagée — planifiée
+
+La persistance partagée des contenus et ressources éditoriales n’est pas implémentée
+au jalon 0.3. Elle relève du jalon 0.6 et dépend d’un adaptateur authentifié, de droits
+d’accès, de fichiers privés et de conflits de révision ; Supabase reste optionnel et
+aucun service cloud n’est activé.
+
 ## Priorité suivante du jalon 0.3
 
-- Socle Branding : ressources identifiées, logos, palettes et typographies par rôle.
-- Ressources centralisées, référencées sans duplication depuis Branding, Éditorial
-  et Campagnes ; fichiers, crédits et droits communs, usages locaux distincts.
+- Enrichir Branding : règles de logos, palettes multiples et variantes typographiques.
+- Compléter la médiathèque : miniatures, recherche, gestion des crédits/droits
+  et sauvegarde intégrale ; relier les contenus Éditorial aux ressources communes.
 - Éditorial : contenus et médiathèque liés ; Ligne éditoriale en sous-section.
 - Médias : formats, templates et canaux transversaux.
 - Catalogue et variantes personnalisables ; bindings, overrides et sélections ordonnées.

@@ -6,7 +6,7 @@
 | 0.1            | Contrats validés et noyau campagne | Schémas runtime, migrations, round-trip JSON/ZIP sans perte, sélection d'événements       | Intégré                                |
 | 0.2            | Éditeur statique minimal           | Créer une campagne et une variante ; saisir, déplacer, recadrer, annuler, sauvegarder     | Intégré                                |
 | 0.2 complément | Laboratoire créatif React + Motion | Exploration et recettes locales, aperçu multiformat                                       | Intégré et publié sur Pages            |
-| 0.3            | Templates et formats multiples     | Catalogue, variantes, personnalisations, débordements et pagination                       | En cours — direction créative intégrée |
+| 0.3            | Templates et formats multiples     | Catalogue, variantes, personnalisations, débordements et pagination                       | En cours — Branding et ressources implémentés |
 | 0.4            | Exports                            | PNG/JPEG/PDF, fidélité texte, dimensions physiques, exports groupés                       | À faire                                |
 | 0.5            | Studio privé utilisable            | Assets autorisés, trois templates validés, accès groupe, recette A4/A3/social             | À faire                                |
 | 0.6            | Persistance partagée optionnelle   | Adaptateur authentifié, conflits de révision, fichiers privés, autonomie locale conservée | À faire                                |
@@ -41,6 +41,13 @@ expression colorée distincte de la palette, dominante, ressource image, hérita
 vers les supports et ajustements locaux réinitialisables selon les capacités du
 template. Les recettes v1 sont migrées vers v2 et copiées, sans lien mutable.
 
-Priorité suivante : socle Branding et ressources centralisées, puis catalogue de
-templates et scène résolue. L'identité et le rendu graphique définitifs restent à construire.
+Tranche suivante implémentée : [socle Branding et ressources locales](docs/branding.md),
+identité par rôles, application explicite aux campagnes, stockage dédupliqué et
+migration IndexedDB v2.
+
+Priorité suivante : catalogue de templates et scène résolue ; enrichissement
+progressif du Branding et de l’Éditorial. La persistance éditoriale partagée reste
+planifiée au jalon 0.6, après l’adaptateur authentifié, la gestion des droits et les
+conflits de révision ; aucune API cloud n’est livrée dans le jalon 0.3. L'identité et
+le rendu graphique définitifs restent à construire.
 Voir [décisions détaillées](docs/studio-organization.md) et [critère de sortie](docs/next-step.md).

@@ -63,7 +63,7 @@ test('deleted references and unknown identifiers fail without hiding overrides',
   reject(c => { c.supports[0].template.layers[0].style = { fill: 'brand:deleted' }; }, /Missing brand/);
 });
 test('invalid shapes, versions, duplicate IDs and numerical invariants are rejected', () => {
-  reject(c => { (c as unknown as { schemaVersion: number }).schemaVersion = 2; });
+  reject(c => { (c as unknown as { schemaVersion: number }).schemaVersion = 1; });
   reject(c => { c.revision = 0; });
   reject(c => { c.supports.push(structuredClone(c.supports[0])); });
   reject(c => { c.supports[0].variants[0].placementOverrides.title = { frame: { x: 0, y: 0, width: -1, height: 1 } }; });
@@ -88,13 +88,30 @@ test('snapshots are detached and frozen, and catalogue updates cannot erase cust
 });
 test('migrations require an explicit path, operate on copies and validate the output', () => {
   const c = fixture(); assert.deepEqual(migrateCampaign(c).campaign, c);
-  assert.throws(() => migrateCampaign({ ...c, schemaVersion: 2 }), /Unsupported version/);
+  assert.throws(() => migrateCampaign({ ...c, schemaVersion: 3 }), /Unsupported version/);
   assert.throws(() => migrateCampaign({ ...c, schemaVersion: 0 }), /No unique explicit migration/);
-  const legacy = { ...c, schemaVersion: 0 };
-  const result = migrateCampaign(legacy, [{ from: 0, to: 1, migrate: input => ({ ...(input as Campaign), schemaVersion: 1 }) }]);
-  assert.equal(legacy.schemaVersion, 0); assert.deepEqual(result.original, legacy); assert.deepEqual(result.steps, [{ from: 0, to: 1 }]);
-  assert.throws(() => migrateCampaign(legacy, [{ from: 0, to: 1, migrate: () => ({ schemaVersion: 1 }) }]));
+  const legacy = { ...c, schemaVersion: 1 };
+  const result = migrateCampaign(legacy);
+  assert.equal(legacy.schemaVersion, 1);
+  assert.equal(result.campaign.schemaVersion, 2);
+  assert.deepEqual(result.original, legacy);
+  assert.deepEqual(result.steps, [{ from: 1, to: 2 }]);
+  assert.throws(() => migrateCampaign({ ...c, schemaVersion: 0 }));
+  assert.throws(() => migrateCampaign(legacy, [{ from: 1, to: 2, migrate: () => ({ schemaVersion: 2 }) }]));
 });
+test('format exclusions expose and validate complete frame geometry', () => {
+  const format = read('catalog/formats/a4.json') as Format;
+  format.zones.exclusions = [{
+    id: 'safe-logo',
+    label: 'Zone logo',
+    x: 12,
+    y: 18,
+    width: 40,
+    height: 24,
+  }];
+  validateFormat(format);
+});
+
 // A real, tiny PNG fixture; no personal media.
 const png = Uint8Array.from(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jv1kAAAAASUVORK5CYII=', 'base64'));
 async function withAsset() {
@@ -111,6 +128,22 @@ test('ZIP round trips campaign and binary assets; export is deterministic', asyn
   assert.deepEqual(await exportZIP(campaign, assets), bytes);
   const empty = fixture(); assert.deepEqual((await importZIP(await exportZIP(empty, new Map()))).campaign, empty);
 });
+test('ZIP accepts the alternate Apple TrueType sfnt signature', async () => {
+  const campaign = fixture();
+  const bytes = Uint8Array.from([116, 114, 117, 101]);
+  const asset = {
+    id: 'demo:font',
+    path: 'assets/font.ttf',
+    mimeType: 'font/ttf',
+    sha256: await sha256(bytes),
+    source: 'Generated test font',
+    rights: 'Test fixture',
+  };
+  campaign.assets = [asset];
+  const archive = await exportZIP(campaign, new Map([[asset.path, bytes]]));
+  assert.deepEqual((await importZIP(archive)).campaign, campaign);
+});
+
 test('ZIP rejects missing bytes, hash mismatch, unsupported SVG and MIME spoofing', async () => {
   const { campaign, assets } = await withAsset();
   await assert.rejects(exportZIP(campaign, new Map()), /count mismatch/);

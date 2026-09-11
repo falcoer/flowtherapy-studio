@@ -1,4 +1,4 @@
-# Noyau 0.1
+# Noyau documentaire v2
 
 Le noyau TypeScript ne dépend ni du DOM, ni de React, ni d'un service. Il emploie
 `structuredClone`, `Intl.Locale`, `TextEncoder/TextDecoder` et Web Crypto SHA-256,
@@ -49,12 +49,12 @@ Pointer par exemple vers `#/definitions/Campaign`, `#/definitions/Template` ou
 Les invariants entre références et les dates civiles complètent ces schémas dans
 le validateur métier ; un outil tiers doit également les appliquer.
 
-La structure sérialisée reste `schemaVersion: 1`, également utilisée par le socle
-0.0 : le numéro de version du logiciel n'est pas celui du document.
-`migrateCampaign` conserve `original`, retourne une campagne copiée et les étapes.
-Aucune version historique différente de 1 n'existe dans le dépôt, donc aucune
-migration inventée n'est activée. Une ancienne version exige une migration explicite
-et unique ; version future, sortie invalide ou saut incohérent sont refusés.
+La campagne et l'identité utilisent désormais `schemaVersion: 2` ; les formats et
+templates du catalogue restent des définitions v1. Le numéro de version du logiciel
+n'est pas celui du document. `migrateCampaign` conserve `original`, retourne une
+campagne copiée et les étapes. Une campagne v1 est migrée explicitement vers v2,
+y compris l'instantané d'identité éventuel ; version future, sortie invalide ou saut
+incohérent sont refusés.
 
 ## Exemple d'utilisation
 

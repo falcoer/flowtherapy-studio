@@ -22,12 +22,16 @@ export interface Frame {
   width: number;
   height: number;
 }
+export interface Exclusion extends Frame {
+  id: string;
+  label: string;
+}
 export interface Format extends Definition {
   surface: { width: number; height: number; unit: "px" | "mm" };
   zones: {
     bleed: Insets;
     safeInset: Insets;
-    exclusions?: Array<Frame & { id: string; label: string }>;
+    exclusions?: Exclusion[];
   };
   exports: ExportPreset[];
   defaultExportId: string;
@@ -140,9 +144,15 @@ export interface Template extends Definition {
   layers: Layer[];
   layouts: Layout[];
 }
-export interface Brand extends Definition {
+export interface Brand extends Ref {
+  schemaVersion: 2;
+  name: string;
+  description?: string;
+  tags?: string[];
+  derivedFrom?: Ref;
   colors: { [key: string]: string };
   fonts: { [key: string]: AssetRef };
+  logos?: { [role: string]: AssetRef };
 }
 export interface Asset {
   id: string;
@@ -151,6 +161,7 @@ export interface Asset {
   sha256: string;
   source: string;
   rights: string;
+  credit?: string;
 }
 export interface Variant {
   id: string;
@@ -169,7 +180,7 @@ export interface Support {
   variants: Variant[];
 }
 export interface Campaign {
-  schemaVersion: 1;
+  schemaVersion: 2;
   id: string;
   revision: number; // concurrence de stockage, distincte de schemaVersion
   name: string;

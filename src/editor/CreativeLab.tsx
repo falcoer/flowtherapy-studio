@@ -147,9 +147,11 @@ export function CreativeLab({
   assets,
   onChange,
   onReset,
+  historyEpoch,
 }: {
   campaign: Campaign;
   assets: Map<string, Uint8Array>;
+  historyEpoch: number;
   onChange: (
     recipe: CreativeRecipe,
     supportId: string,
@@ -202,35 +204,74 @@ export function CreativeLab({
       : campaignDirection(campaign);
     setRecipe(directionToRecipe(direction));
     setImageAssetId(direction.imageAssetId ?? "");
-  }, [campaign.id, campaign.revision, targetSupportId]);
+  }, [campaign.id, campaign.revision, targetSupportId, historyEpoch]);
+  const selectedImage = campaign.assets.find(
+    (item) => item.id === imageAssetId,
+  );
+  const selectedImagePath = selectedImage?.path ?? "";
+  const selectedImageMime = selectedImage?.mimeType ?? "";
   useEffect(() => {
-    const asset = campaign.assets.find((item) => item.id === imageAssetId);
-    const bytes = asset ? assets.get(asset.path) : undefined;
-    if (!asset || !bytes) {
+    const bytes = selectedImagePath ? assets.get(selectedImagePath) : undefined;
+    if (!selectedImagePath || !bytes) {
       setImageUrl("");
       return;
     }
-    const copy = new Uint8Array(bytes.byteLength);
-    copy.set(bytes);
     const url = URL.createObjectURL(
-      new Blob([copy.buffer], { type: asset.mimeType }),
+      new Blob([bytes.slice().buffer], { type: selectedImageMime }),
     );
     setImageUrl(url);
     return () => URL.revokeObjectURL(url);
-  }, [assets, campaign.assets, imageAssetId]);
+  }, [assets, selectedImagePath, selectedImageMime]);
   const imageAssets = campaign.assets.filter((asset) =>
     asset.mimeType.startsWith("image/"),
   );
   const targetSupport = campaign.supports.find(
     (support) => support.id === targetSupportId,
   );
+  const capabilities = targetSupport?.template.creativeCapabilities;
+  const axisEnabled = (axis: "energy" | "colorExpression" | "density" | "scale") =>
+    !targetSupport || !!capabilities?.axes.includes(axis);
+  const dominantEnabled = (dominant: CreativeRecipe["dominant"]) =>
+    !targetSupport || !!capabilities?.dominants.includes(dominant);
+  function canApplyRecipe(
+    next: CreativeRecipe,
+    selectedImageId = imageAssetId,
+  ) {
+    if (targetSupport && !capabilities) return false;
+    if (!capabilities) return next.dominant !== "image" || !!selectedImageId;
+    const changedAxes = (
+      ["energy", "colorExpression", "density", "scale"] as const
+    ).filter((axis) => next[axis] !== recipe[axis]);
+    return (
+      changedAxes.every((axis) => capabilities.axes.includes(axis)) &&
+      (next.dominant === recipe.dominant ||
+        capabilities.dominants.includes(next.dominant)) &&
+      (next.dominant !== "image" || !!selectedImageId)
+    );
+  }
   function persist(next: CreativeRecipe, selectedImageId = imageAssetId) {
-    if (targetSupport && !targetSupport.template.creativeCapabilities) {
+    if (targetSupport && !capabilities) {
       setError("Ce support hérité ne déclare aucun ajustement créatif.");
       return false;
     }
-    if (next.dominant === "image" && !selectedImageId) {
-      setError("La dominante Image requiert une ressource image.");
+    if (capabilities) {
+      const changedAxes = (["energy", "colorExpression", "density", "scale"] as const)
+        .filter((axis) => next[axis] !== recipe[axis]);
+      if (changedAxes.some((axis) => !capabilities.axes.includes(axis))) {
+        setError("Cet axe n’est pas pris en charge par le template.");
+        return false;
+      }
+      if (next.dominant !== recipe.dominant && !dominantEnabled(next.dominant)) {
+        setError("Cette dominante n’est pas prise en charge par le template.");
+        return false;
+      }
+    }
+    if (!canApplyRecipe(next, selectedImageId)) {
+      setError(
+        next.dominant === "image" && !selectedImageId
+          ? "La dominante Image requiert une ressource image."
+          : "Cette opération n’est pas prise en charge par le template.",
+      );
       return false;
     }
     setError("");
@@ -361,6 +402,11 @@ export function CreativeLab({
                 <button
                   key={r.name}
                   aria-label={r.name}
+                  disabled={
+                    !canApplyRecipe(
+                      paletteLocked ? { ...r, harmony: recipe.harmony } : r,
+                    )
+                  }
                   onClick={() =>
                     choose(
                       paletteLocked ? { ...r, harmony: recipe.harmony } : r,
@@ -390,6 +436,15 @@ export function CreativeLab({
             <div
               className="lab-pad"
               role="group"
+              aria-disabled={!axisEnabled("energy") || !axisEnabled("density")}
+              style={{
+                pointerEvents:
+                  axisEnabled("energy") && axisEnabled("density")
+                    ? undefined
+                    : "none",
+                opacity:
+                  axisEnabled("energy") && axisEnabled("density") ? 1 : 0.55,
+              }}
               aria-label="Terrain énergie et densité"
               onPointerDown={(e) => {
                 if (e.button !== 0) return;
@@ -444,6 +499,7 @@ export function CreativeLab({
                 <input
                   aria-label={label}
                   type="range"
+                  disabled={!axisEnabled(key)}
                   min="0"
                   max="100"
                   step="1"
@@ -481,7 +537,10 @@ export function CreativeLab({
                 <button
                   key={value}
                   aria-pressed={recipe.dominant === value}
-                  disabled={value === "image" && !imageAssets.length}
+                  disabled={
+                    (value === "image" && !imageAssets.length) ||
+                    !dominantEnabled(value)
+                  }
                   title={
                     value === "image" && !imageAssets.length
                       ? "Ajoutez d’abord une image à la campagne."
@@ -555,14 +614,17 @@ export function CreativeLab({
             </p>
             <button
               className="lab-surprise"
+              disabled={!!targetSupport && !capabilities}
               onClick={() => {
                 const n = crypto.getRandomValues(new Uint32Array(4));
                 choose({
                   ...recipe,
-                  energy: n[0] % 101,
-                  colorExpression: n[3] % 101,
-                  density: n[1] % 101,
-                  scale: n[2] % 101,
+                  energy: axisEnabled("energy") ? n[0] % 101 : recipe.energy,
+                  colorExpression: axisEnabled("colorExpression")
+                    ? n[3] % 101
+                    : recipe.colorExpression,
+                  density: axisEnabled("density") ? n[1] % 101 : recipe.density,
+                  scale: axisEnabled("scale") ? n[2] % 101 : recipe.scale,
                   harmony: paletteLocked
                     ? recipe.harmony
                     : recipes[n[3] % 3].harmony,

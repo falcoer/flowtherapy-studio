@@ -53,7 +53,7 @@ export function redo<T>(h: History<T>): History<T> {
 export function newCampaign(): CampaignBundle {
   return {
     campaign: {
-      schemaVersion: 1,
+      schemaVersion: 2,
       id: crypto.randomUUID(),
       revision: 1,
       name: "Nouvelle campagne",

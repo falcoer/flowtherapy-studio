@@ -21,7 +21,7 @@ const format = f => {
   }
 };
 const c = await read('examples/campaign-demo.json');
-assert.equal(c.schemaVersion, 1);
+assert.equal(c.schemaVersion, 2);
 unique(c.supports.map(s => s.id));
 unique(c.content.events.map(e => e.id));
 for (const e of c.content.events) {

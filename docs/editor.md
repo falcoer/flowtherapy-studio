@@ -44,12 +44,13 @@ et empêche l'enregistrement ; annuler ou compléter la saisie pour la corriger.
 
 ## Persistance et conflits
 
-`IndexedDBCampaignStore` implémente `CampaignStore` et ajoute `loadBundle` et
-`saveBundle` pour les ressources binaires. Document et octets sont dans un même
-record ; lecture de révision et écriture sont atomiques dans une transaction
-readwrite. La validation asynchrone a lieu avant la transaction, sur une copie.
-Une création attend `null`, une mise à jour attend la dernière révision chargée ;
-la révision est incrémentée par le store. La suppression exige aussi cette révision.
+`IndexedDBCampaignStore` implémente `CampaignStore` avec `loadBundle` et
+`saveBundle`. Depuis le socle Branding, IndexedDB v2 conserve les octets une seule
+fois par SHA-256 et les documents les référencent. Révision, document et fichiers
+sont enregistrés atomiquement après validation sur copie. La migration v1 conserve
+les campagnes existantes ; voir [stockage commun et limites](branding.md).
+Une création attend `null`, une mise à jour la révision chargée ; la révision est
+incrémentée par le store. La suppression exige aussi cette révision.
 
 Un conflit ne modifie pas la version stockée ni le travail en mémoire : recharger
 la version enregistrée (avec confirmation d'abandon si nécessaire), enregistrer

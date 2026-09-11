@@ -143,20 +143,7 @@
             "exclusions": {
               "type": "array",
               "items": {
-                "additionalProperties": false,
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "string"
-                  },
-                  "label": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "id",
-                  "label"
-                ]
+                "$ref": "#/definitions/Exclusion"
               }
             }
           },
@@ -1075,9 +1062,15 @@
             "$ref": "#/definitions/AssetRef"
           }
         },
+        "logos": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AssetRef"
+          }
+        },
         "schemaVersion": {
           "type": "number",
-          "const": 1
+          "const": 2
         },
         "name": {
           "type": "string"
@@ -1131,6 +1124,9 @@
           "type": "string"
         },
         "rights": {
+          "type": "string"
+        },
+        "credit": {
           "type": "string"
         }
       },
@@ -1227,7 +1223,7 @@
       "properties": {
         "schemaVersion": {
           "type": "number",
-          "const": 1
+          "const": 2
         },
         "id": {
           "type": "string"
@@ -1516,8 +1512,40 @@
         }
       },
       "additionalProperties": false
+    },
+    "Exclusion": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "height",
+        "id",
+        "label",
+        "width",
+        "x",
+        "y"
+      ]
     }
   },
   "$ref": "#/definitions/Campaign",
-  "$id": "https://flowtherapymusic.com/studio/schemas/domain-v1.json"
+  "$id": "https://flowtherapymusic.com/studio/schemas/domain-v2.json"
 }

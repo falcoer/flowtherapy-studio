@@ -62,7 +62,7 @@ function checkAsset(asset: Asset, data: Uint8Array) {
     'image/jpeg': () => starts(255, 216, 255),
     'font/woff': () => starts(119, 79, 70, 70),
     'font/woff2': () => starts(119, 79, 70, 50),
-    'font/ttf': () => starts(0, 1, 0, 0),
+    'font/ttf': () => starts(0, 1, 0, 0) || starts(116, 114, 117, 101),
     'font/otf': () => starts(79, 84, 84, 79),
   };
   requireThat(Object.hasOwn(signatures, asset.mimeType) && signatures[asset.mimeType](), asset.path, 'Unsupported MIME type or signature mismatch', 'ASSET');

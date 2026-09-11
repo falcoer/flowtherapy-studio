@@ -123,7 +123,9 @@ La PR #4 a été fusionnée et publiée sur GitHub Pages le 11 septembre 2026.
 Disponible : campagne locale, cinq axes de direction persistés, harmonies, recettes
 v2 avec migration v1, héritage et ajustements de support réinitialisables, ressource
 image de direction et aperçu multiformat.
-Non livré : tiroirs complets, ressources centralisées, contenus éditoriaux partagés,
+Disponible également : [socle Branding](branding.md), ressources centralisées locales
+et application explicite de l’identité aux campagnes.
+Non livré : tiroirs complets, contenus éditoriaux partagés,
 scène graphique commune, templates de production et exports graphiques.
 
 Le rendu du studio et des médias est provisoire : palettes exploratoires,
@@ -131,6 +133,6 @@ polices système et compositions de prototype. Les interactions validées ne fig
 pas la finition graphique. Celle-ci s'appuiera sur l'identité et des templates
 travaillés par format.
 
-Priorité : construire le socle Branding et les ressources centralisées, puis relier
+Priorité : compléter le socle Branding et les ressources centralisées, puis relier
 le catalogue de Médias et la scène résolue aux directions déjà persistées.
 Voir [prochaine étape](next-step.md) et [limites du laboratoire actuel](creative-lab.md).
