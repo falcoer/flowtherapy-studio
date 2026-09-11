@@ -1,0 +1,28 @@
+.scene-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 600px;
+  margin: 0 auto 16px;
+}
+.scene-pagination { display: flex; align-items: center; gap: 12px; font-size: 12px; }
+.scene-toolbar button { font-size: 12px; }
+.scene-toolbar button[aria-pressed="true"] { border-color: var(--studio-accent); }
+.resolved-surface .scene-text {
+  white-space: pre;
+  overflow-wrap: normal;
+  word-break: normal;
+  letter-spacing: 0;
+  font-style: normal;
+  font-weight: 400;
+  font-kerning: normal;
+  font-variant: normal;
+  tab-size: 1;
+}
+.resolved-surface .scene-text > div { white-space: pre; }
+.scene-guides { position: absolute; inset: 0; pointer-events: none; }
+.scene-safe-area, .scene-exclusion { position: absolute; border-style: dashed; }
+.scene-safe-area { border-color: #cf2777; }
+.scene-exclusion { border-color: #b45309; background: rgb(180 83 9 / 12%); }

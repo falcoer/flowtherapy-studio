@@ -3,60 +3,78 @@
 ## Références et état
 
 Lire README.md, ROADMAP.md, architecture.md, studio-organization.md,
-creative-lab.md, editor.md et core-api.md.
-Les décisions validées sont dans [Organisation du studio](studio-organization.md).
+creative-lab.md, editor.md, core-api.md et resolved-scene.md.
+Les décisions validées sont dans Organisation du studio.
+Le noyau 0.1, l'éditeur 0.2 et le laboratoire sont intégrés sur main.
+GitHub Pages est actif avec publication publique autorisée depuis le 11 septembre
+2026. Les campagnes et ressources importées restent locales.
 
-Le noyau 0.1, l'éditeur 0.2 et le laboratoire (PR #4) sont intégrés sur main.
-GitHub Pages est actif ; publication publique autorisée et déploiement du laboratoire
-réussi le 11 septembre 2026. Les campagnes restent locales.
+## Tranches réalisées du jalon 0.3
 
-## Tranche réalisée : direction créative persistée
+### Direction créative persistée
 
-1. Direction créative rattachée à la campagne : cinq axes (énergie, expression
-   colorée, échelle graphique, densité, dominante), sauvegarde/restauration et JSON/ZIP.
-   La structure de campagne v1 reste rétrocompatible ; les recettes v1 sont
-   migrées explicitement vers v2.
-2. Laboratoire complété : expression colorée distincte du choix de palette,
-   dominante Image/Texte/Équilibrée et ressource image sélectionnée lorsque nécessaire.
-3. Supports héritant de la direction de campagne ; ajustements locaux
-   explicites, réinitialisables, avec capacités déclarées par template.
-   Une recette copie des réglages vers une campagne, sans dépendance mutable implicite.
-4. Navigation Branding / Éditorial / Médias / Campagnes posée.
-   Le laboratoire se trouve dans Campagnes > campagne > Direction créative.
-   Ne pas présenter les tiroirs futurs comme des fonctions déjà disponibles.
+Cinq axes portés par la campagne : énergie, expression colorée, échelle graphique,
+densité, dominante. Ressource image, sauvegarde/restauration et JSON/ZIP.
+Les supports héritent des réglages, avec ajustements explicites réinitialisables
+selon les capacités du template. Les recettes v1 sont migrées vers v2 et copiées
+sans dépendance mutable. Navigation Branding / Éditorial / Médias / Campagnes ;
+laboratoire dans Campagnes > campagne > Direction créative.
 
-Critère couvert par les tests de domaine : modifier la direction sur deux supports
-de formats différents, sérialiser puis rouvrir la campagne et retrouver les réglages.
-Vérifier aussi le round-trip JSON/ZIP, l'isolation des ajustements locaux et
-l'absence de perte silencieuse des informations obligatoires.
+### Branding et ressources locales
 
-## Tranche réalisée : socle Branding et ressources locales
+Voir branding.md : identité locale, palette par rôle, logos et polices,
+application explicite aux campagnes, sauvegarde/restauration ZIP.
+IndexedDB v2 déduplique les fichiers et migre les campagnes existantes sans changer
+leurs révisions ni inventer leurs fichiers absents. Les instantanés restent isolés.
+Switch clair/sombre du studio et sélection/import local des polices du site livrés.
 
-Voir [parcours, stockage et limites](branding.md). L'écran Branding expose une
-identité locale, palette par rôle, logos et références de polices ; application
-explicite aux campagnes et sauvegarde/restauration d'identité ZIP. Les ressources
-sont réutilisables dans les supports. IndexedDB v2 déduplique les fichiers et migre
-les campagnes existantes sans changer leurs révisions ni remplir leurs fichiers absents.
-Les instantanés de campagne restent isolés du référentiel.
+### Scène résolue, typographie et pagination
 
-## Persistance éditoriale partagée — planifiée
+Voir resolved-scene.md : `src/render/scene.ts` consomme les contenus/placements
+résolus et une mesure injectée ; il produit des pages sérialisables sans React.
+L'aperçu des supports utilise les polices locales de la campagne, recalcule après
+chargement, ajuste les textes et respecte les modes error/compact/paginate.
+Un événement reste entier, son ordre est conservé et aucun contenu n'est tronqué.
+Navigation de pages et affichage facultatif des marges/zones d'exclusion.
+Déplacement, ajustements locaux et échanges JSON/ZIP sont conservés.
+Aucune migration du schéma de campagne, aucun export graphique livré.
 
-La persistance partagée des contenus et ressources éditoriales n’est pas implémentée
-au jalon 0.3. Elle relève du jalon 0.6 et dépend d’un adaptateur authentifié, de droits
-d’accès, de fichiers privés et de conflits de révision ; Supabase reste optionnel et
-aucun service cloud n’est activé.
+## Priorité suivante : template concert illustré
 
-## Priorité suivante du jalon 0.3
+L'affiche fournie le 11 septembre 2026 est la référence visuelle : photographie
+de guitare/lumières de scène et zones sombres, grand lettrage expressif, agenda
+multi-événements en colonnes, accents colorés, soulignements et petits ornements,
+trois alpagas colorés au premier plan en bas.
 
-- Enrichir Branding : règles de logos, palettes multiples et variantes typographiques.
-- Compléter la médiathèque : miniatures, recherche, gestion des crédits/droits
-  et sauvegarde intégrale ; relier les contenus Éditorial aux ressources communes.
-- Éditorial : contenus et médiathèque liés ; Ligne éditoriale en sous-section.
-- Médias : formats, templates et canaux transversaux.
-- Catalogue et variantes personnalisables ; bindings, overrides et sélections ordonnées.
-- Scène résolue commune, mesure typographique, débordements, compactage et pagination.
-- Validation graphique des templates et zones de sécurité par format.
+Construire une composition éditable de calques, pas une image aplatie :
 
-Préserver le domaine indépendant de React, l'autonomie statique, les révisions
-et les échanges JSON/ZIP. Exécuter npm run check et npm run test:e2e pour l'implémentation.
-Le rendu actuel est provisoire ; PNG/JPEG/PDF restent au jalon 0.4.
+1. Identifier/importer les ressources autorisées du groupe avec provenance,
+   droits et crédits ; ne pas intégrer de photo personnelle ou campagne réelle
+   dans les fixtures. SVG non accepté sans nettoyage dédié.
+2. Ajouter le template concert illustré au catalogue et son choix dans Médias,
+   avec variantes carré, portrait, story et affiche adaptées réellement.
+3. Enrichir la composition des collections en blocs/colonnes, la hiérarchie
+   typographique et les ornements. Appliquer les cinq axes créatifs à cette scène,
+   dans les capacités déclarées, sans modifier les instantanés déjà créés.
+4. Valider visuellement chaque format, la sécurité des zones, les titres longs
+   et les agendas denses avant de présenter le template comme prêt à produire.
+
+La scène actuelle est un socle mesuré et paginé, pas encore l'affiche artistique
+finale. Les logos ne sont pas insérés automatiquement sans calque dédié.
+PNG/JPEG/PDF restent au jalon 0.4 ; leur adaptation devra réutiliser la scène et
+les polices, sans calcul de mise en page divergent.
+
+## Autres travaux 0.3 à poursuivre
+
+Branding : règles de logos, palettes multiples, variantes typographiques.
+Médiathèque : miniatures, recherche, crédits/droits, sauvegarde intégrale.
+Éditorial : contenus et ressources liés ; Ligne éditoriale en sous-section.
+Médias : formats, templates, canaux ; bindings, overrides et sélections ordonnées.
+
+La persistance éditoriale partagée relève du jalon 0.6 : adaptateur authentifié,
+droits, fichiers privés et conflits de révision. Supabase reste optionnel ; aucun
+service cloud n'est activé.
+
+Préserver domaine indépendant, autonomie statique, révisions et JSON/ZIP.
+Exécuter `npm run check` et `npm run test:e2e`, y compris la recette de scène.
+Ne pas présenter les tiroirs ou fonctions futurs comme déjà disponibles.

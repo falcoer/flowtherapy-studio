@@ -1,33 +1,28 @@
 # Roadmap
 
-| Jalon          | Objectif                           | Critère de sortie                                                                         | État                                   |
-| -------------- | ---------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------- |
-| 0.0            | Cadrage, contrats et exemples      | Décisions consultables, exemples contrôlés                                                | Socle initial                          |
-| 0.1            | Contrats validés et noyau campagne | Schémas runtime, migrations, round-trip JSON/ZIP sans perte, sélection d'événements       | Intégré                                |
-| 0.2            | Éditeur statique minimal           | Créer une campagne et une variante ; saisir, déplacer, recadrer, annuler, sauvegarder     | Intégré                                |
-| 0.2 complément | Laboratoire créatif React + Motion | Exploration et recettes locales, aperçu multiformat                                       | Intégré et publié sur Pages            |
-| 0.3            | Templates et formats multiples     | Catalogue, variantes, personnalisations, débordements et pagination                       | En cours — Branding et ressources implémentés |
-| 0.4            | Exports                            | PNG/JPEG/PDF, fidélité texte, dimensions physiques, exports groupés                       | À faire                                |
-| 0.5            | Studio privé utilisable            | Assets autorisés, trois templates validés, accès groupe, recette A4/A3/social             | À faire                                |
-| 0.6            | Persistance partagée optionnelle   | Adaptateur authentifié, conflits de révision, fichiers privés, autonomie locale conservée | À faire                                |
-| Plus tard      | Publication puis animation         | Connecteurs validés par capacités réelles, instantanés publiés, service facultatif        | Réserve                                |
+| Jalon | Objectif | Critère de sortie | État |
+| --- | --- | --- | --- |
+| 0.0 | Cadrage, contrats et exemples | Décisions consultables, exemples contrôlés | Socle initial |
+| 0.1 | Contrats validés et noyau campagne | Schémas runtime, migrations, round-trip JSON/ZIP sans perte, sélection d'événements | Intégré |
+| 0.2 | Éditeur statique minimal | Créer une campagne et une variante ; saisir, déplacer, recadrer, annuler, sauvegarder | Intégré |
+| 0.2 complément | Laboratoire créatif React + Motion | Exploration et recettes locales, aperçu multiformat | Intégré et publié sur Pages |
+| 0.3 | Templates et formats multiples | Catalogue, variantes, personnalisations, débordements et pagination | En cours — Branding, ressources et scène résolue implémentés |
+| 0.4 | Exports | PNG/JPEG/PDF, fidélité texte, dimensions physiques, exports groupés | À faire |
+| 0.5 | Studio privé utilisable | Assets autorisés, trois templates validés, accès groupe, recette A4/A3/social | À faire |
+| 0.6 | Persistance partagée optionnelle | Adaptateur authentifié, conflits de révision, fichiers privés, autonomie locale conservée | À faire |
+| Plus tard | Publication puis animation | Connecteurs validés par capacités réelles, instantanés publiés, service facultatif | Réserve |
 
-L'automatisation des déploiements est postérieure au choix et à la validation de
-la protection d'accès. Supabase est retenu pour le futur adaptateur partagé 0.6,
-sans dépendance dans le domaine ; aucun moteur graphique n'est encore imposé.
+GitHub Pages est actif avec l'accord du propriétaire ; main est publié après les
+tests. Les campagnes restent locales. Le contrôle d'accès du futur studio partagé
+n'est pas encore livré. Supabase est retenu pour l'adaptateur optionnel 0.6, sans
+dépendance dans le domaine.
 
 0.1 : voir [API](docs/core-api.md) et [archive v1](docs/archive-format.md).
-ZIP STORE uniquement ; SVG non acceptés. Aucun éditeur ni export graphique livré.
+ZIP STORE uniquement ; SVG non acceptés.
 
-0.2 : voir [éditeur local](docs/editor.md). Aperçu DOM/CSS provisoire, IndexedDB
-et sauvegardes JSON/ZIP ; aucun export graphique.
-
-Complément 0.2 : [GitHub Pages](docs/github-pages.md) actif ; laboratoire publié
-après tests le 11 septembre 2026 (PR #4).
-
-Laboratoire : voir [périmètre et limites](docs/creative-lab.md). Le référentiel de
-marque, les composants adaptatifs et l’application des recettes aux variantes
-complètent le jalon 0.3 ; les exports restent au jalon 0.4.
+0.2 : voir [éditeur local](docs/editor.md). IndexedDB et sauvegardes JSON/ZIP ;
+pas d'export graphique. Complément : [GitHub Pages](docs/github-pages.md) et
+[laboratoire](docs/creative-lab.md) publié depuis le 11 septembre 2026.
 
 ## Décisions validées et priorité 0.3
 
@@ -36,18 +31,31 @@ Navigation : **Branding / Éditorial / Médias / Campagnes**.
 Médias regroupe formats, templates et canaux. Les ressources sont centralisées et
 référencées sans duplication entre les tiroirs.
 
-Tranche intégrée : Direction créative persistée dans la campagne (cinq axes),
-expression colorée distincte de la palette, dominante, ressource image, héritage
-vers les supports et ajustements locaux réinitialisables selon les capacités du
-template. Les recettes v1 sont migrées vers v2 et copiées, sans lien mutable.
+Tranches réalisées :
 
-Tranche suivante implémentée : [socle Branding et ressources locales](docs/branding.md),
-identité par rôles, application explicite aux campagnes, stockage dédupliqué et
-migration IndexedDB v2.
+- Direction créative persistée dans la campagne : cinq axes, expression colorée,
+  dominante, ressource image, héritage et ajustements locaux réinitialisables.
+  Recettes v1 migrées vers v2 et copiées sans lien mutable.
+- [Branding et ressources locales](docs/branding.md) : rôles, application explicite,
+  stockage dédupliqué, IndexedDB v2, thème du studio et import des polices du site.
+- [Scène résolue](docs/resolved-scene.md) : moteur indépendant de React, polices de
+  l'instantané de campagne, mesure des textes, ajustement jusqu'aux minima, modes
+  error/compact/paginate, navigation des pages et guides de sécurité. Aucun texte
+  ni événement tronqué silencieusement. Les formats et campagnes ne changent pas
+  de schéma ; les instantanés existants ne sont pas remplacés.
 
-Priorité suivante : catalogue de templates et scène résolue ; enrichissement
-progressif du Branding et de l’Éditorial. La persistance éditoriale partagée reste
-planifiée au jalon 0.6, après l’adaptateur authentifié, la gestion des droits et les
-conflits de révision ; aucune API cloud n’est livrée dans le jalon 0.3. L'identité et
-le rendu graphique définitifs restent à construire.
-Voir [décisions détaillées](docs/studio-organization.md) et [critère de sortie](docs/next-step.md).
+La scène ne clôture pas le jalon 0.3. La priorité graphique est maintenant le
+template **concert illustré multiformat**, guidé par l'affiche de référence du
+11 septembre : fond photo et lumières, grand titre expressif, agenda en colonnes,
+accents et ornements, trois alpagas au premier plan. Il faut encore sélectionner
+les ressources autorisées, composer ces calques, appliquer les axes créatifs au
+rendu général et valider chaque format. Les aperçus ne sont pas encore des médias
+de production et les exports restent au jalon 0.4.
+
+Le catalogue de templates, les variantes personnalisables et l'enrichissement de
+Branding/Éditorial se poursuivent. La persistance éditoriale partagée reste au
+jalon 0.6, après adaptateur authentifié, droits et conflits de révision ; aucune
+API cloud n'est activée.
+
+Voir [décisions détaillées](docs/studio-organization.md),
+[limites du rendu](docs/resolved-scene.md) et [prochaine étape](docs/next-step.md).
