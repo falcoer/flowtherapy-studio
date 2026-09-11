@@ -39,6 +39,13 @@ sont réutilisables dans les supports. IndexedDB v2 déduplique les fichiers et 
 les campagnes existantes sans changer leurs révisions ni remplir leurs fichiers absents.
 Les instantanés de campagne restent isolés du référentiel.
 
+## Persistance éditoriale partagée — planifiée
+
+La persistance partagée des contenus et ressources éditoriales n’est pas implémentée
+au jalon 0.3. Elle relève du jalon 0.6 et dépend d’un adaptateur authentifié, de droits
+d’accès, de fichiers privés et de conflits de révision ; Supabase reste optionnel et
+aucun service cloud n’est activé.
+
 ## Priorité suivante du jalon 0.3
 
 - Enrichir Branding : règles de logos, palettes multiples et variantes typographiques.
