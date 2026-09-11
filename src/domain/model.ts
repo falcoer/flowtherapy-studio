@@ -1,4 +1,4 @@
-/** Contrats sérialisés v1, stabilisés au jalon 0.1. */
+/** Contrats sérialisés v2 ; formats et templates restent des définitions v1. */
 export interface Ref {
   id: string;
   revision: number;
@@ -22,12 +22,16 @@ export interface Frame {
   width: number;
   height: number;
 }
+export interface Exclusion extends Frame {
+  id: string;
+  label: string;
+}
 export interface Format extends Definition {
   surface: { width: number; height: number; unit: "px" | "mm" };
   zones: {
     bleed: Insets;
     safeInset: Insets;
-    exclusions?: Array<Frame & { id: string; label: string }>;
+    exclusions?: Exclusion[];
   };
   exports: ExportPreset[];
   defaultExportId: string;
@@ -140,7 +144,8 @@ export interface Template extends Definition {
   layers: Layer[];
   layouts: Layout[];
 }
-export interface Brand extends Definition {
+export interface Brand extends Omit<Definition, "schemaVersion"> {
+  schemaVersion: 2;
   colors: { [key: string]: string };
   fonts: { [key: string]: AssetRef };
   logos?: { [role: string]: AssetRef };
@@ -171,7 +176,7 @@ export interface Support {
   variants: Variant[];
 }
 export interface Campaign {
-  schemaVersion: 1;
+  schemaVersion: 2;
   id: string;
   revision: number; // concurrence de stockage, distincte de schemaVersion
   name: string;
