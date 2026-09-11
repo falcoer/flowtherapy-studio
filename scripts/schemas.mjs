@@ -52,6 +52,7 @@ const firstDiff = (actual, expected, at = '$') => {
       const difference = firstDiff(actual[key], expected[key], `${at}.${key}`);
       if (difference) return difference;
     }
+    return null;
   }
   return `${at}: ${JSON.stringify(actual)} !== ${JSON.stringify(expected)}`;
 };
