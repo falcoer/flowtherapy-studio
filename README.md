@@ -6,9 +6,9 @@ sociaux et l'impression.
 
 ## État
 
-Socle de conception préparé le 11 septembre 2026. L'éditeur et les exporteurs ne
-sont pas encore implémentés. Les contrats TypeScript et exemples sont une première
-spécification, à stabiliser au jalon 0.1. Aucun hébergement n'est activé.
+Jalon 0.1 : noyau TypeScript implémenté, contrats validés, résolution des contenus,
+snapshots et import/export JSON/ZIP avec contrôle des assets. L'éditeur et les
+exporteurs graphiques ne sont pas encore implémentés. Aucun hébergement activé.
 
 ## Principes
 
@@ -24,16 +24,20 @@ spécification, à stabiliser au jalon 0.1. Aucun hébergement n'est activé.
 - [Périmètre et parcours](docs/product.md)
 - [Architecture](docs/architecture.md)
 - [Modèle de données](docs/data-model.md)
+- [API du noyau](docs/core-api.md)
+- [Format d’archive ZIP](docs/archive-format.md)
 - [Décisions](docs/decisions/0001-static-campaign-studio.md)
 - [Roadmap](ROADMAP.md)
 - [Prochaine étape](docs/next-step.md)
 - [Mise en place GitHub](docs/repository-setup.md)
 
-`npm run check` vérifie les exemples et références avec Node, sans dépendance.
-Ce contrôle n'est pas encore une validation exhaustive des imports utilisateur.
+`npm ci` puis `npm run check` (Node >= 22) vérifient les schémas générés, le typage,
+les tests du noyau et les fixtures. ZIP v1 : STORE sans compression ; PNG/JPEG et
+polices acceptés, SVG refusés en attendant un nettoyage dédié.
 
 Le dépôt doit rester privé. Une protection de l'application hébergée est également
 nécessaire : la confidentialité du dépôt ne protège pas le site déployé.
 
 Aucune licence open source n'est attribuée à ce stade. Les droits des photos,
 logos, illustrations et polices devront être renseignés avant leur intégration.
+

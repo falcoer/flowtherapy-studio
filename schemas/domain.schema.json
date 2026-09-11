@@ -1,0 +1,1389 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Ref": {
+      "description": "Contrats sérialisés v1, stabilisés au jalon 0.1.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "revision"
+      ]
+    },
+    "Definition": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "derivedFrom": {
+          "description": "Contrats sérialisés v1, stabilisés au jalon 0.1.",
+          "$ref": "#/definitions/Ref"
+        },
+        "id": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "revision",
+        "schemaVersion"
+      ]
+    },
+    "Insets": {
+      "type": "object",
+      "properties": {
+        "top": {
+          "type": "number"
+        },
+        "right": {
+          "type": "number"
+        },
+        "bottom": {
+          "type": "number"
+        },
+        "left": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "bottom",
+        "left",
+        "right",
+        "top"
+      ]
+    },
+    "Frame": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "height",
+        "width",
+        "x",
+        "y"
+      ]
+    },
+    "Format": {
+      "type": "object",
+      "properties": {
+        "surface": {
+          "type": "object",
+          "properties": {
+            "width": {
+              "type": "number"
+            },
+            "height": {
+              "type": "number"
+            },
+            "unit": {
+              "enum": [
+                "mm",
+                "px"
+              ],
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "height",
+            "unit",
+            "width"
+          ]
+        },
+        "zones": {
+          "type": "object",
+          "properties": {
+            "bleed": {
+              "$ref": "#/definitions/Insets"
+            },
+            "safeInset": {
+              "$ref": "#/definitions/Insets"
+            },
+            "exclusions": {
+              "type": "array",
+              "items": {
+                "additionalProperties": false,
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "label"
+                ]
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "bleed",
+            "safeInset"
+          ]
+        },
+        "exports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExportPreset"
+          }
+        },
+        "defaultExportId": {
+          "type": "string"
+        },
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "derivedFrom": {
+          "description": "Contrats sérialisés v1, stabilisés au jalon 0.1.",
+          "$ref": "#/definitions/Ref"
+        },
+        "id": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "defaultExportId",
+        "exports",
+        "id",
+        "name",
+        "revision",
+        "schemaVersion",
+        "surface",
+        "zones"
+      ]
+    },
+    "ExportPreset": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "area": {
+              "enum": [
+                "bleed",
+                "surface"
+              ],
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "raster"
+            },
+            "mimeType": {
+              "enum": [
+                "image/jpeg",
+                "image/png"
+              ],
+              "type": "string"
+            },
+            "resolution": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "scale"
+                    },
+                    "factor": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "factor",
+                    "mode"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "dpi"
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "mode",
+                    "value"
+                  ]
+                }
+              ]
+            },
+            "background": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "quality": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "area",
+            "background",
+            "id",
+            "mimeType",
+            "name",
+            "resolution",
+            "type"
+          ]
+        },
+        {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "area": {
+              "enum": [
+                "bleed",
+                "surface"
+              ],
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "const": "pdf"
+            },
+            "background": {
+              "type": "string"
+            },
+            "cropMarks": {
+              "type": "boolean"
+            },
+            "rasterDpi": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "area",
+            "background",
+            "cropMarks",
+            "id",
+            "name",
+            "rasterDpi",
+            "type"
+          ]
+        }
+      ]
+    },
+    "EventRow": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "date",
+        "id",
+        "label",
+        "location"
+      ]
+    },
+    "AssetRef": {
+      "type": "object",
+      "properties": {
+        "assetId": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "assetId"
+      ]
+    },
+    "Value": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/AssetRef"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EventRow"
+          }
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "Field": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "type": {
+              "enum": [
+                "date",
+                "text",
+                "url"
+              ],
+              "type": "string"
+            },
+            "defaultValue": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "required",
+            "type"
+          ]
+        },
+        {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "type": {
+              "type": "string",
+              "const": "image"
+            },
+            "defaultValue": {
+              "$ref": "#/definitions/AssetRef"
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "required",
+            "type"
+          ]
+        },
+        {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "type": {
+              "type": "string",
+              "const": "collection"
+            },
+            "itemSchema": {
+              "type": "string",
+              "const": "core:event@1"
+            },
+            "minItems": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "id",
+            "itemSchema",
+            "label",
+            "minItems",
+            "required",
+            "type"
+          ]
+        }
+      ]
+    },
+    "Source": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "field"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "value": {
+              "$ref": "#/definitions/Value"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "value"
+          ]
+        }
+      ]
+    },
+    "Layer": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "style": {
+              "$ref": "#/definitions/Style"
+            },
+            "editing": {
+              "type": "object",
+              "properties": {
+                "move": {
+                  "type": "boolean"
+                },
+                "resize": {
+                  "type": "boolean"
+                },
+                "restyle": {
+                  "type": "boolean"
+                },
+                "hide": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "hide",
+                "move",
+                "resize",
+                "restyle"
+              ]
+            },
+            "type": {
+              "enum": [
+                "image",
+                "qr",
+                "text",
+                "vector"
+              ],
+              "type": "string"
+            },
+            "content": {
+              "$ref": "#/definitions/Source"
+            }
+          },
+          "required": [
+            "content",
+            "editing",
+            "id",
+            "type"
+          ]
+        },
+        {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "style": {
+              "$ref": "#/definitions/Style"
+            },
+            "editing": {
+              "type": "object",
+              "properties": {
+                "move": {
+                  "type": "boolean"
+                },
+                "resize": {
+                  "type": "boolean"
+                },
+                "restyle": {
+                  "type": "boolean"
+                },
+                "hide": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "hide",
+                "move",
+                "resize",
+                "restyle"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "const": "shape"
+            },
+            "shape": {
+              "enum": [
+                "ellipse",
+                "rectangle"
+              ],
+              "type": "string"
+            }
+          },
+          "required": [
+            "editing",
+            "id",
+            "shape",
+            "type"
+          ]
+        },
+        {
+          "additionalProperties": false,
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "style": {
+              "$ref": "#/definitions/Style"
+            },
+            "editing": {
+              "type": "object",
+              "properties": {
+                "move": {
+                  "type": "boolean"
+                },
+                "resize": {
+                  "type": "boolean"
+                },
+                "restyle": {
+                  "type": "boolean"
+                },
+                "hide": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "hide",
+                "move",
+                "resize",
+                "restyle"
+              ]
+            },
+            "type": {
+              "type": "string",
+              "const": "event-list"
+            },
+            "source": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "field"
+              ]
+            }
+          },
+          "required": [
+            "editing",
+            "id",
+            "source",
+            "type"
+          ]
+        }
+      ]
+    },
+    "Placement": {
+      "type": "object",
+      "properties": {
+        "layerId": {
+          "type": "string"
+        },
+        "frame": {
+          "$ref": "#/definitions/Frame"
+        },
+        "rotation": {
+          "type": "number"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "style": {
+          "$ref": "#/definitions/Style"
+        },
+        "imageFit": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "enum": [
+                "contain",
+                "cover"
+              ],
+              "type": "string"
+            },
+            "focalX": {
+              "type": "number"
+            },
+            "focalY": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "focalX",
+            "focalY",
+            "mode"
+          ]
+        },
+        "textFit": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "enum": [
+                "error",
+                "shrink"
+              ],
+              "type": "string"
+            },
+            "minFontSize": {
+              "type": "number"
+            },
+            "maxLines": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "maxLines",
+            "minFontSize",
+            "mode"
+          ]
+        },
+        "eventPresentation": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "enum": [
+                "cards",
+                "list",
+                "table"
+              ],
+              "type": "string"
+            },
+            "columns": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "field": {
+                    "enum": [
+                      "date",
+                      "label",
+                      "location"
+                    ],
+                    "type": "string"
+                  },
+                  "width": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "field",
+                  "width"
+                ]
+              }
+            },
+            "dateFormat": {
+              "enum": [
+                "day-month",
+                "day-month-year"
+              ],
+              "type": "string"
+            },
+            "rowGap": {
+              "type": "number"
+            },
+            "overflow": {
+              "enum": [
+                "compact",
+                "error",
+                "paginate"
+              ],
+              "type": "string"
+            },
+            "minFontSize": {
+              "type": "number"
+            },
+            "minRowGap": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "columns",
+            "dateFormat",
+            "minFontSize",
+            "minRowGap",
+            "mode",
+            "overflow",
+            "rowGap"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "frame",
+        "layerId",
+        "rotation",
+        "visible"
+      ]
+    },
+    "Layout": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "formatRef": {
+          "$ref": "#/definitions/Ref"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "validated"
+          ],
+          "type": "string"
+        },
+        "placements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Placement"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "formatRef",
+        "id",
+        "placements",
+        "status"
+      ]
+    },
+    "Template": {
+      "type": "object",
+      "properties": {
+        "brandRef": {
+          "description": "Contrats sérialisés v1, stabilisés au jalon 0.1.",
+          "$ref": "#/definitions/Ref"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Field"
+          }
+        },
+        "layers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Layer"
+          }
+        },
+        "layouts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Layout"
+          }
+        },
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "derivedFrom": {
+          "description": "Contrats sérialisés v1, stabilisés au jalon 0.1.",
+          "$ref": "#/definitions/Ref"
+        },
+        "id": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "fields",
+        "id",
+        "layers",
+        "layouts",
+        "name",
+        "revision",
+        "schemaVersion"
+      ]
+    },
+    "Brand": {
+      "type": "object",
+      "properties": {
+        "colors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "fonts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AssetRef"
+          }
+        },
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "derivedFrom": {
+          "description": "Contrats sérialisés v1, stabilisés au jalon 0.1.",
+          "$ref": "#/definitions/Ref"
+        },
+        "id": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "colors",
+        "fonts",
+        "id",
+        "name",
+        "revision",
+        "schemaVersion"
+      ]
+    },
+    "Asset": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "mimeType": {
+          "type": "string"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "rights": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "mimeType",
+        "path",
+        "rights",
+        "sha256",
+        "source"
+      ]
+    },
+    "Variant": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "layoutId": {
+          "type": "string"
+        },
+        "format": {
+          "$ref": "#/definitions/Format"
+        },
+        "placementOverrides": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/PlacementOverride"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "format",
+        "id",
+        "layoutId",
+        "placementOverrides"
+      ]
+    },
+    "Support": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "template": {
+          "$ref": "#/definitions/Template"
+        },
+        "bindings": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "overrides": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Value"
+          }
+        },
+        "eventSelections": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/EventSelection"
+          }
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Variant"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "bindings",
+        "eventSelections",
+        "id",
+        "name",
+        "overrides",
+        "template",
+        "variants"
+      ]
+    },
+    "Campaign": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "id": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "content": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Value"
+          }
+        },
+        "brand": {
+          "$ref": "#/definitions/Brand"
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Asset"
+          }
+        },
+        "supports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Support"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "assets",
+        "content",
+        "id",
+        "locale",
+        "name",
+        "revision",
+        "schemaVersion",
+        "supports"
+      ]
+    },
+    "ArchiveManifest": {
+      "description": "ZIP v1: STORE entries, paths and hashes cover campaign.json and all assets.",
+      "type": "object",
+      "properties": {
+        "archiveVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sha256": {
+                "type": "string"
+              },
+              "mimeType": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "mimeType",
+              "path",
+              "sha256",
+              "size"
+            ]
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "archiveVersion",
+        "files"
+      ]
+    },
+    "EventSelection": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "all"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "mode"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "const": "ids"
+            },
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "ids",
+            "mode"
+          ]
+        }
+      ]
+    },
+    "PlacementOverride": {
+      "type": "object",
+      "properties": {
+        "frame": {
+          "$ref": "#/definitions/Frame"
+        },
+        "rotation": {
+          "type": "number"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "style": {
+          "$ref": "#/definitions/Style"
+        },
+        "imageFit": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "enum": [
+                "contain",
+                "cover"
+              ],
+              "type": "string"
+            },
+            "focalX": {
+              "type": "number"
+            },
+            "focalY": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "focalX",
+            "focalY",
+            "mode"
+          ]
+        },
+        "textFit": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "enum": [
+                "error",
+                "shrink"
+              ],
+              "type": "string"
+            },
+            "minFontSize": {
+              "type": "number"
+            },
+            "maxLines": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "maxLines",
+            "minFontSize",
+            "mode"
+          ]
+        },
+        "eventPresentation": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "enum": [
+                "cards",
+                "list",
+                "table"
+              ],
+              "type": "string"
+            },
+            "columns": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "field": {
+                    "enum": [
+                      "date",
+                      "label",
+                      "location"
+                    ],
+                    "type": "string"
+                  },
+                  "width": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false,
+                "required": [
+                  "field",
+                  "width"
+                ]
+              }
+            },
+            "dateFormat": {
+              "enum": [
+                "day-month",
+                "day-month-year"
+              ],
+              "type": "string"
+            },
+            "rowGap": {
+              "type": "number"
+            },
+            "overflow": {
+              "enum": [
+                "compact",
+                "error",
+                "paginate"
+              ],
+              "type": "string"
+            },
+            "minFontSize": {
+              "type": "number"
+            },
+            "minRowGap": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "columns",
+            "dateFormat",
+            "minFontSize",
+            "minRowGap",
+            "mode",
+            "overflow",
+            "rowGap"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "Style": {
+      "type": "object",
+      "properties": {
+        "fill": {
+          "type": "string"
+        },
+        "font": {
+          "type": "string"
+        },
+        "fontSize": {
+          "type": "number"
+        },
+        "align": {
+          "enum": [
+            "center",
+            "left",
+            "right"
+          ],
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$ref": "#/definitions/Campaign",
+  "$id": "https://flowtherapymusic.com/studio/schemas/domain-v1.json"
+}
