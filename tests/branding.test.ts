@@ -24,7 +24,7 @@ async function fixture() {
     credit: "Auteur fictif",
   };
   const brand: Brand = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     id: "brand",
     revision: 1,
     name: "Identité test",
