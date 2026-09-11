@@ -90,10 +90,14 @@ test('migrations require an explicit path, operate on copies and validate the ou
   const c = fixture(); assert.deepEqual(migrateCampaign(c).campaign, c);
   assert.throws(() => migrateCampaign({ ...c, schemaVersion: 2 }), /Unsupported version/);
   assert.throws(() => migrateCampaign({ ...c, schemaVersion: 0 }), /No unique explicit migration/);
-  const legacy = { ...c, schemaVersion: 0 };
-  const result = migrateCampaign(legacy, [{ from: 0, to: 1, migrate: input => ({ ...(input as Campaign), schemaVersion: 1 }) }]);
-  assert.equal(legacy.schemaVersion, 0); assert.deepEqual(result.original, legacy); assert.deepEqual(result.steps, [{ from: 0, to: 1 }]);
-  assert.throws(() => migrateCampaign(legacy, [{ from: 0, to: 1, migrate: () => ({ schemaVersion: 1 }) }]));
+  const legacy = { ...c, schemaVersion: 1 };
+  const result = migrateCampaign(legacy);
+  assert.equal(legacy.schemaVersion, 1);
+  assert.equal(result.campaign.schemaVersion, 2);
+  assert.deepEqual(result.original, legacy);
+  assert.deepEqual(result.steps, [{ from: 1, to: 2 }]);
+  assert.throws(() => migrateCampaign({ ...c, schemaVersion: 0 }));
+  assert.throws(() => migrateCampaign(legacy, [{ from: 1, to: 2, migrate: () => ({ schemaVersion: 2 }) }]));
 });
 // A real, tiny PNG fixture; no personal media.
 const png = Uint8Array.from(Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jv1kAAAAASUVORK5CYII=', 'base64'));
