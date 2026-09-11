@@ -76,5 +76,6 @@ Le dépôt et l’application sur Pages sont publics avec l’accord du proprié
 les campagnes et images importées restent dans le navigateur.
 La confidentialité du dépôt ne protège pas le site déployé.
 
-Aucune licence open source n'est attribuée à ce stade. Les droits des photos,
-logos, illustrations et polices devront être renseignés avant leur intégration.
+Aucune licence open source n'est attribuée au code à ce stade. Les droits des
+photos, logos et illustrations devront être renseignés avant leur intégration ;
+les polices du site importées par le préréglage conservent leur licence SIL OFL 1.1.

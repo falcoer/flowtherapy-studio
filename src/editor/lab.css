@@ -2,16 +2,16 @@
   display: flex;
   gap: 6px;
   padding: 12px 32px;
-  background: #fcfdfa;
-  border-bottom: 1px solid #dce2dc;
+  background: var(--studio-surface);
+  border-bottom: 1px solid var(--studio-line);
 }
 .studio-navigation button {
   border: 0;
   background: transparent;
 }
 .studio-navigation button[aria-pressed="true"] {
-  background: #e7ecd8;
-  color: #254739;
+  background: color-mix(in srgb, var(--studio-accent) 14%, var(--studio-surface));
+  color: var(--studio-text);
 }
 .studio-navigation .studio-root-active {
   font-weight: 700;
@@ -19,7 +19,7 @@
 .studio-navigation button small {
   display: block;
   margin-top: 2px;
-  color: #7b897f;
+  color: var(--studio-muted);
   font-size: 8px;
   font-weight: 500;
 }
@@ -27,7 +27,7 @@
   display: flex;
   gap: 6px;
   padding-left: 8px;
-  border-left: 1px solid #dce2dc;
+  border-left: 1px solid var(--studio-line);
 }
 .creative-lab {
   max-width: 1800px;
@@ -551,4 +551,36 @@
   letter-spacing: 0.12em;
   color: #708477;
   margin-right: 14px;
+}
+:root[data-theme="dark"] .lab-heading p,
+:root[data-theme="dark"] .lab-caption,
+:root[data-theme="dark"] .lab-notebook p,
+:root[data-theme="dark"] .lab-harmony-name,
+:root[data-theme="dark"] .lab-pad-caption,
+:root[data-theme="dark"] .lab-pad-label,
+:root[data-theme="dark"] .lab-variants small,
+:root[data-theme="dark"] .studio-section-label {
+  color: var(--studio-muted);
+}
+:root[data-theme="dark"] .lab-presets button,
+:root[data-theme="dark"] .lab-notebook,
+:root[data-theme="dark"] .lab-stage,
+:root[data-theme="dark"] .lab-stage-toolbar,
+:root[data-theme="dark"] .lab-artboard {
+  background-color: var(--studio-surface);
+  border-color: var(--studio-line);
+}
+:root[data-theme="dark"] .lab-artboard {
+  background-image: radial-gradient(var(--studio-line) 0.8px, transparent 0.8px);
+}
+:root[data-theme="dark"] .lab-stage-toolbar,
+:root[data-theme="dark"] .lab-explore {
+  border-color: var(--studio-line);
+}
+:root[data-theme="dark"] .lab-formats button[aria-pressed="true"] {
+  background: var(--studio-surface-soft);
+}
+:root[data-theme="dark"] .lab-surprise {
+  background: color-mix(in srgb, var(--studio-accent) 18%, var(--studio-surface));
+  border-color: var(--studio-accent);
 }

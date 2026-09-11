@@ -23,8 +23,8 @@
   gap: 20px;
 }
 .branding-card {
-  background: #fff;
-  border: 1px solid #cdd8d4;
+  background: var(--studio-surface);
+  border: 1px solid var(--studio-line);
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 20px;
@@ -37,6 +37,7 @@
   font-size: 14px;
   line-height: 1.6;
   margin: 16px 0 0;
+  color: var(--studio-muted);
 }
 .branding-color-group {
   margin-top: 18px;
@@ -60,6 +61,43 @@
   display: block;
   margin-top: 6px;
   font-family: monospace;
+  color: var(--studio-muted);
+}
+.font-tools {
+  display: grid;
+  gap: 9px;
+  margin: -5px 0 22px;
+  padding: 12px;
+  border: 1px solid color-mix(in srgb, var(--studio-accent) 35%, var(--studio-line));
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--studio-accent) 7%, var(--studio-surface));
+}
+.font-tools span,
+.storage-note {
+  font-size: 13px;
+  color: var(--studio-muted);
+}
+.font-choice {
+  margin: 16px 0 20px;
+}
+.font-choice label {
+  margin: 0;
+}
+.font-specimen {
+  min-height: 38px;
+  margin-top: 9px;
+  padding: 8px 10px;
+  border-left: 3px solid var(--studio-orange);
+  background: var(--studio-surface-soft);
+  color: var(--studio-text);
+  font-size: 20px;
+  line-height: 1.25;
+}
+.font-choice:nth-child(2) .font-specimen {
+  font-size: 18px;
+}
+.font-choice:nth-child(3) .font-specimen {
+  font-size: 21px;
 }
 .resource-import {
   display: grid;
@@ -77,12 +115,14 @@
   display: grid;
   gap: 8px;
   padding: 16px;
-  border: 1px solid #cdd8d4;
+  border: 1px solid var(--studio-line);
+  background: var(--studio-surface-soft);
   border-radius: 8px;
   overflow-wrap: anywhere;
 }
 .resource-list span {
   font-size: 14px;
+  color: var(--studio-muted);
 }
 @media (max-width: 1000px) {
   .branding-grid {

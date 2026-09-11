@@ -10,7 +10,11 @@ import {
   sha256,
 } from "../storage/archive.js";
 import "./branding.css";
-import { flowTherapySiteBrand, flowTherapySiteFonts } from "./siteBrand.js";
+import {
+  flowTherapySiteBrand,
+  flowTherapySiteFontAssets,
+  flowTherapySiteFonts,
+} from "./siteBrand.js";
 
 const colorGroups = [
   {
@@ -48,6 +52,7 @@ const logoRoles = {
   light: "Sur fond clair",
   dark: "Sur fond sombre",
 };
+const siteFontRights = "SIL Open Font License 1.1";
 function initial(): CampaignBundle {
   return {
     campaign: {
@@ -195,6 +200,29 @@ export function Branding({
     setDraft(next);
     setDirty(true);
   }
+  async function persistResource(input: {
+    bytes: Uint8Array;
+    fileName: string;
+    mimeType: string;
+    source?: string;
+    rights: string;
+    credit?: string;
+  }) {
+    const hash = await sha256(input.bytes);
+    const asset = await store.importResource(
+      {
+        id: `resource-${hash}`,
+        path: `assets/${hash}.${input.fileName.split(".").at(-1)?.toLowerCase() ?? "bin"}`,
+        mimeType: input.mimeType,
+        sha256: hash,
+        source: input.source ?? input.fileName,
+        rights: input.rights,
+        ...(input.credit ? { credit: input.credit } : {}),
+      },
+      input.bytes,
+    );
+    return { asset, bytes: input.bytes };
+  }
   async function importResource(file: File) {
     if (!rights.trim()) throw new Error("Renseignez les droits d’utilisation.");
     if (file.size > ARCHIVE_LIMITS.entryBytes)
@@ -218,22 +246,47 @@ export function Branding({
       );
       bitmap.close();
     }
-    const hash = await sha256(bytes);
-    await store.importResource(
-      {
-        id: `resource-${hash}`,
-        path: `assets/${hash}.${ext}`,
-        mimeType,
-        sha256: hash,
-        source: file.name,
-        rights: rights.trim(),
-        ...(credit.trim() ? { credit: credit.trim() } : {}),
-      },
+    await persistResource({
       bytes,
-    );
+      fileName: file.name,
+      mimeType,
+      rights: rights.trim(),
+      credit: credit.trim() || undefined,
+    });
     await refresh();
     setNotice(
       "Ressource disponible dans le studio. Les fichiers identiques sont réutilisés avec leurs crédits et droits existants.",
+    );
+  }
+  async function importSiteFonts() {
+    const imported = await Promise.all(
+      flowTherapySiteFontAssets.map(async (font) => {
+        const response = await fetch(font.sourcePath);
+        if (!response.ok) throw new Error(`Police inaccessible : ${font.fileName}.`);
+        const bytes = new Uint8Array(await response.arrayBuffer());
+        return { font, ...(await persistResource({
+          bytes,
+          fileName: font.fileName,
+          mimeType: "font/ttf",
+          source: font.fileName,
+          rights: siteFontRights,
+          credit: `Google Fonts · ${font.source}`,
+        })) };
+      }),
+    );
+    const next = structuredClone(draft);
+    for (const { font, asset, bytes } of imported) {
+      const assetId = attachResource(next.campaign, asset);
+      next.assets.set(asset.path, bytes);
+      if (!next.campaign.brand!.fonts[font.role] && font.id !== "kalam-bold") {
+        next.campaign.brand!.fonts[font.role] = { assetId };
+      }
+    }
+    setDraft(next);
+    setDirty(true);
+    await refresh();
+    setNotice(
+      "Les polices du site ont été importées et associées aux rôles disponibles. Enregistrez l’identité pour les conserver.",
     );
   }
   async function apply() {
@@ -253,35 +306,111 @@ export function Branding({
       "Identité appliquée à la campagne. Enregistrez la campagne pour conserver cet instantané.",
     );
   }
+  const fontSignature = Object.values(brand.fonts)
+    .map((ref) => ref.assetId)
+    .sort()
+    .join("|");
+  const [loadedFontFamilies, setLoadedFontFamilies] = useState<
+    Record<string, string>
+  >({});
+  useEffect(() => {
+    let active = true;
+    const faces: FontFace[] = [];
+    const fontSet = document.fonts as FontFaceSet & {
+      add(face: FontFace): void;
+      delete(face: FontFace): boolean;
+    };
+    const load = async () => {
+      const families: Record<string, string> = {};
+      const selected = new Map(
+        Object.values(brand.fonts).map((ref) => {
+          const asset = draft.campaign.assets.find((a) => a.id === ref.assetId);
+          return [asset?.sha256 ?? "", asset] as const;
+        }),
+      );
+      for (const [hash, asset] of selected) {
+        if (!hash || !asset) continue;
+        const bytes = draft.assets.get(asset.path);
+        if (!bytes) continue;
+        const family = `FTAsset-${hash.slice(0, 12)}`;
+        const face = new FontFace(family, new Uint8Array(bytes).buffer);
+        try {
+          await face.load();
+          if (!active) return;
+          fontSet.add(face);
+          faces.push(face);
+          families[hash] = family;
+        } catch {
+          // The archive signature is checked at import; a browser may still
+          // reject an otherwise valid font and the system fallback is enough.
+        }
+      }
+      if (active) setLoadedFontFamilies(families);
+    };
+    void load();
+    return () => {
+      active = false;
+      for (const face of faces) fontSet.delete(face);
+    };
+  }, [draft.assets, draft.campaign.assets, fontSignature, brand.fonts]);
+  function fontFamily(asset?: Asset) {
+    if (!asset) return undefined;
+    return (
+      loadedFontFamilies[asset.sha256] ??
+      (asset.source.toLowerCase().includes("bangers")
+        ? "Bangers"
+        : asset.source.toLowerCase().includes("kalam")
+          ? "Kalam"
+          : asset.source.toLowerCase().includes("inter")
+            ? "Inter"
+            : undefined)
+    );
+  }
   function choices(kind: "fonts" | "logos", roles: Record<string, string>) {
     return Object.entries(roles).map(([role, label]) => {
       const ref = brand[kind]?.[role],
         asset = draft.campaign.assets.find((a) => a.id === ref?.assetId);
+      const sample =
+        role === "title"
+          ? "FLOW THERAPY"
+          : role === "caption"
+            ? "Une note vivante"
+            : "Musique · Énergie · Émotion";
       return (
-        <label key={role}>
-          {kind === "fonts" ? "Police" : "Logo"} — {label}
-          <select
-            aria-label={`${kind === "fonts" ? "Police" : "Logo"} — ${label}`}
-            value={asset?.sha256 ?? ""}
-            onChange={(e) => void run(() => assign(kind, role, e.target.value))}
-          >
-            <option value="">Non défini</option>
-            {asset && !resources.some((a) => a.sha256 === asset.sha256) && (
-              <option value={asset.sha256}>
-                {asset.source} (fichier absent)
-              </option>
-            )}
-            {resources
-              .filter((a) =>
-                a.mimeType.startsWith(kind === "fonts" ? "font/" : "image/"),
-              )
-              .map((a) => (
-                <option key={a.sha256} value={a.sha256}>
-                  {a.source}
+        <div className="font-choice" key={role}>
+          <label>
+            {kind === "fonts" ? "Police" : "Logo"} — {label}
+            <select
+              aria-label={`${kind === "fonts" ? "Police" : "Logo"} — ${label}`}
+              value={asset?.sha256 ?? ""}
+              onChange={(e) => void run(() => assign(kind, role, e.target.value))}
+            >
+              <option value="">Non défini</option>
+              {asset && !resources.some((a) => a.sha256 === asset.sha256) && (
+                <option value={asset.sha256}>
+                  {asset.source} (fichier absent)
                 </option>
-              ))}
-          </select>
-        </label>
+              )}
+              {resources
+                .filter((a) =>
+                  a.mimeType.startsWith(kind === "fonts" ? "font/" : "image/"),
+                )
+                .map((a) => (
+                  <option key={a.sha256} value={a.sha256}>
+                    {a.source}
+                  </option>
+                ))}
+            </select>
+          </label>
+          {kind === "fonts" && (
+            <div
+              className="font-specimen"
+              style={{ fontFamily: fontFamily(asset) ?? "inherit" }}
+            >
+              {sample}
+            </div>
+          )}
+        </div>
       );
     });
   }
@@ -390,12 +519,21 @@ export function Branding({
           </section>
           <section className="branding-card">
             <h2>Typographies</h2>
+            <div className="font-tools">
+              <button type="button" onClick={() => void run(importSiteFonts)}>
+                Importer les polices du site
+              </button>
+              <span>
+                Bangers, Inter variable et Kalam depuis le dépôt Flow Therapy
+              </span>
+            </div>
             {choices("fonts", fontRoles)}
             <p>
               Références du site : titres — {flowTherapySiteFonts.title}, corps
               — {flowTherapySiteFonts.body}, annotations — {flowTherapySiteFonts.caption}.
-              Importez les fichiers WOFF/WOFF2/TTF/OTF pour les associer aux rôles ;
-              les aperçus utilisent encore les polices système.
+              Le bouton ci-dessus importe les fichiers maîtres et les associe
+              automatiquement aux rôles encore libres. Vous pouvez ensuite
+              choisir une autre police dans chaque sélecteur.
             </p>
           </section>
         </div>
@@ -405,6 +543,12 @@ export function Branding({
             <p>
               Fichiers, crédits et droits communs aux identités et aux
               campagnes.
+            </p>
+            <p className="storage-note">
+              Les fichiers importés restent dans le stockage local du
+              navigateur : les métadonnées sont indexées par empreinte SHA-256
+              et les octets sont conservés séparément. Un export ZIP permet de
+              les transférer ou de les sauvegarder.
             </p>
           </div>
           <div className="resource-import">

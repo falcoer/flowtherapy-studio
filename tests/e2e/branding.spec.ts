@@ -117,3 +117,33 @@ test("brand roles, shared image, independent campaign snapshot and identity back
   });
   expect(errors).toEqual([]);
 });
+
+test("theme switch and Flow Therapy font kit", async ({ page }) => {
+  await page.goto("/#branding");
+  const theme = page.getByRole("button", { name: "Activer le thème sombre" });
+  await expect(theme).toHaveAttribute("aria-pressed", "false");
+  await theme.click();
+  await expect(
+    page.getByRole("button", { name: "Activer le thème clair" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  await page
+    .getByRole("button", { name: "Importer les polices du site" })
+    .click();
+  await expect(page.getByRole("status")).toContainText(
+    "polices du site ont été importées",
+  );
+  await expect(page.locator(".resource-list li")).toHaveCount(4);
+  await expect(
+    page.getByLabel("Police — Titres").locator("option:checked"),
+  ).toHaveText("Bangers-Regular.ttf");
+  await expect(
+    page.getByLabel("Police — Corps").locator("option:checked"),
+  ).toHaveText("Inter-Variable.ttf");
+  await expect(
+    page.getByLabel("Police — Légendes").locator("option:checked"),
+  ).toHaveText("Kalam-Regular.ttf");
+});

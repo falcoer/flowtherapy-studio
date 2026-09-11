@@ -41,3 +41,39 @@ export const flowTherapySiteFonts = {
   body: "Inter",
   caption: "Kalam",
 } as const;
+
+/** Binary font sources mirrored from falcoer/flowtherapy-bio-website. */
+export const flowTherapySiteFontAssets = [
+  {
+    id: "bangers",
+    family: "Bangers",
+    role: "title",
+    sourcePath: new URL("./site-fonts/Bangers-Regular.ttf", import.meta.url).href,
+    source: "flowtherapy-bio-website · assets-src/fonts/bangers/Bangers-Regular.ttf",
+    fileName: "Bangers-Regular.ttf",
+  },
+  {
+    id: "inter",
+    family: "Inter",
+    role: "body",
+    sourcePath: new URL("./site-fonts/Inter-Variable.ttf", import.meta.url).href,
+    source: "flowtherapy-bio-website · assets-src/fonts/inter/Inter-Variable.ttf.gz (décompressé)",
+    fileName: "Inter-Variable.ttf",
+  },
+  {
+    id: "kalam-regular",
+    family: "Kalam",
+    role: "caption",
+    sourcePath: new URL("./site-fonts/Kalam-Regular.ttf", import.meta.url).href,
+    source: "flowtherapy-bio-website · assets-src/fonts/kalam/Kalam-Regular.ttf",
+    fileName: "Kalam-Regular.ttf",
+  },
+  {
+    id: "kalam-bold",
+    family: "Kalam",
+    role: "caption",
+    sourcePath: new URL("./site-fonts/Kalam-Bold.ttf", import.meta.url).href,
+    source: "flowtherapy-bio-website · assets-src/fonts/kalam/Kalam-Bold.ttf",
+    fileName: "Kalam-Bold.ttf",
+  },
+] as const;

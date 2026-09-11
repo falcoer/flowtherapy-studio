@@ -80,6 +80,14 @@ function localDate() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
+type StudioTheme = "light" | "dark";
+function initialTheme(): StudioTheme {
+  const saved = window.localStorage.getItem("ft-studio-theme");
+  if (saved === "light" || saved === "dark") return saved;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+}
 export function App() {
   const [view, setView] = useState(() =>
     location.hash === "#branding"
@@ -88,6 +96,14 @@ export function App() {
         ? "campaign"
         : "lab",
   );
+  const [theme, setTheme] = useState<StudioTheme>(initialTheme);
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", theme === "dark" ? "#07101d" : "#fbf8f2");
+    window.localStorage.setItem("ft-studio-theme", theme);
+  }, [theme]);
   useEffect(() => {
     const sync = () =>
       setView(
@@ -383,7 +399,23 @@ export function App() {
           </div>
           <span className="version">0.3</span>
         </div>
-        <span className="local-indicator">● Espace local</span>
+        <div className="topbar-tools">
+          <span className="local-indicator">● Espace local</span>
+          <button
+            className="theme-toggle"
+            type="button"
+            aria-label={
+              theme === "dark"
+                ? "Activer le thème clair"
+                : "Activer le thème sombre"
+            }
+            aria-pressed={theme === "dark"}
+            onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
+          >
+            <span aria-hidden="true">☀</span>
+            <span aria-hidden="true">☾</span>
+          </button>
+        </div>
       </header>
       <nav className="studio-navigation" aria-label="Espaces du studio">
         <button
