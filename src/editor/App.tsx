@@ -109,6 +109,7 @@ export function App() {
     campaign = bundle.campaign;
   const [expected, setExpected] = useState<number | null>(null),
     [saved, setSaved] = useState("");
+  const [historyEpoch, setHistoryEpoch] = useState(0);
   const [notice, setNotice] = useState(""),
     [error, setError] = useState(""),
     [conflict, setConflict] = useState(false);
@@ -436,6 +437,7 @@ export function App() {
         <CreativeLab
           campaign={campaign}
           assets={bundle.assets}
+          historyEpoch={historyEpoch}
           onChange={(recipe, targetSupportId, imageAssetId) =>
             safe(() => {
               const direction = recipeToDirection(recipe, imageAssetId);
@@ -498,6 +500,7 @@ export function App() {
                     },
                   };
                 });
+                setHistoryEpoch((value) => value + 1);
                 setNotice("");
               }}
             >
@@ -519,6 +522,7 @@ export function App() {
                     },
                   };
                 });
+                setHistoryEpoch((value) => value + 1);
                 setNotice("");
               }}
             >
