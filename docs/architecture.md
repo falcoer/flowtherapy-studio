@@ -61,7 +61,7 @@ Le frontal utilisera à terme `studio.flowtherapymusic.com` ; voir
 
 ## Laboratoire créatif
 
-`src/domain/creative.ts` porte les recettes v1 et leur résolution pure.
+`src/domain/creative.ts` porte les recettes v2 (migration v1) et leur résolution pure.
 `src/editor/CreativeLab.tsx` fournit l’exploration React + Motion et un aperçu CSS.
 Ce complément ne modifie pas les contrats campagne v1 ni le pipeline d’export.
 Voir [contrats et limites](creative-lab.md).
@@ -76,6 +76,7 @@ templates et canaux, indépendamment du catalogue de contenus éditoriaux.
 La Direction créative appartient à la campagne ; le laboratoire en est l'éditeur.
 Ses cinq axes sont persistés dans le modèle cible et hérités par les supports.
 Les ajustements restent locaux et explicites ; les recettes sont des préréglages
-réutilisables. Cette cible exige encore une évolution des contrats et du stockage,
-avec migrations explicites et round-trips sans perte.
+réutilisables. La direction est désormais persistée ; les échanges JSON/ZIP préservent les axes
+et les ajustements. Le socle Branding et le stockage commun IndexedDB v2 sont
+décrits dans [Branding](branding.md).
 Voir [organisation et décisions](studio-organization.md).

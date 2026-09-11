@@ -143,6 +143,7 @@ export interface Template extends Definition {
 export interface Brand extends Definition {
   colors: { [key: string]: string };
   fonts: { [key: string]: AssetRef };
+  logos?: { [role: string]: AssetRef };
 }
 export interface Asset {
   id: string;
@@ -151,6 +152,7 @@ export interface Asset {
   sha256: string;
   source: string;
   rights: string;
+  credit?: string;
 }
 export interface Variant {
   id: string;
