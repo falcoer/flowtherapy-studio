@@ -35,7 +35,7 @@ function initial(): CampaignBundle {
       supports: [],
       assets: [],
       brand: {
-        schemaVersion: 1,
+        schemaVersion: 2,
         id: "local:studio-brand",
         revision: 1,
         name: "Mon identité",
