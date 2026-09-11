@@ -28,6 +28,19 @@ Les références manquantes ou collisions d'identifiants sont refusées sans éc
 Un conflit entre onglets refuse l'enregistrement ; recharger l'identité enregistrée
 ou exporter le brouillon avant de le recharger.
 
+## Préréglage du site Flow Therapy
+
+Le bouton **Charger la charte du site** préremplit l'identité avec la configuration
+du dépôt public `falcoer/flowtherapy-bio-website` : fond crème et bleu nuit,
+surfaces, texte, texte secondaire, violet, orange, rose et bleu, en déclinaisons
+claire et sombre. Les rôles typographiques sont référencés comme **Bangers** pour
+les titres, **Inter** pour le texte et **Kalam** pour les annotations.
+
+Le préréglage est une copie locale versionnée dans
+`src/editor/siteBrand.ts`. Les fichiers binaires du logo et des polices ne
+sont pas embarqués automatiquement : leur import depuis l'écran Branding exige
+une provenance et des droits d'utilisation explicites.
+
 ## Stockage et migration
 
 IndexedDB passe de version 1 à 2 dans une transaction de migration. Les documents

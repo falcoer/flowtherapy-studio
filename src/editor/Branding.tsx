@@ -10,13 +10,38 @@ import {
   sha256,
 } from "../storage/archive.js";
 import "./branding.css";
+import { flowTherapySiteBrand, flowTherapySiteFonts } from "./siteBrand.js";
 
-const colorRoles = {
-  background: "Fond",
-  text: "Texte",
-  accent: "Accent",
-  contrast: "Contraste",
-};
+const colorGroups = [
+  {
+    label: "Thème clair",
+    roles: {
+      background: "Fond",
+      surface: "Surface",
+      text: "Texte",
+      muted: "Texte secondaire",
+      accent: "Accent",
+      contrast: "Contraste",
+      purple: "Violet",
+      orange: "Orange",
+      pink: "Rose",
+      blue: "Bleu",
+    },
+  },
+  {
+    label: "Thème sombre",
+    roles: {
+      darkBackground: "Fond",
+      darkSurface: "Surface",
+      darkText: "Texte",
+      darkMuted: "Texte secondaire",
+      darkPurple: "Violet",
+      darkOrange: "Orange",
+      darkPink: "Rose",
+      darkBlue: "Bleu",
+    },
+  },
+];
 const fontRoles = { title: "Titres", body: "Corps", caption: "Légendes" };
 const logoRoles = {
   primary: "Principal",
@@ -38,14 +63,9 @@ function initial(): CampaignBundle {
         schemaVersion: 2,
         id: "local:studio-brand",
         revision: 1,
-        name: "Mon identité",
-        colors: {
-          background: "#12383e",
-          text: "#ffffff",
-          accent: "#e9c86c",
-          contrast: "#182428",
-        },
+        ...flowTherapySiteBrand,
         fonts: {},
+
         logos: {},
       },
     },
@@ -136,6 +156,18 @@ export function Branding({
     setDirty(true);
     setNotice("");
   }
+  function loadSiteBrand() {
+    update((b) => {
+      b.name = flowTherapySiteBrand.name;
+      b.description = flowTherapySiteBrand.description;
+      b.tags = [...(flowTherapySiteBrand.tags ?? [])];
+      b.colors = { ...flowTherapySiteBrand.colors };
+    });
+    setNotice(
+      "Charte Flow Therapy chargée depuis la configuration du site. Importez ensuite les logos et polices autorisés.",
+    );
+  }
+
   async function assign(kind: "fonts" | "logos", role: string, hash: string) {
     const next = structuredClone(draft),
       roles = (next.campaign.brand![kind] ??= {});
@@ -270,6 +302,12 @@ export function Branding({
         <div className="actions">
           <button
             disabled={!ready || busy}
+            onClick={loadSiteBrand}
+          >
+            Charger la charte du site
+          </button>
+          <button
+            disabled={!ready || busy}
             onClick={() =>
               void run(async () => {
                 const saved = await store.saveBrand(draft, expected);
@@ -314,24 +352,29 @@ export function Branding({
                 }
               />
             </label>
-            <div className="branding-swatches">
-              {Object.entries(colorRoles).map(([role, label]) => (
-                <label key={role}>
-                  {label}
-                  <input
-                    type="color"
-                    aria-label={label}
-                    value={brand.colors[role] ?? "#000000"}
-                    onChange={(e) =>
-                      update((b) => {
-                        b.colors[role] = e.target.value;
-                      })
-                    }
-                  />
-                  <span>{brand.colors[role] ?? "Non défini"}</span>
-                </label>
-              ))}
-            </div>
+            {colorGroups.map((group) => (
+              <div className="branding-color-group" key={group.label}>
+                <h3>{group.label}</h3>
+                <div className="branding-swatches">
+                  {Object.entries(group.roles).map(([role, label]) => (
+                    <label key={role}>
+                      {label}
+                      <input
+                        type="color"
+                        aria-label={role === "accent" || role === "contrast" ? label : `${group.label} — ${label}`}
+                        value={brand.colors[role] ?? "#000000"}
+                        onChange={(e) =>
+                          update((b) => {
+                            b.colors[role] = e.target.value;
+                          })
+                        }
+                      />
+                      <span>{brand.colors[role] ?? "Non défini"}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ))}
             <p>
               Ces couleurs forment le référentiel. Leur application graphique
               aux templates viendra avec la scène résolue.
@@ -349,8 +392,10 @@ export function Branding({
             <h2>Typographies</h2>
             {choices("fonts", fontRoles)}
             <p>
-              WOFF, WOFF2, TTF ou OTF. Les rôles sont sauvegardés ; les aperçus
-              utilisent encore les polices système.
+              Références du site : titres — {flowTherapySiteFonts.title}, corps
+              — {flowTherapySiteFonts.body}, annotations — {flowTherapySiteFonts.caption}.
+              Importez les fichiers WOFF/WOFF2/TTF/OTF pour les associer aux rôles ;
+              les aperçus utilisent encore les polices système.
             </p>
           </section>
         </div>
