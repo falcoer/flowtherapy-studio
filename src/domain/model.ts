@@ -144,8 +144,12 @@ export interface Template extends Definition {
   layers: Layer[];
   layouts: Layout[];
 }
-export interface Brand extends Omit<Definition, "schemaVersion"> {
+export interface Brand extends Ref {
   schemaVersion: 2;
+  name: string;
+  description?: string;
+  tags?: string[];
+  derivedFrom?: Ref;
   colors: { [key: string]: string };
   fonts: { [key: string]: AssetRef };
   logos?: { [role: string]: AssetRef };
