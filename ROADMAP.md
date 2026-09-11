@@ -46,5 +46,8 @@ identité par rôles, application explicite aux campagnes, stockage dédupliqué
 migration IndexedDB v2.
 
 Priorité suivante : catalogue de templates et scène résolue ; enrichissement
-progressif du Branding et de l’Éditorial. L'identité et le rendu graphique définitifs restent à construire.
+progressif du Branding et de l’Éditorial. La persistance éditoriale partagée reste
+planifiée au jalon 0.6, après l’adaptateur authentifié, la gestion des droits et les
+conflits de révision ; aucune API cloud n’est livrée dans le jalon 0.3. L'identité et
+le rendu graphique définitifs restent à construire.
 Voir [décisions détaillées](docs/studio-organization.md) et [critère de sortie](docs/next-step.md).
