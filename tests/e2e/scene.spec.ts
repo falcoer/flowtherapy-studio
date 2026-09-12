@@ -23,9 +23,12 @@ test("resolved preview paginates every event once and preserves keyboard editing
   await expect(page.locator("[data-safe-area]")).toBeVisible();
   const pagination = await page.locator("[data-scene-page]").textContent();
   await page.setViewportSize({ width: 390, height: 844 });
+  // ResizeObserver updates the preview scale on the next rendering cycle.
+  // Retain the strict overflow assertion, but wait for that asynchronous update.
+  await expect.poll(() => page.evaluate(() =>
+    document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  )).toBeLessThanOrEqual(1);
   await expect(page.locator("[data-scene-page]")).toHaveText(pagination!);
-  const dimensions = await page.evaluate(() => ({ width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth }));
-  expect(dimensions.scroll).toBeLessThanOrEqual(dimensions.width + 1);
   expect(errors).toEqual([]);
 });
 
