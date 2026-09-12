@@ -936,6 +936,58 @@ export function App() {
                   support={support}
                   onChange={commit}
                 />
+                {support.template.fields.some((field) => field.type === "image") && (
+                  <section className="asset-slots" aria-labelledby="asset-slots-title">
+                    <h3 id="asset-slots-title">Ressources du template</h3>
+                    <p className="hint">
+                      Affectez les images importées aux emplacements prévus par la composition.
+                      Une image absente reste signalée dans l’aperçu.
+                    </p>
+                    {support.template.fields
+                      .filter((field) => field.type === "image")
+                      .map((field) => {
+                        const assigned = support.overrides[field.id];
+                        const assetId =
+                          assigned && typeof assigned === "object" && !Array.isArray(assigned)
+                            ? assigned.assetId
+                            : "";
+                        return (
+                          <label key={field.id}>
+                            {field.label}
+                            <select
+                              aria-label={field.label}
+                              value={assetId}
+                              onChange={(e) =>
+                                change((campaign) => {
+                                  const current = campaign.supports.find(
+                                    (item) => item.id === support.id,
+                                  )!;
+                                  if (e.target.value) {
+                                    current.overrides[field.id] = {
+                                      assetId: e.target.value,
+                                    };
+                                  } else {
+                                    delete current.overrides[field.id];
+                                  }
+                                })
+                              }
+                            >
+                              <option value="">Aucune ressource</option>
+                              {campaign.assets
+                                .filter((asset) =>
+                                  ["image/png", "image/jpeg"].includes(asset.mimeType),
+                                )
+                                .map((asset) => (
+                                  <option key={asset.id} value={asset.id}>
+                                    {asset.source} · {asset.rights}
+                                  </option>
+                                ))}
+                            </select>
+                          </label>
+                        );
+                      })}
+                  </section>
+                )}
                 <label>
                   Support actif
                   <select
