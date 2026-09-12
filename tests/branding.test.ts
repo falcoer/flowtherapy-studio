@@ -98,7 +98,7 @@ test("resources and campaigns share one binary, retain snapshots, and brand revi
     (await store.loadBundle("second")).assets.get(asset.path),
     bytes,
   );
-  const db = await request(factory.open("central", 2));
+  const db = await request(factory.open("central", 3));
   assert.equal(
     await request(db.transaction("blobs").objectStore("blobs").count()),
     1,

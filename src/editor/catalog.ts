@@ -7,3 +7,6 @@ import a3 from "../../catalog/formats/a3.json" with { type: "json" };
 import type { Template, Format } from "../domain/model.js";
 export const formats = [square, portrait, story, a4, a3] as Format[];
 export const agenda = agendaJSON as Template;
+
+import editorialNote from "../../catalog/templates/editorial-note.json" with { type: "json" };
+export const templates = [agenda, editorialNote as Template];

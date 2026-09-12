@@ -6,7 +6,7 @@
 | 0.1 | Contrats validés et noyau campagne | Schémas runtime, migrations, round-trip JSON/ZIP sans perte, sélection d'événements | Intégré |
 | 0.2 | Éditeur statique minimal | Créer une campagne et une variante ; saisir, déplacer, recadrer, annuler, sauvegarder | Intégré |
 | 0.2 complément | Laboratoire créatif React + Motion | Exploration et recettes locales, aperçu multiformat | Intégré et publié sur Pages |
-| 0.3 | Templates et formats multiples | Catalogue, variantes, personnalisations, débordements et pagination | En cours — Branding, ressources et scène résolue implémentés |
+| 0.3 | Templates et formats multiples | Catalogue, variantes, personnalisations, débordements et pagination | En cours — Branding, scène résolue, Éditorial et médiathèque implémentés |
 | 0.4 | Exports | PNG/JPEG/PDF, fidélité texte, dimensions physiques, exports groupés | À faire |
 | 0.5 | Studio privé utilisable | Assets autorisés, trois templates validés, accès groupe, recette A4/A3/social | À faire |
 | 0.6 | Persistance partagée optionnelle | Adaptateur authentifié, conflits de révision, fichiers privés, autonomie locale conservée | À faire |
@@ -44,7 +44,12 @@ Tranches réalisées :
   ni événement tronqué silencieusement. Les formats et campagnes ne changent pas
   de schéma ; les instantanés existants ne sont pas remplacés.
 
-La scène ne clôture pas le jalon 0.3. La priorité graphique est maintenant le
+- [Éditorial et médiathèque](docs/editorial.md) : rédaction autonome, types/statuts,
+  images associées, catalogue visuel, métadonnées, ZIP par article et des ressources,
+  copies versionnées dans les campagnes, liaisons de contenu et Note éditoriale.
+  Migration campagne v2→v3 et IndexedDB v2→v3, révisions/fichiers préservés.
+
+Ces tranches ne clôturent pas le jalon 0.3. La priorité graphique est maintenant le
 template **concert illustré multiformat**, guidé par l'affiche de référence du
 11 septembre : fond photo et lumières, grand titre expressif, agenda en colonnes,
 accents et ornements, trois alpagas au premier plan. Il faut encore sélectionner

@@ -53,7 +53,7 @@ test("brand roles, shared image, independent campaign snapshot and identity back
     .getByRole("button", { name: "Enregistrer l’identité", exact: true })
     .click();
   await expect(page.getByRole("status")).toHaveText("Identité enregistrée.");
-  await page.getByRole("button", { name: "Campagne", exact: true }).click();
+  await page.getByRole("button", { name: "Campagnes", exact: true }).click();
   await page.getByRole("button", { name: "+ Ajouter un événement" }).click();
   await page.getByLabel("Libellé 1", { exact: true }).fill("Concert fictif");
   await page.getByLabel("Lieu 1", { exact: true }).fill("Ville exemple");
@@ -77,13 +77,11 @@ test("brand roles, shared image, independent campaign snapshot and identity back
   expect(saved.campaign.brand!.colors.accent).toBe("#aa33bb");
   expect(saved.campaign.assets[0].credit).toBe("Auteur fictif");
   await page.getByRole("button", { name: "Branding", exact: true }).click();
-  await page
-    .getByLabel("Importer une identité ZIP")
-    .setInputFiles({
-      name: "branding.zip",
-      mimeType: "application/zip",
-      buffer: backup,
-    });
+  await page.getByLabel("Importer une identité ZIP").setInputFiles({
+    name: "branding.zip",
+    mimeType: "application/zip",
+    buffer: backup,
+  });
   await expect(page.getByRole("status")).toContainText("Identité importée");
   await expect(page.getByLabel("Accent", { exact: true })).toHaveValue(
     "#aa33bb",

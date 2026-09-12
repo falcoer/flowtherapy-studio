@@ -34,11 +34,14 @@ import {
   undo,
 } from "./state.js";
 import type { History } from "./state.js";
-import { agenda, formats } from "./catalog.js";
+import { agenda, formats, templates } from "./catalog.js";
 import { Preview } from "./Preview.js";
 import { Branding } from "./Branding.js";
 import { attachResource } from "../domain/branding.js";
 import { CreativeLab } from "./CreativeLab.js";
+import { Editorial } from "./Editorial.js";
+import { CampaignEditorial, ContentBindings } from "./CampaignEditorial.js";
+import { selectEditorial } from "../storage/editorial.js";
 
 const messageOf = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
@@ -90,11 +93,13 @@ function initialTheme(): StudioTheme {
 }
 export function App() {
   const [view, setView] = useState(() =>
-    location.hash === "#branding"
-      ? "branding"
-      : location.hash === "#campagne"
-        ? "campaign"
-        : "lab",
+    location.hash === "#editorial"
+      ? "editorial"
+      : location.hash === "#branding"
+        ? "branding"
+        : location.hash === "#campagne"
+          ? "campaign"
+          : "lab",
   );
   const [theme, setTheme] = useState<StudioTheme>(initialTheme);
   useEffect(() => {
@@ -107,11 +112,13 @@ export function App() {
   useEffect(() => {
     const sync = () =>
       setView(
-        location.hash === "#branding"
-          ? "branding"
-          : location.hash === "#campagne"
-            ? "campaign"
-            : "lab",
+        location.hash === "#editorial"
+          ? "editorial"
+          : location.hash === "#branding"
+            ? "branding"
+            : location.hash === "#campagne"
+              ? "campaign"
+              : "lab",
       );
     window.addEventListener("hashchange", sync);
     return () => window.removeEventListener("hashchange", sync);
@@ -123,6 +130,8 @@ export function App() {
   }));
   const bundle = history.present,
     campaign = bundle.campaign;
+  const latestBundle = useRef(bundle);
+  latestBundle.current = bundle;
   const [expected, setExpected] = useState<number | null>(null),
     [saved, setSaved] = useState("");
   const [historyEpoch, setHistoryEpoch] = useState(0);
@@ -138,6 +147,8 @@ export function App() {
     [supportId, setSupportId] = useState(""),
     [variantId, setVariantId] = useState(""),
     [layerId, setLayerId] = useState("");
+  const [templateId, setTemplateId] = useState(agenda.id);
+  const template = templates.find((t) => t.id === templateId) ?? agenda;
   const [layout, setLayout] = useState("square"),
     [rights, setRights] = useState("");
   const [resources, setResources] = useState<Asset[]>([]);
@@ -410,7 +421,9 @@ export function App() {
                 : "Activer le thème sombre"
             }
             aria-pressed={theme === "dark"}
-            onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
+            onClick={() =>
+              setTheme((value) => (value === "dark" ? "light" : "dark"))
+            }
           >
             <span aria-hidden="true">☀</span>
             <span aria-hidden="true">☾</span>
@@ -428,10 +441,13 @@ export function App() {
           Branding
         </button>
         <button
-          disabled
-          title="Le socle Éditorial sera livré dans la suite du jalon 0.3."
+          aria-pressed={view === "editorial"}
+          onClick={() => {
+            location.hash = "editorial";
+            setView("editorial");
+          }}
         >
-          Éditorial <small>Bientôt</small>
+          Éditorial
         </button>
         <button
           disabled
@@ -440,8 +456,10 @@ export function App() {
           Médias <small>Bientôt</small>
         </button>
         <button
-          className={view !== "branding" ? "studio-root-active" : ""}
-          aria-pressed={view !== "branding"}
+          className={
+            ["campaign", "lab"].includes(view) ? "studio-root-active" : ""
+          }
+          aria-pressed={["campaign", "lab"].includes(view)}
           onClick={() => {
             location.hash = "campagne";
             setView("campaign");
@@ -449,7 +467,10 @@ export function App() {
         >
           Campagnes
         </button>
-        <span className="studio-subnavigation">
+        <span
+          className="studio-subnavigation"
+          hidden={!["campaign", "lab"].includes(view)}
+        >
           <button
             aria-pressed={view === "lab"}
             onClick={() => {
@@ -470,6 +491,25 @@ export function App() {
           </button>
         </span>
       </nav>
+      <div hidden={view !== "editorial"}>
+        <Editorial
+          active={view === "editorial"}
+          onUse={async (document, editorialStore) => {
+            const original = bundle;
+            const next = await selectEditorial(
+              original,
+              document,
+              editorialStore,
+            );
+            if (latestBundle.current !== original)
+              throw new Error(
+                "La campagne a changé pendant la sélection. Réessayez.",
+              );
+            commit(next);
+          }}
+          onInsert={support ? placeImage : undefined}
+        />
+      </div>
       <div hidden={view !== "branding"}>
         <Branding bundle={bundle} onApply={commit} />
       </div>
@@ -749,6 +789,11 @@ export function App() {
                 <p key={key}>Image référencée : {key}</p>
               ),
             )}
+            <CampaignEditorial
+              bundle={bundle}
+              onChange={commit}
+              active={view === "campaign"}
+            />
             <div className="divider" />
             <h3>Mes campagnes locales</h3>
             <label>
@@ -839,8 +884,22 @@ export function App() {
             <h2>Supports & calques</h2>
             <label>
               Template
-              <select aria-label="Template">
-                <option>Agenda — prototype</option>
+              <select
+                aria-label="Template"
+                value={templateId}
+                onChange={(e) => {
+                  setTemplateId(e.target.value);
+                  setLayout(
+                    templates.find((t) => t.id === e.target.value)!.layouts[0]
+                      .id,
+                  );
+                }}
+              >
+                {templates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
+                ))}
               </select>
             </label>
             <label>
@@ -849,7 +908,7 @@ export function App() {
                 value={layout}
                 onChange={(e) => setLayout(e.target.value)}
               >
-                {agenda.layouts.map((l) => (
+                {template.layouts.map((l) => (
                   <option key={l.id} value={l.id}>
                     {formats.find((f) => f.id === l.formatRef.id)?.name}
                   </option>
@@ -860,7 +919,7 @@ export function App() {
               className="wide"
               onClick={() =>
                 safe(() => {
-                  const next = activate(campaign, agenda, formats, layout);
+                  const next = activate(campaign, template, formats, layout);
                   commit({ ...bundle, campaign: next });
                   setSupportId(next.supports.at(-1)!.id);
                   setVariantId("");
@@ -872,6 +931,11 @@ export function App() {
             </button>
             {support && (
               <>
+                <ContentBindings
+                  bundle={bundle}
+                  support={support}
+                  onChange={commit}
+                />
                 <label>
                   Support actif
                   <select

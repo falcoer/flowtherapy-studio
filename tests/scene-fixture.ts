@@ -30,7 +30,7 @@ export function sceneFixture(count = 20): SceneInput {
     variants: [{ id: "square", layoutId: "square", format, placementOverrides: {} }],
   };
   const campaign: Campaign = {
-    schemaVersion: 2, id: "test:scene", revision: 1, name: "Campagne fictive", locale: "fr-FR", assets: [],
+    schemaVersion: 3, id: "test:scene", revision: 1, name: "Campagne fictive", locale: "fr-FR", assets: [],
     content: { title: "CONCERTS FICTIFS", events: Array.from({ length: count }, (_, index) => ({
       id: `event-${index}`, date: "2026-10-24", label: `Concert fictif ${index + 1}`, location: "Ville exemple",
     })) },

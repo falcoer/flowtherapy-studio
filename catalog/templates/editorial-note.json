@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "id": "ft:editorial-note",
+  "revision": 1,
+  "name": "Note éditoriale — prototype",
+  "description": "Support textuel de travail. Les textes trop longs sont conservés et signalés, sans pagination des articles.",
+  "fields": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Titre",
+      "required": true,
+      "defaultValue": "Note éditoriale"
+    },
+    {
+      "id": "body",
+      "type": "text",
+      "label": "Texte",
+      "required": false,
+      "defaultValue": ""
+    }
+  ],
+  "layers": [
+    {
+      "id": "title",
+      "type": "text",
+      "content": {
+        "field": "title"
+      },
+      "style": {
+        "fill": "#173943",
+        "align": "left"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": true,
+        "hide": true
+      }
+    },
+    {
+      "id": "body",
+      "type": "text",
+      "content": {
+        "field": "body"
+      },
+      "style": {
+        "fill": "#173943",
+        "align": "left"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": true,
+        "hide": true
+      }
+    }
+  ],
+  "layouts": [
+    {
+      "id": "square",
+      "formatRef": {
+        "id": "ft:square",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 97.2,
+            "y": 86.4,
+            "width": 885.5999999999999,
+            "height": 183.60000000000002
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 64.8
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 37.800000000000004,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "body",
+          "frame": {
+            "x": 97.2,
+            "y": 313.2,
+            "width": 885.5999999999999,
+            "height": 680.4000000000001
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 28.08
+          },
+          "textFit": {
+            "mode": "error",
+            "minFontSize": 28.08,
+            "maxLines": 120
+          }
+        }
+      ]
+    },
+    {
+      "id": "portrait",
+      "formatRef": {
+        "id": "ft:portrait",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 97.2,
+            "y": 108.0,
+            "width": 885.5999999999999,
+            "height": 229.50000000000003
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 64.8
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 37.800000000000004,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "body",
+          "frame": {
+            "x": 97.2,
+            "y": 391.5,
+            "width": 885.5999999999999,
+            "height": 850.5
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 28.08
+          },
+          "textFit": {
+            "mode": "error",
+            "minFontSize": 28.08,
+            "maxLines": 120
+          }
+        }
+      ]
+    },
+    {
+      "id": "story",
+      "formatRef": {
+        "id": "ft:story",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 97.2,
+            "y": 153.6,
+            "width": 885.5999999999999,
+            "height": 326.40000000000003
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 64.8
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 37.800000000000004,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "body",
+          "frame": {
+            "x": 97.2,
+            "y": 556.8,
+            "width": 885.5999999999999,
+            "height": 1209.6000000000001
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 28.08
+          },
+          "textFit": {
+            "mode": "error",
+            "minFontSize": 28.08,
+            "maxLines": 120
+          }
+        }
+      ]
+    },
+    {
+      "id": "a4",
+      "formatRef": {
+        "id": "ft:a4",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 18.9,
+            "y": 23.76,
+            "width": 172.2,
+            "height": 50.49
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 12.6
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 7.3500000000000005,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "body",
+          "frame": {
+            "x": 18.9,
+            "y": 86.13,
+            "width": 172.2,
+            "height": 187.11
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 5.46
+          },
+          "textFit": {
+            "mode": "error",
+            "minFontSize": 5.46,
+            "maxLines": 120
+          }
+        }
+      ]
+    },
+    {
+      "id": "a3",
+      "formatRef": {
+        "id": "ft:a3",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 26.73,
+            "y": 33.6,
+            "width": 243.54,
+            "height": 71.4
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 17.82
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 10.395000000000001,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "body",
+          "frame": {
+            "x": 26.73,
+            "y": 121.8,
+            "width": 243.54,
+            "height": 264.59999999999997
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 7.7219999999999995
+          },
+          "textFit": {
+            "mode": "error",
+            "minFontSize": 7.7219999999999995,
+            "maxLines": 120
+          }
+        }
+      ]
+    }
+  ]
+}

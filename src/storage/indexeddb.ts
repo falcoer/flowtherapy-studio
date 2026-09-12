@@ -1,7 +1,12 @@
-import type { Asset, Campaign, CampaignStore } from "../domain/model.js";
-import { validateCampaign } from "../domain/core.js";
+import type {
+  Asset,
+  Campaign,
+  CampaignStore,
+  EditorialDocument,
+} from "../domain/model.js";
+import { validateCampaign, validateEditorial } from "../domain/core.js";
 import { exportZIP } from "./archive.js";
-import { migrateCampaign } from "./json.js";
+import { migrateCampaign, exportJSON } from "./json.js";
 
 export interface CampaignBundle {
   campaign: Campaign;
@@ -21,7 +26,7 @@ interface RecordValue {
 }
 function resourceDocument(assets: Asset[]): Campaign {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     id: "resources",
     revision: 1,
     name: "Resources",
@@ -47,36 +52,62 @@ export class IndexedDBCampaignStore implements CampaignStore {
   private db: Promise<IDBDatabase>;
   constructor(name = "flowtherapy-studio", factory: IDBFactory = indexedDB) {
     this.db = new Promise((resolve, reject) => {
-      const open = factory.open(name, 2);
-      open.onupgradeneeded = () => {
+      const open = factory.open(name, 3);
+      open.onupgradeneeded = (event) => {
         const db = open.result,
           tx = open.transaction!;
         if (!db.objectStoreNames.contains("campaigns"))
           db.createObjectStore("campaigns", { keyPath: "campaign.id" });
-        db.createObjectStore("brands", { keyPath: "campaign.id" });
-        const blobs = db.createObjectStore("blobs");
-        const resources = db.createObjectStore("resources", {
-          keyPath: "sha256",
-        });
-        // Upgrade v1 in one transaction: keep documents, revisions and missing files.
-        const cursor = tx.objectStore("campaigns").openCursor();
-        cursor.onsuccess = () => {
-          const row = cursor.result;
-          if (!row) return;
-          const old = row.value as CampaignBundle;
-          const campaign = migrateCampaign(old.campaign).campaign;
-          const assetHashes = new Map<string, string>();
-          for (const asset of campaign.assets) {
-            const bytes = old.assets.get(asset.path);
-            if (bytes) {
-              blobs.put(bytes, asset.sha256);
-              resources.put(asset);
-              assetHashes.set(asset.path, asset.sha256);
+        if (event.oldVersion < 2) {
+          db.createObjectStore("brands", { keyPath: "campaign.id" });
+          const blobs = db.createObjectStore("blobs");
+          const resources = db.createObjectStore("resources", {
+            keyPath: "sha256",
+          });
+          const cursor = tx.objectStore("campaigns").openCursor();
+          cursor.onsuccess = () => {
+            const row = cursor.result;
+            if (!row) return;
+            try {
+              const old = row.value as CampaignBundle;
+              const campaign = migrateCampaign(old.campaign).campaign;
+              const assetHashes = new Map<string, string>();
+              for (const asset of campaign.assets) {
+                const bytes = old.assets.get(asset.path);
+                if (bytes) {
+                  blobs.put(bytes, asset.sha256);
+                  resources.put(asset);
+                  assetHashes.set(asset.path, asset.sha256);
+                }
+              }
+              row.update({ campaign, assetHashes });
+              row.continue();
+            } catch {
+              tx.abort();
             }
+          };
+        } else {
+          // v2 → v3: migrate documents only. Preserve revisions, missing files,
+          // resource metadata and all content-addressed blobs in the same transaction.
+          for (const table of ["campaigns", "brands"]) {
+            const cursor = tx.objectStore(table).openCursor();
+            cursor.onsuccess = () => {
+              const row = cursor.result;
+              if (!row) return;
+              try {
+                const record = row.value as RecordValue;
+                row.update({
+                  ...record,
+                  campaign: migrateCampaign(record.campaign).campaign,
+                });
+                row.continue();
+              } catch {
+                tx.abort();
+              }
+            };
           }
-          row.update({ campaign, assetHashes });
-          row.continue();
-        };
+        }
+        db.createObjectStore("editorial", { keyPath: "id" });
       };
       open.onsuccess = () => {
         open.result.onversionchange = () => open.result.close();
@@ -192,7 +223,7 @@ export class IndexedDBCampaignStore implements CampaignStore {
     // Reuse v1 MIME, signature, size and integrity controls for the supplied subset.
     await exportZIP(
       {
-        schemaVersion: 2,
+        schemaVersion: 3,
         id: "asset-check",
         revision: 1,
         name: "Asset check",
@@ -213,6 +244,7 @@ export class IndexedDBCampaignStore implements CampaignStore {
   ): Promise<Campaign> {
     const campaign = structuredClone(input);
     validateCampaign(campaign);
+    exportJSON(campaign);
     if (expected !== null && (!Number.isSafeInteger(expected) || expected < 1))
       throw new Error("Révision attendue invalide.");
     const db = await this.db;
@@ -282,6 +314,109 @@ export class IndexedDBCampaignStore implements CampaignStore {
       if (conflict) throw new RevisionConflict();
       throw error;
     }
+  }
+  async listEditorial(): Promise<EditorialDocument[]> {
+    const db = await this.db;
+    const records = (await request(
+      db.transaction("editorial").objectStore("editorial").getAll(),
+    )) as EditorialDocument[];
+    records.forEach(validateEditorial);
+    return records.sort((a, b) => a.title.localeCompare(b.title, "fr"));
+  }
+  async loadEditorial(id: string): Promise<EditorialDocument> {
+    const db = await this.db;
+    const document = await request(
+      db.transaction("editorial").objectStore("editorial").get(id),
+    );
+    if (!document) throw new Error("Contenu éditorial introuvable.");
+    validateEditorial(document);
+    return document;
+  }
+  async saveEditorial(
+    input: EditorialDocument,
+    expected: number | null,
+  ): Promise<EditorialDocument> {
+    const document = structuredClone(input);
+    validateEditorial(document);
+    if (expected !== null && (!Number.isSafeInteger(expected) || expected < 1))
+      throw new Error("Révision attendue invalide.");
+    const db = await this.db,
+      tx = db.transaction(["editorial", "resources", "blobs"], "readwrite"),
+      done = complete(tx);
+    let failure: Error | undefined;
+    const fail = (message: string) => {
+      if (!failure) {
+        failure = new Error(message);
+        tx.abort();
+      }
+    };
+    const records = tx.objectStore("editorial"),
+      read = records.get(document.id);
+    read.onsuccess = () => {
+      const current = read.result as EditorialDocument | undefined;
+      if (
+        expected === null
+          ? !!current
+          : !current || current.revision !== expected
+      ) {
+        fail(
+          "Ce contenu a été modifié dans un autre onglet. Rechargez-le ou enregistrez une copie.",
+        );
+        return;
+      }
+      document.revision = (current?.revision ?? 0) + 1;
+      records.put(document);
+      for (const asset of document.assets) {
+        const metadata = tx.objectStore("resources").get(asset.sha256);
+        metadata.onsuccess = () => {
+          if (!metadata.result || metadata.result.mimeType !== asset.mimeType)
+            fail("Ressource associée absente du catalogue.");
+        };
+        const blob = tx.objectStore("blobs").getKey(asset.sha256);
+        blob.onsuccess = () => {
+          if (blob.result === undefined)
+            fail("Fichier associé absent du stockage.");
+        };
+      }
+    };
+    try {
+      await done;
+    } catch (error) {
+      throw failure ?? error;
+    }
+    return structuredClone(document);
+  }
+  /** Update common metadata only; campaign/editorial snapshots are left untouched. */
+  async updateResource(
+    expected: Asset,
+    changes: Pick<Asset, "source" | "rights"> & { credit?: string },
+  ): Promise<Asset> {
+    const original = structuredClone(expected),
+      next = { ...original, ...structuredClone(changes) };
+    if (next.credit === undefined) delete next.credit;
+    validateCampaign(resourceDocument([next]));
+    const db = await this.db,
+      tx = db.transaction("resources", "readwrite"),
+      done = complete(tx);
+    let conflict = false;
+    const table = tx.objectStore("resources"),
+      read = table.get(original.sha256);
+    read.onsuccess = () => {
+      if (JSON.stringify(read.result) !== JSON.stringify(original)) {
+        conflict = true;
+        tx.abort();
+      } else table.put(next);
+    };
+    try {
+      await done;
+    } catch (error) {
+      if (conflict)
+        throw new Error(
+          "Métadonnées modifiées dans un autre onglet. Actualisez la médiathèque.",
+        );
+      throw error;
+    }
+    return next;
   }
   async close() {
     (await this.db).close();

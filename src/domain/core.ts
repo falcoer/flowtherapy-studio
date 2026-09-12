@@ -8,6 +8,7 @@ import {
 import type {
   Campaign,
   EventRow,
+  EditorialDocument,
   Field,
   Format,
   Placement,
@@ -388,8 +389,135 @@ export function selectEvents(
     return clone(row);
   });
 }
+/** Strict validation is shared by the repository, imports and campaign snapshots. */
+export function validateEditorial(
+  input: unknown,
+): asserts input is EditorialDocument {
+  validateStructure("EditorialDocument", input);
+  const d = input as EditorialDocument;
+  reference(d, "editorial");
+  requireThat(
+    d.title.trim() && d.title.length <= 500,
+    "title",
+    "Titre requis (500 caractères maximum).",
+  );
+  requireThat(
+    d.summary.length <= 10000 && d.body.length <= 200000,
+    "body",
+    "Contenu éditorial trop volumineux.",
+  );
+  requireThat(
+    new TextEncoder().encode(JSON.stringify(d)).byteLength <= 1024 * 1024,
+    "editorial",
+    "Document supérieur à 1 Mio.",
+  );
+  try {
+    new Intl.Locale(d.locale);
+  } catch {
+    throw new DomainError("INVALID_DOCUMENT", "locale", "Langue invalide.");
+  }
+  unique(d.tags, "tags");
+  requireThat(
+    d.tags.length <= 50 && d.tags.every((t) => t.length <= 100),
+    "tags",
+    "Trop de thèmes ou thème trop long.",
+  );
+  unique(
+    d.assets.map((a) => a.id),
+    "editorial.assets",
+  );
+  unique(
+    d.assets.map((a) => a.path),
+    "editorial.paths",
+  );
+  unique(
+    d.assets.map((a) => a.sha256),
+    "editorial.hashes",
+  );
+  for (const a of d.assets)
+    requireThat(
+      safeAssetPath(a.path) &&
+        /^[a-f0-9]{64}$/.test(a.sha256) &&
+        a.source.trim() &&
+        a.rights.trim() &&
+        ["image/png", "image/jpeg"].includes(a.mimeType),
+      a.id,
+      "Ressource éditoriale PNG/JPEG invalide ou sans droits.",
+    );
+  requireThat(
+    d.kind === "event" ? !!d.event : !d.event,
+    "event",
+    "Les détails de date/lieu sont réservés aux événements.",
+  );
+  if (d.event) {
+    requireThat(
+      d.event.date === "" || isCivilDate(d.event.date),
+      "event.date",
+      "Date civile invalide.",
+    );
+    requireThat(
+      d.status !== "ready" ||
+        (isCivilDate(d.event.date) && d.event.location.trim()),
+      "event",
+      "Compléter la date et le lieu avant validation.",
+    );
+  }
+  requireThat(
+    d.status !== "ready" || !!(d.body.trim() || d.summary.trim() || d.event),
+    "body",
+    "Compléter le texte avant validation.",
+  );
+}
+/** Plain-text projection for text-only templates; the authored Markdown stays in its snapshot. */
+export function editorialPlainText(text: string): string {
+  return text
+    .replace(/^#{1,2} /gm, "")
+    .replace(/^- /gm, "• ")
+    .replace(
+      /\*\*([^*\n]+)\*\*|\*([^*\n]+)\*/g,
+      (_match, bold: string | undefined, italic: string | undefined) =>
+        bold ?? italic ?? "",
+    );
+}
+export function editorialKey(id: string, field: string): string {
+  return `editorial:${encodeURIComponent(id)}:${field}`;
+}
+/** Content pool is derived, never duplicated as opaque JSON in scalar fields. */
+export function campaignContent(c: Campaign): Record<string, Value> {
+  const content: Record<string, Value> = Object.assign(
+    Object.create(null),
+    clone(c.content),
+  );
+  const put = (key: string, value: Value) => {
+    requireThat(!own(content, key), key, "Collision de clé éditoriale.");
+    content[key] = value;
+  };
+  const events: EventRow[] = [];
+  for (const d of c.editorial ?? []) {
+    for (const field of ["title", "summary", "body"] as const)
+      put(
+        editorialKey(d.id, field),
+        field === "body" ? editorialPlainText(d.body) : d[field],
+      );
+    for (const a of d.assets)
+      put(editorialKey(d.id, `image:${a.id}`), { assetId: a.id });
+    if (d.event && isCivilDate(d.event.date) && d.event.location.trim()) {
+      const row = {
+        id: d.id,
+        date: d.event.date,
+        label: d.title,
+        location: d.event.location,
+      };
+      events.push(row);
+      put(editorialKey(d.id, "events"), [row]);
+    }
+  }
+  if (events.length) put("editorial:events", events);
+  return content;
+}
 function resolveFields(c: Campaign, s: Support): Record<string, Value> {
   const result: Record<string, Value> = Object.create(null);
+  const content = campaignContent(c);
   for (const key of [
     ...Object.keys(s.bindings),
     ...Object.keys(s.overrides),
@@ -404,7 +532,7 @@ function resolveFields(c: Campaign, s: Support): Record<string, Value> {
   for (const f of s.template.fields) {
     if (own(s.bindings, f.id))
       requireThat(
-        own(c.content, s.bindings[f.id]),
+        own(content, s.bindings[f.id]),
         f.id,
         "Deleted bound content",
         "REFERENCE",
@@ -412,7 +540,7 @@ function resolveFields(c: Campaign, s: Support): Record<string, Value> {
     let value = own(s.overrides, f.id)
       ? s.overrides[f.id]
       : own(s.bindings, f.id)
-        ? c.content[s.bindings[f.id]]
+        ? content[s.bindings[f.id]]
         : "defaultValue" in f
           ? f.defaultValue
           : undefined;
@@ -491,6 +619,27 @@ export function validateCampaign(input: unknown): asserts input is Campaign {
     "supports",
   );
   const assetIds = new Set(c.assets.map((a) => a.id));
+  unique(
+    (c.editorial ?? []).map((d) => d.id),
+    "editorial",
+  );
+  for (const document of c.editorial ?? []) {
+    validateEditorial(document);
+    for (const a of document.assets)
+      requireThat(
+        c.assets.some(
+          (target) =>
+            target.id === a.id &&
+            target.path === a.path &&
+            target.sha256 === a.sha256 &&
+            target.mimeType === a.mimeType,
+        ),
+        a.id,
+        "Ressource de l’instantané éditorial absente de la campagne.",
+        "REFERENCE",
+      );
+  }
+  campaignContent(c);
   for (const a of c.assets)
     requireThat(
       safeAssetPath(a.path) &&

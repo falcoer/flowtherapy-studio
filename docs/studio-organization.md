@@ -125,8 +125,11 @@ v2 avec migration v1, héritage et ajustements de support réinitialisables, res
 image de direction et aperçu multiformat.
 Disponible également : [socle Branding](branding.md), ressources centralisées locales
 et application explicite de l’identité aux campagnes.
-Non livré : tiroirs complets, contenus éditoriaux partagés,
-scène graphique commune, templates de production et exports graphiques.
+Disponible désormais : scène graphique mesurée/paginée, rédaction éditoriale locale,
+médiathèque visuelle, instantanés éditoriaux sélectionnés dans les campagnes et liaisons
+vers les champs des supports. Voir [Éditorial](editorial.md).
+Non livré : partage distant, Ligne éditoriale éditable, tiroir Médias complet,
+templates artistiques de production et exports graphiques.
 
 Le rendu du studio et des médias est provisoire : palettes exploratoires,
 polices système et compositions de prototype. Les interactions validées ne figent

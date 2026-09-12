@@ -56,7 +56,7 @@ const siteFontRights = "SIL Open Font License 1.1";
 function initial(): CampaignBundle {
   return {
     campaign: {
-      schemaVersion: 2,
+      schemaVersion: 3,
       id: "studio-brand",
       revision: 1,
       name: "Identité du studio",

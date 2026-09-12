@@ -88,14 +88,14 @@ test('snapshots are detached and frozen, and catalogue updates cannot erase cust
 });
 test('migrations require an explicit path, operate on copies and validate the output', () => {
   const c = fixture(); assert.deepEqual(migrateCampaign(c).campaign, c);
-  assert.throws(() => migrateCampaign({ ...c, schemaVersion: 3 }), /Unsupported version/);
+  assert.throws(() => migrateCampaign({ ...c, schemaVersion: 4 }), /Unsupported version/);
   assert.throws(() => migrateCampaign({ ...c, schemaVersion: 0 }), /No unique explicit migration/);
   const legacy = { ...c, schemaVersion: 1 };
   const result = migrateCampaign(legacy);
   assert.equal(legacy.schemaVersion, 1);
-  assert.equal(result.campaign.schemaVersion, 2);
+  assert.equal(result.campaign.schemaVersion, 3);
   assert.deepEqual(result.original, legacy);
-  assert.deepEqual(result.steps, [{ from: 1, to: 2 }]);
+  assert.deepEqual(result.steps, [{ from: 1, to: 2 }, { from: 2, to: 3 }]);
   assert.throws(() => migrateCampaign({ ...c, schemaVersion: 0 }));
   assert.throws(() => migrateCampaign(legacy, [{ from: 1, to: 2, migrate: () => ({ schemaVersion: 2 }) }]));
 });
