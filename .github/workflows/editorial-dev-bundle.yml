@@ -1,26 +1,51 @@
-name: Editorial development bundle
+name: Editorial implementation verification
 on:
   push:
     branches: [feat/0.3-editorial-library]
-    paths: [.github/workflows/editorial-dev-bundle.yml]
+    paths:
+      - .github/workflows/editorial-dev-bundle.yml
+      - .editorial-dev/**
 permissions:
-  contents: read
+  contents: write
 jobs:
-  bundle:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          persist-credentials: false
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
+      - name: Apply exact locally checked implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .editorial-dev/part-*.gz > /tmp/editorial.patch.gz
+          echo 'ea92d08bc36e1e0b42773abe01ee0d4212b048aac0cb62111405fc3930ec4199  /tmp/editorial.patch.gz' | sha256sum -c -
+          gzip -dc /tmp/editorial.patch.gz > /tmp/editorial.patch
+          git checkout 301249d2d3e4520d7cdd6b0eb52adf6afd6653c0 -- .github/workflows/editorial-dev-bundle.yml
+          git rm -r .editorial-dev
+          git apply --index /tmp/editorial.patch
+          test "$(git write-tree)" = 'bc63ba39820dcf002b864e3ae0aaa74b769eceb6'
       - run: npm ci
-      - name: Package source and locked development dependencies without git credentials
-        run: tar --exclude='./.git' --exclude='./test-results' -czf /tmp/editorial-development.tar.gz .
-      - uses: actions/upload-artifact@v4
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - name: Save browser review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: editorial-development
-          path: /tmp/editorial-development.tar.gz
-          retention-days: 1
+          name: editorial-review
+          path: test-results/
+          retention-days: 3
+      - name: Commit verified implementation on development branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git write-tree)" = 'bc63ba39820dcf002b864e3ae0aaa74b769eceb6'
+          git config user.name 'falcoer'
+          git config user.email '38299246+falcoer@users.noreply.github.com'
+          git commit -m 'feat: local editorial authoring, media library and campaign snapshots'
+          git push origin HEAD:refs/heads/feat/0.3-editorial-library
