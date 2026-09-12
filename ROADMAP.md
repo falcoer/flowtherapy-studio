@@ -6,7 +6,7 @@
 | 0.1 | Contrats validés et noyau campagne | Schémas runtime, migrations, round-trip JSON/ZIP sans perte, sélection d'événements | Intégré |
 | 0.2 | Éditeur statique minimal | Créer une campagne et une variante ; saisir, déplacer, recadrer, annuler, sauvegarder | Intégré |
 | 0.2 complément | Laboratoire créatif React + Motion | Exploration et recettes locales, aperçu multiformat | Intégré et publié sur Pages |
-| 0.3 | Templates et formats multiples | Catalogue, variantes, personnalisations, débordements et pagination | En cours — Branding, scène résolue, Éditorial et médiathèque implémentés |
+| 0.3 | Templates et formats multiples | Catalogue, variantes, personnalisations, débordements et pagination | En cours — Branding, scène résolue, Éditorial, médiathèque et template concert illustré intégrés |
 | 0.4 | Exports | PNG/JPEG/PDF, fidélité texte, dimensions physiques, exports groupés | À faire |
 | 0.5 | Studio privé utilisable | Assets autorisés, trois templates validés, accès groupe, recette A4/A3/social | À faire |
 | 0.6 | Persistance partagée optionnelle | Adaptateur authentifié, conflits de révision, fichiers privés, autonomie locale conservée | À faire |
@@ -49,13 +49,12 @@ Tranches réalisées :
   copies versionnées dans les campagnes, liaisons de contenu et Note éditoriale.
   Migration campagne v2→v3 et IndexedDB v2→v3, révisions/fichiers préservés.
 
-Ces tranches ne clôturent pas le jalon 0.3. La priorité graphique est maintenant le
-template **concert illustré multiformat**, guidé par l'affiche de référence du
-11 septembre : fond photo et lumières, grand titre expressif, agenda en colonnes,
-accents et ornements, trois alpagas au premier plan. Il faut encore sélectionner
-les ressources autorisées, composer ces calques, appliquer les axes créatifs au
-rendu général et valider chaque format. Les aperçus ne sont pas encore des médias
-de production et les exports restent au jalon 0.4.
+Ces tranches ne clôturent pas le jalon 0.3. Le template **concert illustré multiformat**
+est désormais au catalogue : composition éditable en calques, agenda, accent et
+emplacements d’images pour la photo de scène et les trois alpagas, avec variantes
+carré, portrait, story, A4 et A3. Restent la sélection des ressources autorisées,
+l’application visuelle complète des axes créatifs, la validation graphique de chaque
+format et les exports de production du jalon 0.4.
 
 Le catalogue de templates, les variantes personnalisables et l'enrichissement de
 Branding/Éditorial se poursuivent. La persistance éditoriale partagée reste au
