@@ -1,4 +1,4 @@
-# Modèle de données v2 (jalon 0.3)
+# Modèle de données v3 (jalon 0.3)
 
 Contrats : `src/domain/model.ts`, schémas exportables dans `schemas/domain.schema.json`.
 Validation runtime et résolution : `src/domain/core.ts`. Les exemples servent de fixtures, pas de templates graphiques validés.
@@ -76,3 +76,12 @@ commun. Export contribution pour revue GitHub, pas d'écriture GitHub depuis le 
 Modèles de campagne regroupant supports, futures publications avec instantanés,
 destinations/capacités et statuts ; schémas à définir aux jalons correspondants.
 Pas de secrets sociaux, de fonctions JS ou d'expressions exécutables dans les JSON.
+
+## Contenus éditoriaux
+
+La campagne v3 ajoute `editorial?: EditorialDocument[]`, liste ordonnée de copies
+identifiées par id/révision. Article, annonce, présentation et événement partagent
+titre/résumé/corps/thèmes/statut/images ; les événements ajoutent date/lieu.
+`campaignContent` expose leurs champs au système de bindings existant.
+Brand reste v2 ; templates/formats v1. La migration campagne v2→v3 préserve toute
+valeur et toute révision, sans inventer de contenu éditorial. Voir [Éditorial](editorial.md).

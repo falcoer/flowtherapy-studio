@@ -44,6 +44,17 @@ explicites `brand:<rôle>`, puis `title` et `body` par défaut lorsque aucune po
 n'est déclarée. Les logos nécessitent encore un calque dédié ; ils ne sont pas
 insérés automatiquement. Aucun chargement distant de police dans cet aperçu.
 
+## Éditorial et médiathèque
+
+Le [parcours éditorial local](docs/editorial.md) permet de rédiger articles, annonces,
+présentations et événements, d'associer leurs images, de gérer leurs statuts et de
+sélectionner une copie identifiée dans une campagne. Médiathèque avec miniatures,
+recherche, métadonnées et ZIP complet de ressources ; ZIP par contenu éditorial.
+Les champs des supports peuvent être liés aux contenus sélectionnés. Un template
+Note éditoriale de travail expose titre et texte sur cinq formats.
+Campagne v3 avec migration explicite depuis v1/v2 ; IndexedDB v3 sans perte de révisions.
+Les exports de visuels, l'éditeur riche complet et la publication restent non livrés.
+
 ## Organisation validée
 
 **Branding / Éditorial / Médias / Campagnes** : voir les

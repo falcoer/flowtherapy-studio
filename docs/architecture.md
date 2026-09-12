@@ -88,3 +88,11 @@ axes et ajustements. Le socle Branding et IndexedDB v2 sont décrits dans
 [Branding](branding.md). Les polices appliquées à une campagne sont maintenant
 consommées par l'aperçu de ses supports.
 Voir [organisation et décisions](studio-organization.md).
+
+## Éditorial local
+
+Le domaine porte EditorialDocument v1 et les instantanés de campagne v3.
+`campaignContent` projette les sources sans duplication du texte dans les scalaires.
+IndexedDB v3 ajoute le catalogue éditorial ; les ressources/blobs restent centralisés.
+Les migrations des enveloppes de campagnes/identités sont transactionnelles, sans
+changer les révisions. Voir [parcours, contrats et limites](editorial.md).

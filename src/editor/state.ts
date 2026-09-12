@@ -1,5 +1,7 @@
 import {
   createSupport,
+  campaignContent,
+  editorialKey,
   resolvePlacements,
   validateCampaign,
 } from "../domain/core.js";
@@ -53,7 +55,7 @@ export function redo<T>(h: History<T>): History<T> {
 export function newCampaign(): CampaignBundle {
   return {
     campaign: {
-      schemaVersion: 2,
+      schemaVersion: 3,
       id: crypto.randomUUID(),
       revision: 1,
       name: "Nouvelle campagne",
@@ -136,8 +138,25 @@ export function activate(
     template,
     formats,
     layoutIds: [layoutId],
-    bindings: { title: "title", events: "events" },
+    bindings: Object.fromEntries(
+      template.fields
+        .filter((f) => Object.hasOwn(campaignContent(next), f.id))
+        .map((f) => [f.id, f.id]),
+    ),
   });
+  const first =
+    next.editorial?.find((d) => d.kind !== "event") ?? next.editorial?.[0];
+  if (template.id === "ft:editorial-note" && first) {
+    support.bindings.title = editorialKey(first.id, "title");
+    support.bindings.body = editorialKey(first.id, "body");
+  }
+  if (
+    template.id === "ft:agenda" &&
+    Array.isArray(next.content.events) &&
+    !next.content.events.length &&
+    campaignContent(next)["editorial:events"]
+  )
+    support.bindings.events = "editorial:events";
   next.supports.push(support);
   validateCampaign(next);
   return next;

@@ -2,7 +2,7 @@ import { DomainError, requireThat, validateCampaign } from "../domain/core.js";
 import type { Campaign } from "../domain/model.js";
 
 export const MAX_JSON_BYTES = 2 * 1024 * 1024;
-export const CURRENT_SCHEMA_VERSION = 2;
+export const CURRENT_SCHEMA_VERSION = 3;
 
 export interface Migration {
   from: number;
@@ -30,7 +30,17 @@ const v1ToV2: Migration = {
 };
 
 /** Explicit document migrations; the input and every migration result are copied. */
-export const campaignMigrations: readonly Migration[] = [v1ToV2];
+const v2ToV3: Migration = {
+  from: 2,
+  to: 3,
+  migrate(input) {
+    const candidate = structuredClone(input) as Record<string, unknown>;
+    // Do not populate editorial snapshots or alter persisted revisions.
+    candidate.schemaVersion = 3;
+    return candidate;
+  },
+};
+export const campaignMigrations: readonly Migration[] = [v1ToV2, v2ToV3];
 
 export function migrateCampaign(
   input: unknown,
@@ -59,7 +69,9 @@ export function migrateCampaign(
     "VERSION",
   );
   while (current < CURRENT_SCHEMA_VERSION) {
-    const candidates = migrations.filter((migration) => migration.from === current);
+    const candidates = migrations.filter(
+      (migration) => migration.from === current,
+    );
     requireThat(
       candidates.length === 1,
       "$.schemaVersion",

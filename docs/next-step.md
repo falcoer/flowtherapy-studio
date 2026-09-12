@@ -39,6 +39,18 @@ Navigation de pages et affichage facultatif des marges/zones d'exclusion.
 Déplacement, ajustements locaux et échanges JSON/ZIP sont conservés.
 Aucune migration du schéma de campagne, aucun export graphique livré.
 
+### Éditorial et médiathèque (0.3.0-alpha.3)
+
+Voir editorial.md : rédaction locale autonome d'articles/annonces/présentations/
+événements, statuts, thèmes, mise en forme simple et images associées. Médiathèque
+visuelle, recherche/filtre, édition des métadonnées, insertion dans un support actif.
+ZIP par contenu et ZIP complet des ressources, restaurations sans écrasement.
+Les campagnes sélectionnent des instantanés ordonnés et portent des liaisons vers
+leurs champs ; Note éditoriale de travail sur cinq formats. Les fichiers restent
+dédupliqués. Campagne v3 et IndexedDB v3, migrations explicites sans perte de révision.
+Les articles longs ne sont pas paginés et la mise en forme riche ne passe pas dans
+les calques texte : le corps original reste conservé dans l'instantané.
+
 ## Priorité suivante : template concert illustré
 
 L'affiche fournie le 11 septembre 2026 est la référence visuelle : photographie
@@ -67,8 +79,9 @@ les polices, sans calcul de mise en page divergent.
 ## Autres travaux 0.3 à poursuivre
 
 Branding : règles de logos, palettes multiples, variantes typographiques.
-Médiathèque : miniatures, recherche, crédits/droits, sauvegarde intégrale.
-Éditorial : contenus et ressources liés ; Ligne éditoriale en sous-section.
+Médiathèque : classement avancé, suppression contrôlée, audio/vidéo/documents.
+Éditorial : Ligne éditoriale, éditeur riche, actualisation comparée des instantanés,
+sauvegarde groupée de tous les contenus.
 Médias : formats, templates, canaux ; bindings, overrides et sélections ordonnées.
 
 La persistance éditoriale partagée relève du jalon 0.6 : adaptateur authentifié,

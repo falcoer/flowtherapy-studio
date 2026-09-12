@@ -104,6 +104,38 @@
         "y"
       ]
     },
+    "Exclusion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "height",
+        "id",
+        "label",
+        "width",
+        "x",
+        "y"
+      ]
+    },
     "Format": {
       "type": "object",
       "properties": {
@@ -1050,24 +1082,6 @@
     "Brand": {
       "type": "object",
       "properties": {
-        "colors": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "fonts": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/AssetRef"
-          }
-        },
-        "logos": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/AssetRef"
-          }
-        },
         "schemaVersion": {
           "type": "number",
           "const": 2
@@ -1087,6 +1101,24 @@
         "derivedFrom": {
           "description": "Contrats sérialisés v1, stabilisés au jalon 0.1.",
           "$ref": "#/definitions/Ref"
+        },
+        "colors": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "fonts": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AssetRef"
+          }
+        },
+        "logos": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/AssetRef"
+          }
         },
         "id": {
           "type": "string"
@@ -1218,12 +1250,107 @@
         "variants"
       ]
     },
+    "EditorialDocument": {
+      "description": "A reusable authored document, independent of any campaign or renderer.",
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "number",
+          "const": 1
+        },
+        "kind": {
+          "enum": [
+            "announcement",
+            "article",
+            "event",
+            "presentation"
+          ],
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "archived",
+            "draft",
+            "ready"
+          ],
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "body": {
+          "description": "Restricted Markdown: headings, paragraphs, lists, bold and italic. No HTML.",
+          "type": "string"
+        },
+        "locale": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "assets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Asset"
+          }
+        },
+        "event": {
+          "type": "object",
+          "properties": {
+            "date": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "date",
+            "location"
+          ]
+        },
+        "id": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "assets",
+        "body",
+        "id",
+        "kind",
+        "locale",
+        "revision",
+        "schemaVersion",
+        "status",
+        "summary",
+        "tags",
+        "title"
+      ]
+    },
     "Campaign": {
       "type": "object",
       "properties": {
         "schemaVersion": {
           "type": "number",
-          "const": 2
+          "const": 3
+        },
+        "editorial": {
+          "description": "Ordered snapshots. Editing the editorial library never mutates these.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EditorialDocument"
+          }
         },
         "id": {
           "type": "string"
@@ -1512,40 +1639,8 @@
         }
       },
       "additionalProperties": false
-    },
-    "Exclusion": {
-      "type": "object",
-      "properties": {
-        "x": {
-          "type": "number"
-        },
-        "y": {
-          "type": "number"
-        },
-        "width": {
-          "type": "number"
-        },
-        "height": {
-          "type": "number"
-        },
-        "id": {
-          "type": "string"
-        },
-        "label": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "height",
-        "id",
-        "label",
-        "width",
-        "x",
-        "y"
-      ]
     }
   },
   "$ref": "#/definitions/Campaign",
-  "$id": "https://flowtherapymusic.com/studio/schemas/domain-v2.json"
+  "$id": "https://flowtherapymusic.com/studio/schemas/domain-v3.json"
 }

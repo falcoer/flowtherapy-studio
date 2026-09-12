@@ -91,3 +91,11 @@ reste inchangé.
 `npm run check` et `npm run test:e2e` couvrent la migration v1, la déduplication,
 les conflits et écritures atomiques, l'isolation des instantanés, JSON/ZIP,
 l'application d'identité, l'insertion d'une ressource existante et le mobile.
+
+## Complément Éditorial (0.3.0-alpha.3)
+
+La [médiathèque](editorial.md) fournit désormais miniatures, recherche et édition
+des métadonnées, insertion et sauvegarde ZIP de toutes les ressources. Les polices
+de campagne sont consommées par la scène résolue. IndexedDB et l'enveloppe campagne
+sont en v3 ; Brand reste en v2. Les limitations historiques ci-dessus concernent
+la tranche initiale : l'Éditorial local est désormais livré, mais pas le partage distant.

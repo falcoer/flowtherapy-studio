@@ -179,8 +179,24 @@ export interface Support {
   creativeOverrides?: CreativeOverrides;
   variants: Variant[];
 }
+/** A reusable authored document, independent of any campaign or renderer. */
+export interface EditorialDocument extends Ref {
+  schemaVersion: 1;
+  kind: "article" | "announcement" | "event" | "presentation";
+  status: "draft" | "ready" | "archived";
+  title: string;
+  summary: string;
+  /** Restricted Markdown: headings, paragraphs, lists, bold and italic. No HTML. */
+  body: string;
+  locale: string;
+  tags: string[];
+  assets: Asset[];
+  event?: { date: string; location: string };
+}
 export interface Campaign {
-  schemaVersion: 2;
+  schemaVersion: 3;
+  /** Ordered snapshots. Editing the editorial library never mutates these. */
+  editorial?: EditorialDocument[];
   id: string;
   revision: number; // concurrence de stockage, distincte de schemaVersion
   name: string;

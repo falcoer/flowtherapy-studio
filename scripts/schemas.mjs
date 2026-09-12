@@ -12,7 +12,7 @@ const schema = TJS.generateSchema(program, '*', {
 // The persistence adapter is executable API, not a serialized contract.
 delete schema.definitions.CampaignStore;
 schema.$ref = '#/definitions/Campaign';
-schema.$id = 'https://flowtherapymusic.com/studio/schemas/domain-v2.json';
+schema.$id = 'https://flowtherapymusic.com/studio/schemas/domain-v3.json';
 
 const text = JSON.stringify(schema, null, 2) + '\n';
 const path = 'schemas/domain.schema.json';
