@@ -12,8 +12,9 @@ annulation, IndexedDB et échanges JSON/ZIP sont disponibles.
 Le jalon 0.3 ajoute Branding, ressources locales, direction créative et désormais
 une [scène résolue](docs/resolved-scene.md) avec polices de campagne, mesure des
 textes, compactage, pagination des événements et repères de sécurité.
-Les exports graphiques et templates artistiques de production ne sont pas encore
-livrés. L'[intégration GitHub Pages](docs/github-pages.md) publie main après tests ;
+Le template artistique **Concert illustré — Flow Therapy** est maintenant disponible
+avec une composition éditable multiformat ; les ressources d’image autorisées et les
+exports graphiques de production restent à finaliser. L'[intégration GitHub Pages](docs/github-pages.md) publie main après tests ;
 l'accès public a été autorisé par le propriétaire.
 
 ```sh
@@ -61,8 +62,9 @@ Les exports de visuels, l'éditeur riche complet et la publication restent non l
 [décisions de référence](docs/studio-organization.md).
 Les ressources sont partagées sans duplication. Médias regroupe formats, templates
 et canaux. Le laboratoire est l'éditeur de la Direction créative d'une campagne.
-L'apparence finale des médias reste à construire ; l'affiche de concerts illustrée
-fournie le 11 septembre 2026 est la cible du prochain template.
+Le catalogue contient désormais le template de concerts illustré : fond/halo, titre,
+agenda, accent et trois emplacements d’alpagas. Les emplacements restent éditables
+et signalent les ressources manquantes jusqu’à leur import avec provenance et droits.
 
 ## Principes
 
