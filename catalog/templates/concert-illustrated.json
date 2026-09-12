@@ -1,0 +1,1169 @@
+{
+  "schemaVersion": 1,
+  "id": "ft:concert-illustrated",
+  "revision": 1,
+  "name": "Concert illustré — Flow Therapy",
+  "description": "Composition multiformat en calques pour affiche de concerts : fond, titre expressif, agenda et trois emplacements d’illustration.",
+  "tags": [
+    "concert",
+    "agenda",
+    "illustrated",
+    "flow-therapy"
+  ],
+  "creativeCapabilities": {
+    "axes": [
+      "energy",
+      "colorExpression",
+      "scale",
+      "density",
+      "dominant"
+    ],
+    "dominants": [
+      "image",
+      "text",
+      "balanced"
+    ]
+  },
+  "fields": [
+    {
+      "id": "title",
+      "type": "text",
+      "label": "Titre principal",
+      "required": true,
+      "defaultValue": "FLOW THERAPY"
+    },
+    {
+      "id": "kicker",
+      "type": "text",
+      "label": "Accroche",
+      "required": false,
+      "defaultValue": "MUSIQUE · ÉNERGIE · ÉMOTION"
+    },
+    {
+      "id": "events",
+      "type": "collection",
+      "label": "Agenda des concerts",
+      "required": true,
+      "itemSchema": "core:event@1",
+      "minItems": 1
+    },
+    {
+      "id": "heroImage",
+      "type": "image",
+      "label": "Photo guitare / scène",
+      "required": false
+    },
+    {
+      "id": "alpacaLeft",
+      "type": "image",
+      "label": "Alpaga gauche",
+      "required": false
+    },
+    {
+      "id": "alpacaCenter",
+      "type": "image",
+      "label": "Alpaga central",
+      "required": false
+    },
+    {
+      "id": "alpacaRight",
+      "type": "image",
+      "label": "Alpaga droit",
+      "required": false
+    }
+  ],
+  "layers": [
+    {
+      "id": "background",
+      "type": "shape",
+      "shape": "rectangle",
+      "style": {
+        "fill": "#10232b"
+      },
+      "editing": {
+        "move": false,
+        "resize": false,
+        "restyle": true,
+        "hide": true
+      }
+    },
+    {
+      "id": "stage-glow",
+      "type": "shape",
+      "shape": "ellipse",
+      "style": {
+        "fill": "#c7684f"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": true,
+        "hide": true
+      }
+    },
+    {
+      "id": "hero-image",
+      "type": "image",
+      "content": {
+        "field": "heroImage"
+      },
+      "style": {},
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": false,
+        "hide": true
+      }
+    },
+    {
+      "id": "kicker",
+      "type": "text",
+      "content": {
+        "field": "kicker"
+      },
+      "style": {
+        "fill": "#f2c66d",
+        "align": "left"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": true,
+        "hide": true
+      }
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "content": {
+        "field": "title"
+      },
+      "style": {
+        "fill": "#fff8eb",
+        "align": "left"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": true,
+        "hide": true
+      }
+    },
+    {
+      "id": "agenda",
+      "type": "event-list",
+      "source": {
+        "field": "events"
+      },
+      "style": {
+        "fill": "#fff8eb"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": true,
+        "hide": true
+      }
+    },
+    {
+      "id": "underline",
+      "type": "shape",
+      "shape": "rectangle",
+      "style": {
+        "fill": "#e66b54"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": true,
+        "hide": true
+      }
+    },
+    {
+      "id": "alpaca-left",
+      "type": "image",
+      "content": {
+        "field": "alpacaLeft"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": false,
+        "hide": true
+      }
+    },
+    {
+      "id": "alpaca-center",
+      "type": "image",
+      "content": {
+        "field": "alpacaCenter"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": false,
+        "hide": true
+      }
+    },
+    {
+      "id": "alpaca-right",
+      "type": "image",
+      "content": {
+        "field": "alpacaRight"
+      },
+      "editing": {
+        "move": true,
+        "resize": true,
+        "restyle": false,
+        "hide": true
+      }
+    }
+  ],
+  "layouts": [
+    {
+      "id": "square",
+      "formatRef": {
+        "id": "ft:square",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "background",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 1080,
+            "height": 1080
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "stage-glow",
+          "frame": {
+            "x": 700,
+            "y": 20,
+            "width": 420,
+            "height": 420
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "hero-image",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 1080,
+            "height": 690
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "cover",
+            "focalX": 0.5,
+            "focalY": 0.35
+          }
+        },
+        {
+          "layerId": "kicker",
+          "frame": {
+            "x": 72,
+            "y": 72,
+            "width": 936,
+            "height": 60
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 27
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 18,
+            "maxLines": 2
+          }
+        },
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 72,
+            "y": 145,
+            "width": 936,
+            "height": 235
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 102,
+            "align": "left"
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 56,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "agenda",
+          "frame": {
+            "x": 72,
+            "y": 470,
+            "width": 936,
+            "height": 450
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 31
+          },
+          "eventPresentation": {
+            "mode": "table",
+            "columns": [
+              {
+                "field": "date",
+                "width": 0.2
+              },
+              {
+                "field": "label",
+                "width": 0.5
+              },
+              {
+                "field": "location",
+                "width": 0.3
+              }
+            ],
+            "dateFormat": "day-month-year",
+            "rowGap": 22,
+            "overflow": "paginate",
+            "minFontSize": 20,
+            "minRowGap": 11
+          }
+        },
+        {
+          "layerId": "underline",
+          "frame": {
+            "x": 72,
+            "y": 940,
+            "width": 330,
+            "height": 12
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "alpaca-left",
+          "frame": {
+            "x": 70,
+            "y": 930,
+            "width": 250,
+            "height": 150
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        },
+        {
+          "layerId": "alpaca-center",
+          "frame": {
+            "x": 390,
+            "y": 910,
+            "width": 300,
+            "height": 180
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        },
+        {
+          "layerId": "alpaca-right",
+          "frame": {
+            "x": 760,
+            "y": 930,
+            "width": 250,
+            "height": 150
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "portrait",
+      "formatRef": {
+        "id": "ft:portrait",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "background",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 1080,
+            "height": 1350
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "stage-glow",
+          "frame": {
+            "x": 700,
+            "y": 25,
+            "width": 420,
+            "height": 525
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "hero-image",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 1080,
+            "height": 862.5
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "cover",
+            "focalX": 0.5,
+            "focalY": 0.35
+          }
+        },
+        {
+          "layerId": "kicker",
+          "frame": {
+            "x": 72,
+            "y": 90,
+            "width": 936,
+            "height": 75
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 27
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 18,
+            "maxLines": 2
+          }
+        },
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 72,
+            "y": 181.25,
+            "width": 936,
+            "height": 293.75
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 102,
+            "align": "left"
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 56,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "agenda",
+          "frame": {
+            "x": 72,
+            "y": 587.5,
+            "width": 936,
+            "height": 562.5
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 31
+          },
+          "eventPresentation": {
+            "mode": "table",
+            "columns": [
+              {
+                "field": "date",
+                "width": 0.2
+              },
+              {
+                "field": "label",
+                "width": 0.5
+              },
+              {
+                "field": "location",
+                "width": 0.3
+              }
+            ],
+            "dateFormat": "day-month-year",
+            "rowGap": 22,
+            "overflow": "paginate",
+            "minFontSize": 20,
+            "minRowGap": 11
+          }
+        },
+        {
+          "layerId": "underline",
+          "frame": {
+            "x": 72,
+            "y": 1175,
+            "width": 330,
+            "height": 15
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "alpaca-left",
+          "frame": {
+            "x": 70,
+            "y": 1162.5,
+            "width": 250,
+            "height": 187.5
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        },
+        {
+          "layerId": "alpaca-center",
+          "frame": {
+            "x": 390,
+            "y": 1137.5,
+            "width": 300,
+            "height": 225
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        },
+        {
+          "layerId": "alpaca-right",
+          "frame": {
+            "x": 760,
+            "y": 1162.5,
+            "width": 250,
+            "height": 187.5
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "story",
+      "formatRef": {
+        "id": "ft:story",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "background",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 1080,
+            "height": 1920
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "stage-glow",
+          "frame": {
+            "x": 700,
+            "y": 35.556,
+            "width": 420,
+            "height": 746.667
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "hero-image",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 1080,
+            "height": 1226.667
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "cover",
+            "focalX": 0.5,
+            "focalY": 0.35
+          }
+        },
+        {
+          "layerId": "kicker",
+          "frame": {
+            "x": 72,
+            "y": 128,
+            "width": 936,
+            "height": 106.667
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 27
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 18,
+            "maxLines": 2
+          }
+        },
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 72,
+            "y": 257.778,
+            "width": 936,
+            "height": 417.778
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 102,
+            "align": "left"
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 56,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "agenda",
+          "frame": {
+            "x": 72,
+            "y": 835.556,
+            "width": 936,
+            "height": 800
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 31
+          },
+          "eventPresentation": {
+            "mode": "cards",
+            "columns": [
+              {
+                "field": "date",
+                "width": 0.2
+              },
+              {
+                "field": "label",
+                "width": 0.5
+              },
+              {
+                "field": "location",
+                "width": 0.3
+              }
+            ],
+            "dateFormat": "day-month-year",
+            "rowGap": 22,
+            "overflow": "paginate",
+            "minFontSize": 20,
+            "minRowGap": 11
+          }
+        },
+        {
+          "layerId": "underline",
+          "frame": {
+            "x": 72,
+            "y": 1671.111,
+            "width": 330,
+            "height": 21.333
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "alpaca-left",
+          "frame": {
+            "x": 70,
+            "y": 1653.333,
+            "width": 250,
+            "height": 266.667
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        },
+        {
+          "layerId": "alpaca-center",
+          "frame": {
+            "x": 390,
+            "y": 1617.778,
+            "width": 300,
+            "height": 320
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        },
+        {
+          "layerId": "alpaca-right",
+          "frame": {
+            "x": 760,
+            "y": 1653.333,
+            "width": 250,
+            "height": 266.667
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "a4",
+      "formatRef": {
+        "id": "ft:a4",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "background",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 210,
+            "height": 297
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "stage-glow",
+          "frame": {
+            "x": 136.111,
+            "y": 5.5,
+            "width": 81.667,
+            "height": 115.5
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "hero-image",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 210,
+            "height": 189.75
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "cover",
+            "focalX": 0.5,
+            "focalY": 0.35
+          }
+        },
+        {
+          "layerId": "kicker",
+          "frame": {
+            "x": 14,
+            "y": 19.8,
+            "width": 182,
+            "height": 16.5
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 5.25
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 3.5,
+            "maxLines": 2
+          }
+        },
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 14,
+            "y": 39.875,
+            "width": 182,
+            "height": 64.625
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 19.833,
+            "align": "left"
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 10.889,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "agenda",
+          "frame": {
+            "x": 14,
+            "y": 129.25,
+            "width": 182,
+            "height": 123.75
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 6.028
+          },
+          "eventPresentation": {
+            "mode": "table",
+            "columns": [
+              {
+                "field": "date",
+                "width": 0.2
+              },
+              {
+                "field": "label",
+                "width": 0.5
+              },
+              {
+                "field": "location",
+                "width": 0.3
+              }
+            ],
+            "dateFormat": "day-month-year",
+            "rowGap": 4.278,
+            "overflow": "paginate",
+            "minFontSize": 3.889,
+            "minRowGap": 2.139
+          }
+        },
+        {
+          "layerId": "underline",
+          "frame": {
+            "x": 14,
+            "y": 258.5,
+            "width": 64.167,
+            "height": 3.3
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "alpaca-left",
+          "frame": {
+            "x": 13.611,
+            "y": 255.75,
+            "width": 48.611,
+            "height": 41.25
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        },
+        {
+          "layerId": "alpaca-center",
+          "frame": {
+            "x": 75.833,
+            "y": 250.25,
+            "width": 58.333,
+            "height": 49.5
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        },
+        {
+          "layerId": "alpaca-right",
+          "frame": {
+            "x": 147.778,
+            "y": 255.75,
+            "width": 48.611,
+            "height": 41.25
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "a3",
+      "formatRef": {
+        "id": "ft:a3",
+        "revision": 1
+      },
+      "status": "draft",
+      "placements": [
+        {
+          "layerId": "background",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 297,
+            "height": 420
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "stage-glow",
+          "frame": {
+            "x": 192.5,
+            "y": 7.778,
+            "width": 115.5,
+            "height": 163.333
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "hero-image",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "width": 297,
+            "height": 268.333
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "cover",
+            "focalX": 0.5,
+            "focalY": 0.35
+          }
+        },
+        {
+          "layerId": "kicker",
+          "frame": {
+            "x": 19.8,
+            "y": 28,
+            "width": 257.4,
+            "height": 23.333
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 7.425
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 4.95,
+            "maxLines": 2
+          }
+        },
+        {
+          "layerId": "title",
+          "frame": {
+            "x": 19.8,
+            "y": 56.389,
+            "width": 257.4,
+            "height": 91.389
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 28.05,
+            "align": "left"
+          },
+          "textFit": {
+            "mode": "shrink",
+            "minFontSize": 15.4,
+            "maxLines": 3
+          }
+        },
+        {
+          "layerId": "agenda",
+          "frame": {
+            "x": 19.8,
+            "y": 182.778,
+            "width": 257.4,
+            "height": 175
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {
+            "fontSize": 8.525
+          },
+          "eventPresentation": {
+            "mode": "table",
+            "columns": [
+              {
+                "field": "date",
+                "width": 0.2
+              },
+              {
+                "field": "label",
+                "width": 0.5
+              },
+              {
+                "field": "location",
+                "width": 0.3
+              }
+            ],
+            "dateFormat": "day-month-year",
+            "rowGap": 6.05,
+            "overflow": "paginate",
+            "minFontSize": 5.5,
+            "minRowGap": 3.025
+          }
+        },
+        {
+          "layerId": "underline",
+          "frame": {
+            "x": 19.8,
+            "y": 365.556,
+            "width": 90.75,
+            "height": 4.667
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {}
+        },
+        {
+          "layerId": "alpaca-left",
+          "frame": {
+            "x": 19.25,
+            "y": 361.667,
+            "width": 68.75,
+            "height": 58.333
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        },
+        {
+          "layerId": "alpaca-center",
+          "frame": {
+            "x": 107.25,
+            "y": 353.889,
+            "width": 82.5,
+            "height": 70
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        },
+        {
+          "layerId": "alpaca-right",
+          "frame": {
+            "x": 209,
+            "y": 361.667,
+            "width": 68.75,
+            "height": 58.333
+          },
+          "rotation": 0,
+          "visible": true,
+          "style": {},
+          "imageFit": {
+            "mode": "contain",
+            "focalX": 0.5,
+            "focalY": 0.5
+          }
+        }
+      ]
+    }
+  ]
+}
