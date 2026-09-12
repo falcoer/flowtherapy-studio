@@ -1,0 +1,26 @@
+name: Editorial development bundle
+on:
+  push:
+    branches: [feat/0.3-editorial-library]
+    paths: [.github/workflows/editorial-dev-bundle.yml]
+permissions:
+  contents: read
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Package source and locked development dependencies without git credentials
+        run: tar --exclude='./.git' --exclude='./test-results' -czf /tmp/editorial-development.tar.gz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: editorial-development
+          path: /tmp/editorial-development.tar.gz
+          retention-days: 1
