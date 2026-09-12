@@ -55,6 +55,11 @@ figurer dans l'identité visuelle, accompagner un article et servir plusieurs ca
 sans duplication de son fichier. Les usages et recadrages locaux restent distincts.
 La médiathèque est une vue de ces ressources, pas un silo de stockage supplémentaire.
 
+L'Éditorial local, la médiathèque partagée et les instantanés de contenus dans les
+campagnes sont formalisés par l'[ADR 0003](decisions/0003-editorial-library-and-campaign-snapshots.md).
+Une campagne dépend d'une révision copiée du contenu, jamais d'une lecture mutable du
+catalogue éditorial au moment du rendu.
+
 ## 3. Médias
 
 Médias regroupe les moyens transversaux : **formats, templates et canaux**.
@@ -136,6 +141,9 @@ polices système et compositions de prototype. Les interactions validées ne fig
 pas la finition graphique. Celle-ci s'appuiera sur l'identité et des templates
 travaillés par format.
 
-Priorité : compléter le socle Branding et les ressources centralisées, puis relier
-le catalogue de Médias et la scène résolue aux directions déjà persistées.
-Voir [prochaine étape](next-step.md) et [limites du laboratoire actuel](creative-lab.md).
+Priorité : construire le template **concert illustré multiformat** à partir de la
+référence visuelle du 11 septembre 2026, en exploitant les ressources et contenus
+éditoriaux désormais disponibles. Ensuite : compléter le tiroir Médias, enrichir les
+règles Branding/Ligne éditoriale, puis préparer les exports PNG/JPEG/PDF du jalon 0.4.
+Voir [prochaine étape](next-step.md), [ADR 0003](decisions/0003-editorial-library-and-campaign-snapshots.md)
+et [limites du laboratoire actuel](creative-lab.md).
