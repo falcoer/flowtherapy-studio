@@ -25,10 +25,13 @@ jobs:
           cat .editorial-dev/part-*.gz > /tmp/editorial.patch.gz
           echo 'ea92d08bc36e1e0b42773abe01ee0d4212b048aac0cb62111405fc3930ec4199  /tmp/editorial.patch.gz' | sha256sum -c -
           gzip -dc /tmp/editorial.patch.gz > /tmp/editorial.patch
+          cp .editorial-dev/fix.patch /tmp/editorial-fix.patch
           git checkout 301249d2d3e4520d7cdd6b0eb52adf6afd6653c0 -- .github/workflows/editorial-dev-bundle.yml
           git rm -r .editorial-dev
           git apply --index /tmp/editorial.patch
           test "$(git write-tree)" = 'bc63ba39820dcf002b864e3ae0aaa74b769eceb6'
+          git apply --index /tmp/editorial-fix.patch
+          test "$(git write-tree)" = '56ea6bc722752f415023e412642438986053e128'
       - run: npm ci
       - run: npm run check
       - run: npx playwright install --with-deps chromium
@@ -44,7 +47,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git write-tree)" = 'bc63ba39820dcf002b864e3ae0aaa74b769eceb6'
+          test "$(git write-tree)" = '56ea6bc722752f415023e412642438986053e128'
           git config user.name 'falcoer'
           git config user.email '38299246+falcoer@users.noreply.github.com'
           git commit -m 'feat: local editorial authoring, media library and campaign snapshots'

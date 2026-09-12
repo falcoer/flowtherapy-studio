@@ -1,0 +1,44 @@
+diff --git a/src/editor/CampaignEditorial.tsx b/src/editor/CampaignEditorial.tsx
+index 8faeaf4..273cde7 100644
+--- a/src/editor/CampaignEditorial.tsx
++++ b/src/editor/CampaignEditorial.tsx
+@@ -231,6 +231,7 @@ export function ContentBindings({
+         <label key={field.id}>
+           Contenu pour {field.label}
+           <select
++            aria-label={`Contenu pour ${field.label}`}
+             value={support.bindings[field.id] ?? ""}
+             onChange={(e) => {
+               if (
+diff --git a/tests/e2e/branding.spec.ts b/tests/e2e/branding.spec.ts
+index f2dd315..1abef7e 100644
+--- a/tests/e2e/branding.spec.ts
++++ b/tests/e2e/branding.spec.ts
+@@ -53,7 +53,7 @@ test("brand roles, shared image, independent campaign snapshot and identity back
+     .getByRole("button", { name: "Enregistrer l’identité", exact: true })
+     .click();
+   await expect(page.getByRole("status")).toHaveText("Identité enregistrée.");
+-  await page.getByRole("button", { name: "Campagne", exact: true }).click();
++  await page.getByRole("button", { name: "Campagnes", exact: true }).click();
+   await page.getByRole("button", { name: "+ Ajouter un événement" }).click();
+   await page.getByLabel("Libellé 1", { exact: true }).fill("Concert fictif");
+   await page.getByLabel("Lieu 1", { exact: true }).fill("Ville exemple");
+@@ -77,13 +77,11 @@ test("brand roles, shared image, independent campaign snapshot and identity back
+   expect(saved.campaign.brand!.colors.accent).toBe("#aa33bb");
+   expect(saved.campaign.assets[0].credit).toBe("Auteur fictif");
+   await page.getByRole("button", { name: "Branding", exact: true }).click();
+-  await page
+-    .getByLabel("Importer une identité ZIP")
+-    .setInputFiles({
+-      name: "branding.zip",
+-      mimeType: "application/zip",
+-      buffer: backup,
+-    });
++  await page.getByLabel("Importer une identité ZIP").setInputFiles({
++    name: "branding.zip",
++    mimeType: "application/zip",
++    buffer: backup,
++  });
+   await expect(page.getByRole("status")).toContainText("Identité importée");
+   await expect(page.getByLabel("Accent", { exact: true })).toHaveValue(
+     "#aa33bb",
