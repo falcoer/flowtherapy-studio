@@ -51,23 +51,28 @@ dédupliqués. Campagne v3 et IndexedDB v3, migrations explicites sans perte de 
 Les articles longs ne sont pas paginés et la mise en forme riche ne passe pas dans
 les calques texte : le corps original reste conservé dans l'instantané.
 
-## Priorité suivante : template concert illustré
+## Template concert illustré — intégré
 
 L'affiche fournie le 11 septembre 2026 est la référence visuelle : photographie
 de guitare/lumières de scène et zones sombres, grand lettrage expressif, agenda
 multi-événements en colonnes, accents colorés, soulignements et petits ornements,
 trois alpagas colorés au premier plan en bas.
 
-Construire une composition éditable de calques, pas une image aplatie :
+La première composition est intégrée au catalogue dans `catalog/templates/concert-illustrated.json`,
+référencée par l’éditeur et testée sur les cinq formats. Elle contient des calques indépendants
+pour le fond, le halo, la photo de scène, l’accroche, le titre, l’agenda, l’accent et trois
+emplacements d’alpagas. Les images sont facultatives mais leurs absences sont signalées dans
+l’aperçu ; aucune ressource réelle n’a été ajoutée aux fixtures.
+
+Suite à construire :
 
 1. Identifier/importer les ressources autorisées du groupe avec provenance,
    droits et crédits ; ne pas intégrer de photo personnelle ou campagne réelle
    dans les fixtures. SVG non accepté sans nettoyage dédié.
-2. Ajouter le template concert illustré au catalogue et son choix dans Médias,
-   avec variantes carré, portrait, story et affiche adaptées réellement.
-3. Enrichir la composition des collections en blocs/colonnes, la hiérarchie
+2. Enrichir la composition des collections en blocs/colonnes, la hiérarchie
    typographique et les ornements. Appliquer les cinq axes créatifs à cette scène,
    dans les capacités déclarées, sans modifier les instantanés déjà créés.
+3. Sélectionner/importer les ressources autorisées avec provenance, droits et crédits.
 4. Valider visuellement chaque format, la sécurité des zones, les titres longs
    et les agendas denses avant de présenter le template comme prêt à produire.
 
