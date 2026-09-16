@@ -5,14 +5,16 @@
   border-radius: 14px;
   background: var(--studio-surface-soft);
 }
-.layer-dock-heading {
+.layer-dock-heading,
+.resource-inspector-heading {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
 }
-.layer-dock-heading strong {
+.layer-dock-heading strong,
+.resource-inspector-heading strong {
   display: block;
   margin-top: 0.2rem;
   font-size: 1rem;
@@ -43,6 +45,30 @@
   border-color: var(--studio-focus);
   outline: 2px solid color-mix(in srgb, var(--studio-focus) 30%, transparent);
   font-weight: 700;
+}
+.resource-inspector {
+  margin: 0 0 1rem;
+  padding: 0.9rem;
+  border: 1px solid var(--studio-line);
+  border-radius: 14px;
+  background: var(--studio-surface);
+}
+.resource-current-preview {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  overflow: hidden;
+  border: 1px solid var(--studio-line);
+  border-radius: 10px;
+  background: var(--studio-surface-soft);
+}
+.resource-current-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.resource-inspector label {
+  margin: 0;
 }
 .resolved-surface [data-layer].studio-selected-layer {
   outline-style: solid !important;
