@@ -6,7 +6,7 @@ import type { ResolvedScene } from "../render/scene.js";
 import type { CampaignBundle } from "../storage/indexeddb.js";
 import { SceneContent } from "./SceneContent.js";
 import { createBrowserMeasurer, useSceneFonts } from "./sceneFonts.js";
-import { downloadBlob, exportSurfaceAsPng } from "./exportPng.js";
+import { downloadBlob, exportSceneAsPng } from "./exportPng.js";
 import "./scene.css";
 
 export function Preview({ bundle, supportId, variantId, selected, select, move }: {
@@ -52,15 +52,16 @@ export function Preview({ bundle, supportId, variantId, selected, select, move }
   }
   const safe = scene?.format.zones.safeInset;
   const exportCurrentPage = async () => {
-    if (!surface || !surfaceElement.current || exporting) return;
+    if (!surface || !current || exporting) return;
     setExporting(true);
     setExportError("");
     try {
       const physicalScale = surface.unit === "mm" ? 300 / 25.4 : 1;
       const outputWidth = Math.round(surface.width * physicalScale);
       const outputHeight = Math.round(surface.height * physicalScale);
-      const blob = await exportSurfaceAsPng(
-        surfaceElement.current,
+      const blob = await exportSceneAsPng(
+        current.nodes,
+        bundle,
         surface.width,
         surface.height,
         outputWidth,
