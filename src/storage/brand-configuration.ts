@@ -44,15 +44,30 @@ function text(value: unknown, label: string) {
   return value;
 }
 function validateObject(input: unknown): BrandObject {
-  const value = record(input);
+  const value = record(input),
+    type = text(value.type, "Type d’objet");
   text(value.id, "Identifiant d’objet");
-  text(value.type, "Type d’objet");
   text(value.role, "Rôle d’objet");
   text(value.label, "Libellé d’objet");
   integer(value.revision, "Révision d’objet");
   if (!Object.hasOwn(value, "value")) throw new Error("Valeur d’objet absente.");
   if (!["published", "draft"].includes(String(value.status)))
     throw new Error("Statut d’objet invalide.");
+  if (type === "color-token") {
+    if (typeof value.value !== "string" || !value.value.trim())
+      throw new Error("Valeur de couleur invalide.");
+    const canonical = /^#[0-9a-f]{6}$/i.test(value.value),
+      metadata = value.metadata === undefined ? undefined : record(value.metadata),
+      historical =
+        value.status === "published" &&
+        metadata?.legacyColorUnparsed === value.value;
+    if (!canonical && !historical)
+      throw new Error("Une couleur importée doit être au format #RRGGBB.");
+  }
+  if (type === "font-role" || type === "logo") {
+    const asset = record(value.value);
+    text(asset.assetId, "Référence de ressource");
+  }
   return structuredClone(value as unknown as BrandObject);
 }
 function validateRelation(input: unknown): BrandRelation {
@@ -82,7 +97,11 @@ function validateRelease(input: unknown): BrandRelease {
   integer(value.version, "Version de release");
   text(value.createdAt, "Date de release");
   text(value.fingerprint, "Empreinte de release");
-  if (!Array.isArray(value.objects) || !Array.isArray(value.relations) || !Array.isArray(value.findings))
+  if (
+    !Array.isArray(value.objects) ||
+    !Array.isArray(value.relations) ||
+    !Array.isArray(value.findings)
+  )
     throw new Error("Contenu de release invalide.");
   validateGraph(value.objects, value.relations);
   return structuredClone(value as unknown as BrandRelease);
@@ -164,7 +183,11 @@ export class BrandConfigurationStore {
       };
       open.onerror = () => reject(open.error);
       open.onblocked = () =>
-        reject(new Error("Fermez les autres onglets pour ouvrir la configuration de marque."));
+        reject(
+          new Error(
+            "Fermez les autres onglets pour ouvrir la configuration de marque.",
+          ),
+        );
     });
   }
   async load(brandId: string): Promise<BrandConfiguration | null> {
@@ -213,13 +236,35 @@ export class BrandConfigurationStore {
       tx = db.transaction("configurations", "readwrite"),
       done = complete(tx),
       table = tx.objectStore("configurations"),
+      keysRequest = table.getAllKeys(),
       read = table.get(candidate.brandId);
-    read.onsuccess = () => {
-      const current = read.result as BrandConfiguration | undefined;
+    let keys: IDBValidKey[] | undefined,
+      current: BrandConfiguration | undefined,
+      failure: Error | undefined;
+    const persist = () => {
+      if (!keys || read.readyState !== "done") return;
+      const otherBrand = keys.some((key) => String(key) !== candidate.brandId);
+      if (otherBrand) {
+        failure = new Error(
+          "Cette archive appartient à une autre marque. Importez uniquement une configuration de la marque active.",
+        );
+        tx.abort();
+        return;
+      }
+      current = read.result as BrandConfiguration | undefined;
       candidate.revision = Math.max(candidate.revision, current?.revision ?? 0) + 1;
       table.put(candidate);
     };
-    await done;
+    keysRequest.onsuccess = () => {
+      keys = keysRequest.result;
+      persist();
+    };
+    read.onsuccess = persist;
+    try {
+      await done;
+    } catch (error) {
+      throw failure ?? error;
+    }
     return structuredClone(candidate);
   }
   async close() {
