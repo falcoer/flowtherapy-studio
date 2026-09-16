@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Asset, EditorialDocument } from "../domain/model.js";
 import { buildLibraryIndex } from "../domain/library.js";
-import type { LibraryEntry } from "../domain/library.js";
+import type { LibraryEntry, LibraryUsage } from "../domain/library.js";
 import type { CampaignBundle } from "../storage/indexeddb.js";
 import { IndexedDBCampaignStore } from "../storage/indexeddb.js";
 import { BrandConfigurationStore } from "../storage/brand-configuration.js";
@@ -10,17 +10,14 @@ import { ResourceLibrary, ResourceThumbnail } from "./ResourceLibrary.js";
 import "./library.css";
 
 const normalize = (text: string) =>
-  text
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLocaleLowerCase("fr");
-
+  text.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLocaleLowerCase("fr");
 function usageLabel(kind: "brand" | "campaign" | "editorial") {
-  return {
-    brand: "Marque",
-    campaign: "Campagnes",
-    editorial: "Contenus",
-  }[kind];
+  return { brand: "Marque", campaign: "Campagnes", editorial: "Contenus" }[kind];
+}
+function groupUsages(usages: LibraryUsage[]) {
+  const groups: Partial<Record<LibraryUsage["kind"], LibraryUsage[]>> = {};
+  for (const usage of usages) (groups[usage.kind] ??= []).push(usage);
+  return groups;
 }
 
 export function Library({
@@ -52,13 +49,12 @@ export function Library({
     setBusy(true);
     setError("");
     try {
-      const [resources, campaignsIndex, editorial, configurations] =
-        await Promise.all([
-          store.listResources(),
-          store.list(),
-          store.listEditorial(),
-          brandStore.list(),
-        ]);
+      const [resources, campaignsIndex, editorial, configurations] = await Promise.all([
+        store.listResources(),
+        store.list(),
+        store.listEditorial(),
+        brandStore.list(),
+      ]);
       const campaigns = await Promise.all(
         campaignsIndex.map(({ id }) => store.load(id)),
       );
@@ -106,15 +102,15 @@ export function Library({
       (entry) =>
         (type === "all" || entry.kind === type) &&
         normalize(
-          `${entry.asset.source} ${entry.asset.credit ?? ""} ${entry.asset.rights} ${entry.usages.map((usage) => `${usage.label} ${usage.role ?? ""}`).join(" ")}`,
+          `${entry.asset.source} ${entry.asset.credit ?? ""} ${entry.asset.rights} ${entry.usages
+            .map((usage) => `${usage.label} ${usage.role ?? ""}`)
+            .join(" ")}`,
         ).includes(needle),
     );
   }, [entries, query, type]);
   const selected =
-    entries.find((entry) => entry.asset.sha256 === selectedHash) ?? filtered[0];
-  const usageGroups = selected
-    ? Object.groupBy(selected.usages, (usage) => usage.kind)
-    : {};
+      entries.find((entry) => entry.asset.sha256 === selectedHash) ?? filtered[0],
+    usageGroups = groupUsages(selected?.usages ?? []);
 
   return (
     <main className="library-shell">
@@ -144,8 +140,11 @@ export function Library({
           </button>
         </div>
       </header>
-
-      {error && <p className="error" role="alert">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
 
       <div hidden={tab !== "resources"}>
         <div className="library-toolbar">
@@ -162,9 +161,7 @@ export function Library({
             Type
             <select
               value={type}
-              onChange={(event) =>
-                setType(event.target.value as typeof type)
-              }
+              onChange={(event) => setType(event.target.value as typeof type)}
             >
               <option value="all">Tous</option>
               <option value="image">Images</option>
@@ -279,7 +276,9 @@ export function Library({
                             {usage.releaseVersion && (
                               <small>Release {usage.releaseVersion}</small>
                             )}
-                            <small>{usage.snapshot ? "Instantané" : "Référence active"}</small>
+                            <small>
+                              {usage.snapshot ? "Instantané" : "Référence active"}
+                            </small>
                           </li>
                         ))}
                       </ul>
