@@ -68,6 +68,27 @@ test("Brand v2 migration is deterministic and creates the color.primary release"
   );
 });
 
+test("Brand v2 without blue gets a deterministic primary fallback without orphan relations", () => {
+  const brand: Brand = {
+    ...legacyBrand(),
+    id: "legacy-accent-only",
+    colors: { accent: "#7130C8" },
+  };
+  const configuration = migrateBrandV2(brand),
+    release = latestRelease(configuration),
+    primary = release.objects.find((object) => object.id === "color.primary");
+  assert.equal(primary?.value, "#7130C8");
+  assert.equal(primary?.metadata?.migratedFallback, "true");
+  assert.equal(
+    release.relations.some((relation) => relation.targetId === "color.background"),
+    false,
+  );
+  assert.deepEqual(
+    importBrandConfiguration(exportBrandConfiguration(configuration)),
+    configuration,
+  );
+});
+
 test("draft impact is reproducible, validates contrast and publishes an immutable release", () => {
   const configuration = migrateBrandV2(legacyBrand()),
     draft = updateColorToken(createDraft(configuration), "color.primary", "#003366"),
@@ -112,6 +133,38 @@ test("draft impact is reproducible, validates contrast and publishes an immutabl
   assert.equal(
     latestRelease(published).objects.find((object) => object.id === "color.primary")?.value,
     "#003366",
+  );
+});
+
+test("publication rejects a stale draft and a stale impact report", () => {
+  const configuration = migrateBrandV2(legacyBrand()),
+    firstDraft = updateColorToken(createDraft(configuration), "color.primary", "#003366"),
+    release2 = publishDraft(
+      configuration,
+      firstDraft,
+      analyzeImpact(firstDraft),
+      "2026-09-16T08:00:00.000Z",
+    );
+  assert.throws(
+    () =>
+      publishDraft(
+        release2,
+        firstDraft,
+        analyzeImpact(firstDraft),
+        "2026-09-16T09:00:00.000Z",
+      ),
+    /release obsolète/,
+  );
+
+  const currentDraft = updateColorToken(
+      createDraft(release2),
+      "color.primary",
+      "#002244",
+    ),
+    staleReport = { ...analyzeImpact(currentDraft), changedIds: [] };
+  assert.throws(
+    () => publishDraft(release2, currentDraft, staleReport, "2026-09-16T09:00:00.000Z"),
+    /ne correspond plus/,
   );
 });
 
