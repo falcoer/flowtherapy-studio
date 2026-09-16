@@ -60,15 +60,21 @@ function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   ));
 }
 
-export async function exportSurfaceAsPng(surface: HTMLElement, width: number, height: number): Promise<Blob> {
+export async function exportSurfaceAsPng(
+  surface: HTMLElement,
+  logicalWidth: number,
+  logicalHeight: number,
+  outputWidth = logicalWidth,
+  outputHeight = logicalHeight,
+): Promise<Blob> {
   const clone = surface.cloneNode(true) as HTMLElement;
   sanitizeClone(clone);
   await inlineImages(surface, clone);
 
   const markup = new XMLSerializer().serializeToString(clone);
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-    <foreignObject width="100%" height="100%">
-      <div xmlns="http://www.w3.org/1999/xhtml" style="width:${width}px;height:${height}px;overflow:hidden">
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${outputWidth}" height="${outputHeight}" viewBox="0 0 ${logicalWidth} ${logicalHeight}">
+    <foreignObject x="0" y="0" width="${logicalWidth}" height="${logicalHeight}">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="width:${logicalWidth}px;height:${logicalHeight}px;overflow:hidden">
         <style>${collectDocumentStyles()}</style>
         ${markup}
       </div>
@@ -78,11 +84,11 @@ export async function exportSurfaceAsPng(surface: HTMLElement, width: number, he
   try {
     const image = await loadImage(url);
     const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = Math.max(1, Math.round(outputWidth));
+    canvas.height = Math.max(1, Math.round(outputHeight));
     const context = canvas.getContext("2d");
     if (!context) throw new Error("Canvas 2D indisponible dans ce navigateur.");
-    context.drawImage(image, 0, 0, width, height);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
     return await canvasToBlob(canvas);
   } finally {
     URL.revokeObjectURL(url);
