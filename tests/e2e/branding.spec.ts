@@ -20,7 +20,9 @@ test("brand draft, impact, release and explicit campaign migration", async ({
   await expect(page.getByText("1 changement(s) dans le brouillon")).toBeVisible();
   await expect(page.locator(".impact-change")).toContainText("#168AD5 → #0055AA");
   await expect(page.locator(".impact-count")).not.toHaveText("0");
-  await expect(page.getByText("Concert illustré", { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByText("Concert illustré — Flow Therapy", { exact: true }).first(),
+  ).toBeVisible();
 
   await page.getByRole("button", { name: "Enregistrer le brouillon" }).click();
   await expect(page.getByRole("status")).toContainText("Brouillon enregistré localement");
