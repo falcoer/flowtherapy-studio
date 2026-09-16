@@ -30,7 +30,7 @@ export function Branding({
           Outils historiques
         </button>
         <span>
-          Transition 0.3 : les fonctions non encore modélisées restent disponibles sans contourner les releases.
+          Transition 0.3 : les fonctions non encore modélisées restent disponibles dans l’éditeur historique ; leur migration vers les releases reste explicite.
         </span>
       </nav>
       {mode === "configuration" ? (
