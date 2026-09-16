@@ -51,7 +51,7 @@ function validateObject(input: unknown): BrandObject {
   text(value.label, "Libellé d’objet");
   integer(value.revision, "Révision d’objet");
   if (!Object.hasOwn(value, "value")) throw new Error("Valeur d’objet absente.");
-  if (!['published', 'draft'].includes(String(value.status)))
+  if (!["published", "draft"].includes(String(value.status)))
     throw new Error("Statut d’objet invalide.");
   return structuredClone(value as unknown as BrandObject);
 }
@@ -63,6 +63,17 @@ function validateRelation(input: unknown): BrandRelation {
   text(value.type, "Type de relation");
   return structuredClone(value as unknown as BrandRelation);
 }
+function validateGraph(objectsValue: unknown[], relationsValue: unknown[]) {
+  const objects = objectsValue.map(validateObject),
+    ids = new Set(objects.map((object) => object.id));
+  if (ids.size !== objects.length) throw new Error("Identifiant d’objet dupliqué.");
+  const relations = relationsValue.map(validateRelation);
+  for (const relation of relations) {
+    if (!ids.has(relation.sourceId) || !ids.has(relation.targetId))
+      throw new Error(`Relation orpheline : ${relation.id}.`);
+  }
+  return { objects, relations };
+}
 function validateRelease(input: unknown): BrandRelease {
   const value = record(input);
   if (value.schemaVersion !== 1) throw new Error("Version de release invalide.");
@@ -73,14 +84,7 @@ function validateRelease(input: unknown): BrandRelease {
   text(value.fingerprint, "Empreinte de release");
   if (!Array.isArray(value.objects) || !Array.isArray(value.relations) || !Array.isArray(value.findings))
     throw new Error("Contenu de release invalide.");
-  const objects = value.objects.map(validateObject),
-    ids = new Set(objects.map((object) => object.id));
-  if (ids.size !== objects.length) throw new Error("Identifiant d’objet dupliqué.");
-  const relations = value.relations.map(validateRelation);
-  for (const relation of relations) {
-    if (!ids.has(relation.sourceId) || !ids.has(relation.targetId))
-      throw new Error(`Relation orpheline : ${relation.id}.`);
-  }
+  validateGraph(value.objects, value.relations);
   return structuredClone(value as unknown as BrandRelease);
 }
 function validateDraft(input: unknown, releases: BrandRelease[]): BrandDraft {
@@ -92,11 +96,12 @@ function validateDraft(input: unknown, releases: BrandRelease[]): BrandDraft {
     throw new Error("Release de base du brouillon absente.");
   if (!Array.isArray(value.objects) || !Array.isArray(value.relations))
     throw new Error("Contenu de brouillon invalide.");
-  value.objects.map(validateObject);
-  value.relations.map(validateRelation);
+  validateGraph(value.objects, value.relations);
   const changeSet = record(value.changeSet);
   if (!Array.isArray(changeSet.operations))
     throw new Error("Lot de changements invalide.");
+  if (changeSet.baseReleaseId !== baseReleaseId)
+    throw new Error("Le lot de changements ne correspond pas à la release de base.");
   return structuredClone(value as unknown as BrandDraft);
 }
 export function validateBrandConfiguration(input: unknown): BrandConfiguration {
@@ -118,7 +123,12 @@ export function validateBrandConfiguration(input: unknown): BrandConfiguration {
     revision,
     releases,
   };
-  if (value.draft !== undefined) result.draft = validateDraft(value.draft, releases);
+  if (value.draft !== undefined) {
+    const draft = validateDraft(value.draft, releases);
+    if (draft.brandId !== brandId)
+      throw new Error("Le brouillon appartient à une autre marque.");
+    result.draft = draft;
+  }
   return result;
 }
 export function exportBrandConfiguration(configuration: BrandConfiguration): string {
@@ -201,9 +211,14 @@ export class BrandConfigurationStore {
     const candidate = validateBrandConfiguration(input),
       db = await this.db,
       tx = db.transaction("configurations", "readwrite"),
-      done = complete(tx);
-    candidate.revision += 1;
-    tx.objectStore("configurations").put(candidate);
+      done = complete(tx),
+      table = tx.objectStore("configurations"),
+      read = table.get(candidate.brandId);
+    read.onsuccess = () => {
+      const current = read.result as BrandConfiguration | undefined;
+      candidate.revision = Math.max(candidate.revision, current?.revision ?? 0) + 1;
+      table.put(candidate);
+    };
     await done;
     return structuredClone(candidate);
   }
