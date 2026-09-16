@@ -1,1 +1,1 @@
-export { BrandConfiguration as Branding } from "./BrandConfiguration.js";
+export { BrandWorkspace as Branding } from "./BrandWorkspace.js";
