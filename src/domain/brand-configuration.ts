@@ -259,8 +259,6 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
       existing = colorById.get(id),
       direct = legacyRole === role,
       existingDirect = existing?.metadata?.legacyRole === existing?.role;
-    // Brand v2 accepts arbitrary keys. When an alias such as `blue` and the
-    // canonical semantic role `primary` coexist, the canonical role wins.
     if (!existing || (direct && !existingDirect)) colorById.set(id, candidate);
   }
   const colorObjects = [...colorById.values()].sort((a, b) =>
@@ -565,13 +563,14 @@ export function migrateCampaignBrand(
 ): Campaign {
   if (!campaign.brand)
     throw new Error("La campagne ne possède pas d’instantané de marque.");
-  const next = clone(campaign);
-  next.brand = brandFromRelease(next.brand, release);
+  const next = clone(campaign),
+    migratedBrand = brandFromRelease(next.brand, release);
+  next.brand = migratedBrand;
   for (const support of next.supports) {
-    if (support.template.brandRef?.id === next.brand.id)
+    if (support.template.brandRef?.id === migratedBrand.id)
       support.template.brandRef = {
-        id: next.brand.id,
-        revision: next.brand.revision,
+        id: migratedBrand.id,
+        revision: migratedBrand.revision,
       };
   }
   return next;
