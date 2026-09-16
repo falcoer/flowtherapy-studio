@@ -56,7 +56,16 @@ export function Preview({ bundle, supportId, variantId, selected, select, move }
     setExporting(true);
     setExportError("");
     try {
-      const blob = await exportSurfaceAsPng(surfaceElement.current, surface.width, surface.height);
+      const physicalScale = surface.unit === "mm" ? 300 / 25.4 : 1;
+      const outputWidth = Math.round(surface.width * physicalScale);
+      const outputHeight = Math.round(surface.height * physicalScale);
+      const blob = await exportSurfaceAsPng(
+        surfaceElement.current,
+        surface.width,
+        surface.height,
+        outputWidth,
+        outputHeight,
+      );
       const campaignName = bundle.campaign.name.trim().replace(/[^a-zA-Z0-9_-]+/g, "-").replace(/^-|-$/g, "") || "flow-therapy";
       const suffix = scene && scene.pages.length > 1 ? `-page-${pageIndex + 1}` : "";
       downloadBlob(blob, `${campaignName}-${variantId}${suffix}.png`);
@@ -138,7 +147,8 @@ export function Preview({ bundle, supportId, variantId, selected, select, move }
     </div>
     <p className="preview-note">
       {fonts.ready ? "Scène résolue · polices de la campagne lorsqu’elles sont disponibles" : "Chargement des polices locales…"}
-      {" · export PNG prototype de la page affichée. Les contenus débordants restent visibles et signalés."}
+      {surface?.unit === "mm" ? " · export PNG prototype à 300 dpi." : " · export PNG prototype de la page affichée."}
+      {" Les contenus débordants restent visibles et signalés."}
     </p>
     {exportError && <p className="warnings" role="alert">Export PNG : {exportError}</p>}
     {warnings.length > 0 && <ul className="warnings" aria-label="Avertissements de composition">
