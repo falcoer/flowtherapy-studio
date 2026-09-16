@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test("library projects the shared resource catalogue and content workspace", async ({
+test("library projects the shared resource catalogue and links to the single content workspace", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -19,7 +19,7 @@ test("library projects the shared resource catalogue and content workspace", asy
   ).toBeVisible();
   await expect(page.locator(".library-entry-list > button")).toHaveCount(4);
 
-  await page.getByLabel("Rechercher").fill("Bangers");
+  await page.getByLabel("Rechercher une ressource", { exact: true }).fill("Bangers");
   await expect(page.locator(".library-entry-list > button")).toHaveCount(1);
   await page.locator(".library-entry-list > button").click();
   await expect(page.locator(".library-detail")).toContainText("Bangers-Regular.ttf");
@@ -27,9 +27,16 @@ test("library projects the shared resource catalogue and content workspace", asy
   await expect(page.locator(".library-usages")).toContainText("Dépendances");
 
   await page.getByRole("tab", { name: "Contenus" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Contenus éditoriaux" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Ouvrir les contenus éditoriaux" }).click();
   await expect(page.getByRole("heading", { name: "Éditorial" })).toBeVisible();
 
+  await page.getByRole("button", { name: "Branding", exact: true }).click();
   await page.getByRole("button", { name: "Bibliothèque" }).click();
-  await expect(page.getByLabel("Rechercher")).toHaveValue("Bangers");
+  await expect(page.getByLabel("Rechercher une ressource", { exact: true })).toHaveValue(
+    "Bangers",
+  );
   expect(errors).toEqual([]);
 });
