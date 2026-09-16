@@ -66,8 +66,8 @@ campaign.content = {
   kicker: "MUSIQUE · ÉNERGIE · ÉMOTION",
   events: [
     { id: "proto:event-1", date: "2026-10-24", label: "Les Insolites", location: "Martigues" },
-    { id: "proto:event-2", date: "2026-11-14", label: "Concert prototype", location: "Bouches-du-Rhône" },
-    { id: "proto:event-3", date: "2026-12-05", label: "Concert prototype", location: "Bouches-du-Rhône" },
+    { id: "proto:event-2", date: "2026-11-14", label: "Événement de charge A", location: "Donnée prototype" },
+    { id: "proto:event-3", date: "2026-12-05", label: "Événement de charge B", location: "Donnée prototype" },
   ],
   heroImage: { assetId: "proto:hero" },
   alpacaLeft: { assetId: "proto:alpaca-1" },
