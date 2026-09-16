@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Asset, EditorialDocument } from "../domain/model.js";
+import type { Asset } from "../domain/model.js";
 import { buildLibraryIndex } from "../domain/library.js";
 import type { LibraryEntry, LibraryUsage } from "../domain/library.js";
 import type { CampaignBundle } from "../storage/indexeddb.js";
 import { IndexedDBCampaignStore } from "../storage/indexeddb.js";
 import { BrandConfigurationStore } from "../storage/brand-configuration.js";
-import { Editorial } from "./Editorial.js";
 import { ResourceLibrary, ResourceThumbnail } from "./ResourceLibrary.js";
 import "./library.css";
 
@@ -23,15 +22,10 @@ function groupUsages(usages: LibraryUsage[]) {
 export function Library({
   active,
   bundle,
-  onUse,
   onInsert,
 }: {
   active: boolean;
   bundle: CampaignBundle;
-  onUse: (
-    document: EditorialDocument,
-    store: IndexedDBCampaignStore,
-  ) => Promise<void>;
   onInsert?: (asset: Asset, bytes: Uint8Array) => Promise<void>;
 }) {
   const [store] = useState(() => new IndexedDBCampaignStore()),
@@ -149,7 +143,7 @@ export function Library({
       <div hidden={tab !== "resources"}>
         <div className="library-toolbar">
           <label>
-            Rechercher
+            Rechercher une ressource
             <input
               type="search"
               value={query}
@@ -293,13 +287,23 @@ export function Library({
         )}
       </div>
 
-      <div hidden={tab !== "contents"}>
-        <Editorial
-          active={active && tab === "contents"}
-          onUse={onUse}
-          onInsert={onInsert}
-        />
-      </div>
+      <section hidden={tab !== "contents"} className="library-content-transition">
+        <span className="eyebrow">CONTENUS</span>
+        <h2>Contenus éditoriaux</h2>
+        <p>
+          Les contenus appartiennent à Bibliothèque dans le modèle cible. Durant cette
+          tranche, leur édition reste assurée par l’unique workspace Éditorial existant
+          afin de ne pas créer deux brouillons concurrents.
+        </p>
+        <button
+          className="primary"
+          onClick={() => {
+            location.hash = "editorial";
+          }}
+        >
+          Ouvrir les contenus éditoriaux
+        </button>
+      </section>
     </main>
   );
 }
