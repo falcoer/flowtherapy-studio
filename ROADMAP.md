@@ -7,7 +7,8 @@
 | 0.2 | Éditeur statique minimal | Créer une campagne et une variante ; saisir, déplacer, recadrer, annuler, sauvegarder | Intégré |
 | 0.2 complément | Laboratoire créatif React + Motion | Exploration et recettes locales, aperçu multiformat | Intégré et publié sur Pages |
 | 0.3 | Templates et formats multiples | Catalogue, variantes, personnalisations, débordements et pagination | En cours — Branding, scène résolue, Éditorial, médiathèque et template concert illustré intégrés |
-| 0.3b | Configuration de marque | Release initiale, lot de changements, impact couleur, campagne préservée et migration explicite | Cadré — ADR 0004 et modèle cible |
+| 0.3b | Configuration de marque | Release initiale, lot de changements, impact couleur, campagne préservée et migration explicite | Implémenté dans la première verticale — PR en cours |
+| 0.3c | Bibliothèque | Index commun ressources/contenus, usages Marque/Campagnes/Contenus, aucune duplication de stockage | Prochaine tranche |
 | 0.4 | Exports | PNG/JPEG/PDF, fidélité texte, dimensions physiques, exports groupés | À faire |
 | 0.5 | Studio privé utilisable | Assets autorisés, trois templates validés, accès groupe, recette A4/A3/social | À faire |
 | 0.6 | Persistance partagée optionnelle | Adaptateur authentifié, conflits de révision, fichiers privés, autonomie locale conservée | À faire |
@@ -25,7 +26,7 @@ ZIP STORE uniquement ; SVG non acceptés.
 pas d'export graphique. Complément : [GitHub Pages](docs/github-pages.md) et
 [laboratoire](docs/creative-lab.md) publié depuis le 11 septembre 2026.
 
-## Décisions validées et priorité 0.3b
+## Décisions validées et priorité 0.3b / 0.3c
 
 La navigation cible est désormais **Marque / Bibliothèque / Campagnes / Publications**.
 Le branding devient une configuration structurée et versionnée ; sa charte est une
@@ -46,11 +47,15 @@ Tranches réalisées :
   error/compact/paginate, navigation des pages et guides de sécurité. Aucun texte
   ni événement tronqué silencieusement. Les formats et campagnes ne changent pas
   de schéma ; les instantanés existants ne sont pas remplacés.
-
 - [Éditorial et médiathèque](docs/editorial.md) : rédaction autonome, types/statuts,
   images associées, catalogue visuel, métadonnées, ZIP par article et des ressources,
   copies versionnées dans les campagnes, liaisons de contenu et Note éditoriale.
   Migration campagne v2→v3 et IndexedDB v2→v3, révisions/fichiers préservés.
+- [Brand Configuration](docs/brand-configuration.md) : migration Brand v2 vers une
+  release initiale, brouillon et lot de changements, analyse d'impact déterministe,
+  publication immuable, import/export contrôlé et migration explicite des campagnes.
+  La première verticale porte sur `color.primary` et conserve temporairement les
+  outils Branding historiques pour les capacités non encore migrées.
 
 Ces tranches ne clôturent pas le jalon 0.3. Le template **concert illustré multiformat**
 est désormais au catalogue : composition éditable en calques, agenda, accent et
@@ -59,11 +64,13 @@ carré, portrait, story, A4 et A3. Restent la sélection des ressources autoris�
 l’application visuelle complète des axes créatifs, la validation graphique de chaque
 format et les exports de production du jalon 0.4.
 
-Le prochain incrément porte sur Brand Configuration : migration Brand v2 vers une
-release initiale, brouillon du jeton color.primary, analyse d'impact, publication
-atomique et migration explicite d'une campagne. Le catalogue de templates et les
-exports reprennent ensuite sur cette base. La persistance partagée reste au jalon
-0.6 ; aucune API cloud n'est activée.
+Le prochain incrément est **Bibliothèque** : construire une projection commune des
+ressources déjà dédupliquées et des contenus, avec recherche, fiche canonique et
+usages calculés dans les releases de marque, campagnes et contenus. Aucun stockage
+parallèle ne doit être introduit. Une fois cette projection stabilisée, elle pourra
+être promue dans le shell global avant l'ouverture de Publications.
+
+La persistance partagée reste au jalon 0.6 ; aucune API cloud n'est activée.
 
 Voir [décisions détaillées](docs/studio-organization.md),
 [limites du rendu](docs/resolved-scene.md) et [prochaine étape](docs/next-step.md).
