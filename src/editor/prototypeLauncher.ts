@@ -12,8 +12,7 @@ async function loadPrototype(button: HTMLButtonElement): Promise<void> {
   const original = button.textContent;
   button.textContent = "Chargement PROTO-01…";
   try {
-    const base = import.meta.env.BASE_URL || "/";
-    const response = await fetch(`${base}${PROTOTYPE_PATH}`);
+    const response = await fetch(new URL(PROTOTYPE_PATH, document.baseURI));
     if (!response.ok) throw new Error(`Prototype indisponible (${response.status}).`);
     const blob = await response.blob();
     const file = new File([blob], "flowtherapy-viability.zip", { type: "application/zip" });
