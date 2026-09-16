@@ -250,6 +250,27 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
         },
       };
     });
+  if (!colorObjects.some((object) => object.id === "color.primary")) {
+    const source =
+      colorObjects.find((object) => object.id === "color.accent") ??
+      colorObjects.find((object) => object.metadata?.theme === "light");
+    if (source && typeof source.value === "string") {
+      colorObjects.push({
+        id: "color.primary",
+        type: "color-token",
+        role: "primary",
+        label: "Couleur principale",
+        status: "published",
+        revision: brand.revision,
+        value: source.value,
+        metadata: {
+          legacyRole: source.metadata?.legacyRole ?? source.role,
+          theme: "light",
+          migratedFallback: "true",
+        },
+      });
+    }
+  }
   const fontObjects: BrandObject[] = Object.entries(brand.fonts)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([role, ref]) => ({
@@ -292,26 +313,32 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
       value: { minimumRatio: 3 },
     },
   ];
-  const relations: BrandRelation[] = [
-    {
-      id: "component.brand-accent:uses:color.primary",
-      sourceId: "component.brand-accent",
-      targetId: "color.primary",
-      type: "uses",
-    },
-    {
-      id: "rule.primary-contrast:constrains:color.primary",
-      sourceId: "rule.primary-contrast",
-      targetId: "color.primary",
-      type: "constrains",
-    },
-    {
+  const colorIds = new Set(colorObjects.map((object) => object.id));
+  const relations: BrandRelation[] = [];
+  if (colorIds.has("color.primary")) {
+    relations.push(
+      {
+        id: "component.brand-accent:uses:color.primary",
+        sourceId: "component.brand-accent",
+        targetId: "color.primary",
+        type: "uses",
+      },
+      {
+        id: "rule.primary-contrast:constrains:color.primary",
+        sourceId: "rule.primary-contrast",
+        targetId: "color.primary",
+        type: "constrains",
+      },
+    );
+  }
+  if (colorIds.has("color.background")) {
+    relations.push({
       id: "rule.primary-contrast:uses:color.background",
       sourceId: "rule.primary-contrast",
       targetId: "color.background",
       type: "uses",
-    },
-  ];
+    });
+  }
   const objects = [...colorObjects, ...fontObjects, ...logoObjects, ...supportingObjects];
   const release: BrandRelease = {
     schemaVersion: 1,
@@ -428,10 +455,18 @@ export function publishDraft(
 ): BrandConfiguration {
   if (draft.brandId !== input.brandId)
     throw new Error("Le brouillon n’appartient pas à cette marque.");
+  if (draft.baseReleaseId !== latestRelease(input).id)
+    throw new Error("Le brouillon est basé sur une release obsolète. Recréez-le depuis la dernière release.");
   if (!report.complete) throw new Error("L’analyse d’impact est incomplète.");
   if (!draft.changeSet.operations.length)
     throw new Error("Le lot de changements est vide.");
-  if (report.findings.some((finding) => finding.severity === "error"))
+  const changedIds = draft.changeSet.operations
+    .map((operation) => operation.objectId)
+    .sort();
+  if (JSON.stringify(changedIds) !== JSON.stringify([...report.changedIds].sort()))
+    throw new Error("L’analyse d’impact ne correspond plus au brouillon courant.");
+  const currentFindings = findings(draft.objects);
+  if (currentFindings.some((finding) => finding.severity === "error"))
     throw new Error("Corrigez les contrôles en erreur avant publication.");
   const version = Math.max(0, ...input.releases.map((release) => release.version)) + 1;
   const objects = draft.objects.map((object) => ({
@@ -447,7 +482,7 @@ export function publishDraft(
     createdAt,
     objects,
     relations,
-    findings: clone(report.findings),
+    findings: currentFindings,
     fingerprint: releaseFingerprint(input.brandId, version, objects, relations),
   };
   return {
