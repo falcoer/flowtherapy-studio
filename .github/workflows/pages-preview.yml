@@ -1,0 +1,149 @@
+name: Publish studio previews to GitHub Pages
+
+# Preview deployments keep the verified main build at the site root and add
+# feature branches / same-repository PRs under /previews/. Imported data remains
+# browser-local exactly like production.
+on:
+  push:
+    branches:
+      - 'feat/**'
+      - 'fix/**'
+      - 'chore/**'
+      - 'proto/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      pages: read
+    outputs:
+      preview_path: ${{ steps.route.outputs.preview_path }}
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          path: production
+
+      - name: Checkout branch to preview
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          path: current
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            production/package-lock.json
+            current/package-lock.json
+
+      - name: Build production root from main
+        working-directory: production
+        run: |
+          npm ci
+          npm run build
+          mkdir -p ../site
+          cp -a dist/. ../site/
+
+      - name: Build current branch preview
+        id: route
+        working-directory: current
+        run: |
+          npm ci
+          npm run build
+          slug="$(printf '%s' "$GITHUB_REF_NAME" | tr '[:upper:]' '[:lower:]' | sed -E 's#[^a-z0-9._-]+#-#g; s/^-+//; s/-+$//')"
+          path="previews/branch-${slug}"
+          mkdir -p "../site/${path}"
+          cp -a dist/. "../site/${path}/"
+          echo "preview_path=${path}" >> "$GITHUB_OUTPUT"
+
+      - name: Build same-repository pull request previews
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --limit 20 \
+            --json number,headRefOid,isCrossRepository \
+            --jq '.[] | select(.isCrossRepository == false) | [.number, .headRefOid] | @tsv' \
+            > /tmp/open-prs.tsv
+
+          while IFS=$'\t' read -r number sha; do
+            [ -n "$number" ] || continue
+            echo "Building preview for PR #${number} (${sha})"
+            git -C production fetch origin "$sha" --depth=1
+            worktree="${GITHUB_WORKSPACE}/preview-pr-${number}"
+            target="${GITHUB_WORKSPACE}/site/previews/pr-${number}"
+            git -C production worktree add --detach "$worktree" "$sha"
+            if (
+              cd "$worktree"
+              npm ci
+              npm run build
+            ); then
+              mkdir -p "$target"
+              cp -a "$worktree/dist/." "$target/"
+            else
+              echo "::warning::PR #${number} could not be built; it is omitted from this deployment."
+            fi
+            git -C production worktree remove --force "$worktree"
+          done < /tmp/open-prs.tsv
+
+      - name: Add preview index
+        run: |
+          mkdir -p site/previews
+          {
+            printf '%s\n' '<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="robots" content="noindex"><title>Flow Therapy Studio previews</title><body><h1>Flow Therapy Studio — previews</h1><ul>'
+            find site/previews -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort | while read -r name; do
+              printf '<li><a href="./%s/">%s</a></li>\n' "$name" "$name"
+            done
+            printf '%s\n' '</ul></body></html>'
+          } > site/previews/index.html
+
+      - name: Read Pages configuration
+        uses: actions/configure-pages@v5
+        with:
+          enablement: false
+
+      - name: Upload production and preview site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages-preview
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish production root and previews
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Publish preview URL in job summary
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+          PREVIEW_PATH: ${{ needs.build.outputs.preview_path }}
+        run: |
+          echo "### Preview" >> "$GITHUB_STEP_SUMMARY"
+          echo "${PAGE_URL}${PREVIEW_PATH}/" >> "$GITHUB_STEP_SUMMARY"
