@@ -1,6 +1,5 @@
 import { useState } from "react";
 import type { CampaignBundle } from "../storage/indexeddb.js";
-import { selectEditorial } from "../storage/editorial.js";
 import { BrandWorkspace } from "./BrandWorkspace.js";
 import { Branding as LegacyBranding } from "./LegacyBranding.js";
 import { Library } from "./Library.js";
@@ -24,7 +23,7 @@ export function Branding({
           aria-pressed={mode === "configuration"}
           onClick={() => setMode("configuration")}
         >
-          Marque
+          Configuration de marque
         </button>
         <button
           className={mode === "library" ? "primary" : ""}
@@ -49,13 +48,7 @@ export function Branding({
         <BrandWorkspace bundle={bundle} onApply={onApply} />
       </div>
       <div hidden={mode !== "library"}>
-        <Library
-          active={mode === "library"}
-          bundle={bundle}
-          onUse={async (document, store) =>
-            onApply(await selectEditorial(bundle, document, store))
-          }
-        />
+        <Library active={mode === "library"} bundle={bundle} />
       </div>
       <div hidden={mode !== "legacy"}>
         <LegacyBranding bundle={bundle} onApply={onApply} />
