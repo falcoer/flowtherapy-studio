@@ -1,0 +1,66 @@
+.layer-dock {
+  margin: 1rem 0;
+  padding: 0.9rem;
+  border: 1px solid var(--studio-line);
+  border-radius: 14px;
+  background: var(--studio-surface-soft);
+}
+.layer-dock-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.layer-dock-heading strong {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 1rem;
+  text-transform: capitalize;
+}
+.selection-link {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--studio-line);
+  border-radius: 999px;
+  color: var(--studio-muted);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+.layer-dock-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.layer-dock-list button {
+  padding: 0.45rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--studio-line);
+  background: var(--studio-surface);
+  color: var(--studio-text);
+  text-transform: capitalize;
+}
+.layer-dock-list button.active {
+  border-color: var(--studio-focus);
+  outline: 2px solid color-mix(in srgb, var(--studio-focus) 30%, transparent);
+  font-weight: 700;
+}
+.resolved-surface [data-layer].studio-selected-layer {
+  outline-style: solid !important;
+  outline-color: var(--studio-focus) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--studio-focus) 35%, transparent);
+}
+.resolved-surface [data-layer].studio-selected-layer::after {
+  content: attr(data-selection-label);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  transform: translateY(-100%);
+  padding: 4px 7px;
+  background: var(--studio-focus);
+  color: #fff;
+  border-radius: 5px 5px 0 0;
+  font: 600 12px/1 Inter, sans-serif;
+  white-space: nowrap;
+  pointer-events: none;
+}
