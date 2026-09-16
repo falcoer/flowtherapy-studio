@@ -9,7 +9,9 @@ test("brand draft, impact, release and explicit campaign migration", async ({
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/#branding");
 
-  await expect(page.getByRole("heading", { name: "Flow Therapy — Site internet" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Flow Therapy — Site internet" }),
+  ).toBeVisible();
   await expect(page.getByText("Release 1", { exact: true }).first()).toBeVisible();
   await expect(page.getByLabel("Valeur color.primary")).toHaveValue("#168AD5");
 
@@ -18,17 +20,25 @@ test("brand draft, impact, release and explicit campaign migration", async ({
 
   await page.getByLabel("Valeur color.primary").fill("#0055AA");
   await expect(page.getByText("1 changement(s) dans le brouillon")).toBeVisible();
-  await expect(page.locator(".impact-change")).toContainText("#168AD5 → #0055AA");
+  await expect(page.locator(".impact-change")).toContainText(
+    "#168AD5 → #0055AA",
+  );
   await expect(page.locator(".impact-count")).not.toHaveText("0");
   await expect(
     page.getByText("Concert illustré — Flow Therapy", { exact: true }).first(),
   ).toBeVisible();
 
-  await page.getByRole("button", { name: "Enregistrer le brouillon" }).click();
-  await expect(page.getByRole("status")).toContainText("Brouillon enregistré localement");
+  await page
+    .getByRole("button", { name: "Enregistrer le brouillon" })
+    .click();
+  await expect(page.getByRole("status")).toContainText(
+    "Brouillon enregistré localement",
+  );
   await page.getByRole("button", { name: "Publier la release" }).click();
   await expect(page.getByRole("status")).toContainText("Release 2 publiée");
-  await expect(page.getByRole("button", { name: "Migrer vers release 2" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Migrer vers release 2" }),
+  ).toBeVisible();
 
   const exportEvent = page.waitForEvent("download");
   await page.getByRole("button", { name: "Exporter", exact: true }).click();
@@ -37,14 +47,18 @@ test("brand draft, impact, release and explicit campaign migration", async ({
     await readFile(exportedPath!, "utf8"),
   );
   expect(configuration.releases).toHaveLength(2);
-  expect(configuration.releases[1].objects.find((object) => object.id === "color.primary")?.value).toBe(
-    "#0055AA",
-  );
+  expect(
+    configuration.releases[1].objects.find(
+      (object) => object.id === "color.primary",
+    )?.value,
+  ).toBe("#0055AA");
   expect(configuration.releases[1].fingerprint).toMatch(/^fnv1a-/);
 
   await page.getByRole("button", { name: "Migrer vers release 2" }).click();
   await expect(page.getByRole("status")).toContainText("migrée dans l’éditeur");
-  await expect(page.getByRole("button", { name: "Campagne alignée sur release 2" })).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Campagne alignée sur release 2" }),
+  ).toBeDisabled();
 
   await page.reload();
   await expect(page.getByText("Release 2", { exact: true }).first()).toBeVisible();
@@ -61,6 +75,22 @@ test("brand draft, impact, release and explicit campaign migration", async ({
   expect(errors).toEqual([]);
 });
 
+test("switching branding tools preserves an unsaved configuration draft", async ({
+  page,
+}) => {
+  await page.goto("/#branding");
+  await expect(page.getByLabel("Valeur color.primary")).toHaveValue("#168AD5");
+  await page.getByLabel("Valeur color.primary").fill("#006699");
+  await expect(page.getByText("1 changement(s) dans le brouillon")).toBeVisible();
+
+  await page.getByRole("button", { name: "Outils historiques" }).click();
+  await expect(page.getByLabel("Nom de l’identité")).toBeVisible();
+  await page.getByRole("button", { name: "Configuration de marque" }).click();
+
+  await expect(page.getByLabel("Valeur color.primary")).toHaveValue("#006699");
+  await expect(page.getByText("1 changement(s) dans le brouillon")).toBeVisible();
+});
+
 test("theme switch remains independent from brand releases", async ({ page }) => {
   await page.goto("/#branding");
   const theme = page.getByRole("button", { name: "Activer le thème sombre" });
@@ -72,5 +102,7 @@ test("theme switch remains independent from brand releases", async ({ page }) =>
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await expect(page.getByText("MARQUE / CONFIGURATION", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("MARQUE / CONFIGURATION", { exact: true }),
+  ).toBeVisible();
 });
