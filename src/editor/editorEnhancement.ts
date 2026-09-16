@@ -1,7 +1,17 @@
+function labelsIn(selector: string): HTMLLabelElement[] {
+  return Array.from(document.querySelectorAll<HTMLLabelElement>(`${selector} label`));
+}
+
+function labelContaining(selector: string, text: string): HTMLLabelElement | undefined {
+  return labelsIn(selector).find((item) => item.textContent?.includes(text));
+}
+
 function selectedLayerSelect(): HTMLSelectElement | null {
-  const labels = Array.from(document.querySelectorAll<HTMLLabelElement>(".adjustment-panel label"));
-  const label = labels.find((item) => item.textContent?.includes("Calque sélectionné"));
-  return label?.querySelector("select") ?? null;
+  return labelContaining(".adjustment-panel", "Calque sélectionné")?.querySelector("select") ?? null;
+}
+
+function variantSelect(): HTMLSelectElement | null {
+  return labelContaining(".adjustment-panel", "Variante active")?.querySelector("select") ?? null;
 }
 
 function labelFor(option: HTMLOptionElement): string {
@@ -121,15 +131,100 @@ function syncLayerDock(): void {
   syncResourceInspector(panel, current);
 }
 
+function proxyClick(target: Element | null): void {
+  (target as HTMLElement | null)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function syncPaletteNavigation(): void {
+  const panel = document.querySelector<HTMLElement>(".content-panel");
+  if (!panel || panel.querySelector("[data-palette-navigation]")) return;
+  panel.classList.add("studio-palette");
+  const navigation = document.createElement("nav");
+  navigation.dataset.paletteNavigation = "true";
+  navigation.className = "palette-navigation";
+  navigation.setAttribute("aria-label", "Palette du Studio");
+  const items = [
+    ["Contenu", () => proxyClick(labelContaining(".content-panel", "Nom de la campagne") ?? null)],
+    ["Événements", () => proxyClick(panel.querySelector(".events"))],
+    ["Ressources", () => proxyClick(document.querySelector("[data-resource-inspector], .asset-slots"))],
+    ["Templates", () => proxyClick(labelContaining(".adjustment-panel", "Template") ?? null)],
+    ["Calques", () => proxyClick(document.querySelector("[data-layer-dock]"))],
+  ] as const;
+  for (const [label, action] of items) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", action);
+    navigation.append(button);
+  }
+  panel.prepend(navigation);
+}
+
+function syncFormatDock(): void {
+  const canvas = document.querySelector<HTMLElement>(".canvas-panel");
+  const source = variantSelect();
+  if (!canvas || !source) return;
+  let dock = canvas.querySelector<HTMLElement>("[data-format-dock]");
+  if (!dock) {
+    dock = document.createElement("div");
+    dock.dataset.formatDock = "true";
+    dock.className = "format-dock";
+    canvas.append(dock);
+  }
+  const signature = Array.from(source.options).map((option) => `${option.value}:${option.textContent}`).join("|");
+  if (dock.dataset.signature !== signature) {
+    dock.dataset.signature = signature;
+    dock.replaceChildren();
+    const label = document.createElement("span");
+    label.className = "format-dock-label";
+    label.textContent = "Formats";
+    dock.append(label);
+    for (const option of Array.from(source.options)) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.formatChoice = option.value;
+      button.textContent = option.textContent?.trim() || option.value;
+      button.addEventListener("click", () => {
+        source.value = option.value;
+        source.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      dock.append(button);
+    }
+  }
+  dock.querySelectorAll<HTMLButtonElement>("[data-format-choice]").forEach((button) => {
+    const active = button.dataset.formatChoice === source.value;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+}
+
+function syncStudioShell(): void {
+  const workspace = document.querySelector<HTMLElement>(".workspace");
+  const canvas = document.querySelector<HTMLElement>(".canvas-panel");
+  const inspector = document.querySelector<HTMLElement>(".adjustment-panel");
+  if (!workspace || !canvas || !inspector) return;
+  workspace.classList.add("studio-shell");
+  canvas.classList.add("studio-canvas-workbench");
+  inspector.classList.add("studio-inspector");
+  syncPaletteNavigation();
+  syncFormatDock();
+}
+
+function syncAll(): void {
+  syncStudioShell();
+  syncLayerDock();
+  syncFormatDock();
+}
+
 export function enableEditorEnhancement(): () => void {
-  const sync = () => queueMicrotask(syncLayerDock);
+  const sync = () => queueMicrotask(syncAll);
   const observer = new MutationObserver(sync);
   observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-pressed", "value", "src"] });
   document.addEventListener("change", sync, true);
   document.addEventListener("click", (event) => {
-    if ((event.target as HTMLElement).closest("[data-layer]")) setTimeout(syncLayerDock, 0);
+    if ((event.target as HTMLElement).closest("[data-layer]")) setTimeout(syncAll, 0);
   }, true);
-  syncLayerDock();
+  syncAll();
   return () => {
     observer.disconnect();
     document.removeEventListener("change", sync, true);
