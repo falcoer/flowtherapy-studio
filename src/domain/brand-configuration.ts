@@ -181,6 +181,11 @@ function channel(value: number) {
     ? normalized / 12.92
     : ((normalized + 0.055) / 1.055) ** 2.4;
 }
+function assetId(value: JsonValue) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const candidate = value.assetId;
+  return typeof candidate === "string" ? candidate : undefined;
+}
 export function contrastRatio(a: string, b: string): number {
   assertHex(a);
   assertHex(b);
@@ -232,24 +237,35 @@ function findings(objects: BrandObject[]): ValidationFinding[] {
 }
 
 export function migrateBrandV2(brand: Brand): BrandConfiguration {
-  const colorObjects: BrandObject[] = Object.entries(brand.colors)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([legacyRole, value]) => {
-      const role = colorRoles[legacyRole] ?? legacyRole;
-      return {
-        id: `color.${role}`,
-        type: "color-token" as const,
+  const colorById = new Map<string, BrandObject>();
+  for (const [legacyRole, value] of Object.entries(brand.colors).sort(([a], [b]) =>
+    a.localeCompare(b),
+  )) {
+    const role = colorRoles[legacyRole] ?? legacyRole,
+      id = `color.${role}`,
+      candidate: BrandObject = {
+        id,
+        type: "color-token",
         role,
         label: colorLabels[role] ?? legacyRole,
-        status: "published" as const,
+        status: "published",
         revision: brand.revision,
         value,
         metadata: {
           legacyRole,
           theme: legacyRole.startsWith("dark") ? "dark" : "light",
         },
-      };
-    });
+      },
+      existing = colorById.get(id),
+      direct = legacyRole === role,
+      existingDirect = existing?.metadata?.legacyRole === existing?.role;
+    // Brand v2 accepts arbitrary keys. When an alias such as `blue` and the
+    // canonical semantic role `primary` coexist, the canonical role wins.
+    if (!existing || (direct && !existingDirect)) colorById.set(id, candidate);
+  }
+  const colorObjects = [...colorById.values()].sort((a, b) =>
+    a.id.localeCompare(b.id),
+  );
   if (!colorObjects.some((object) => object.id === "color.primary")) {
     const source =
       colorObjects.find((object) => object.id === "color.accent") ??
@@ -264,7 +280,8 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
         revision: brand.revision,
         value: source.value,
         metadata: {
-          legacyRole: source.metadata?.legacyRole ?? source.role,
+          legacyRole: "blue",
+          sourceLegacyRole: source.metadata?.legacyRole ?? source.role,
           theme: "light",
           migratedFallback: "true",
         },
@@ -301,7 +318,9 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
       label: "Accent de marque",
       status: "published",
       revision: 1,
-      value: { description: "Titres, repères et ornements utilisant le bleu principal." },
+      value: {
+        description: "Titres, repères et ornements utilisant le bleu principal.",
+      },
     },
     {
       id: "rule.primary-contrast",
@@ -339,7 +358,12 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
       type: "uses",
     });
   }
-  const objects = [...colorObjects, ...fontObjects, ...logoObjects, ...supportingObjects];
+  const objects = [
+    ...colorObjects,
+    ...fontObjects,
+    ...logoObjects,
+    ...supportingObjects,
+  ];
   const release: BrandRelease = {
     schemaVersion: 1,
     id: `${brand.id}@1`,
@@ -373,7 +397,10 @@ export function createDraft(
     schemaVersion: 1,
     brandId: configuration.brandId,
     baseReleaseId: release.id,
-    objects: release.objects.map((object) => ({ ...clone(object), status: "published" })),
+    objects: release.objects.map((object) => ({
+      ...clone(object),
+      status: "published",
+    })),
     relations: clone(release.relations),
     changeSet: {
       id: `changes:${release.id}`,
@@ -415,20 +442,28 @@ export function analyzeImpact(
   draft: BrandDraft,
   usages: ImpactUsage[] = [],
 ): ImpactReport {
-  const changed = new Set(draft.changeSet.operations.map((operation) => operation.objectId));
+  const changed = new Set(
+    draft.changeSet.operations.map((operation) => operation.objectId),
+  );
   const dependents = new Set<string>();
   const queue = [...changed];
   while (queue.length) {
     const target = queue.shift()!;
     for (const relation of draft.relations) {
-      if (relation.targetId !== target || changed.has(relation.sourceId) || dependents.has(relation.sourceId))
+      if (
+        relation.targetId !== target ||
+        changed.has(relation.sourceId) ||
+        dependents.has(relation.sourceId)
+      )
         continue;
       dependents.add(relation.sourceId);
       queue.push(relation.sourceId);
     }
   }
   const affected = new Set([...changed, ...dependents]);
-  const matched = usages.filter((usage) => usage.objectIds.some((id) => affected.has(id)));
+  const matched = usages.filter((usage) =>
+    usage.objectIds.some((id) => affected.has(id)),
+  );
   return {
     complete: true,
     changedIds: [...changed].sort(),
@@ -456,19 +491,24 @@ export function publishDraft(
   if (draft.brandId !== input.brandId)
     throw new Error("Le brouillon n’appartient pas à cette marque.");
   if (draft.baseReleaseId !== latestRelease(input).id)
-    throw new Error("Le brouillon est basé sur une release obsolète. Recréez-le depuis la dernière release.");
+    throw new Error(
+      "Le brouillon est basé sur une release obsolète. Recréez-le depuis la dernière release.",
+    );
   if (!report.complete) throw new Error("L’analyse d’impact est incomplète.");
   if (!draft.changeSet.operations.length)
     throw new Error("Le lot de changements est vide.");
   const changedIds = draft.changeSet.operations
     .map((operation) => operation.objectId)
     .sort();
-  if (JSON.stringify(changedIds) !== JSON.stringify([...report.changedIds].sort()))
+  if (
+    JSON.stringify(changedIds) !== JSON.stringify([...report.changedIds].sort())
+  )
     throw new Error("L’analyse d’impact ne correspond plus au brouillon courant.");
   const currentFindings = findings(draft.objects);
   if (currentFindings.some((finding) => finding.severity === "error"))
     throw new Error("Corrigez les contrôles en erreur avant publication.");
-  const version = Math.max(0, ...input.releases.map((release) => release.version)) + 1;
+  const version =
+    Math.max(0, ...input.releases.map((release) => release.version)) + 1;
   const objects = draft.objects.map((object) => ({
     ...clone(object),
     status: "published" as const,
@@ -494,11 +534,28 @@ export function publishDraft(
 }
 export function brandFromRelease(base: Brand, release: BrandRelease): Brand {
   const brand = clone(base);
+  brand.id = release.brandId;
   brand.revision = release.version;
+  brand.colors = {};
+  brand.fonts = {};
+  brand.logos = {};
   for (const object of release.objects) {
-    if (object.type !== "color-token" || typeof object.value !== "string") continue;
-    const legacyRole = object.metadata?.legacyRole;
-    if (legacyRole) brand.colors[legacyRole] = object.value;
+    if (object.type === "color-token" && typeof object.value === "string") {
+      const legacyRole = object.metadata?.legacyRole ?? object.role;
+      brand.colors[legacyRole] = object.value;
+      if (object.id === "color.primary") brand.colors.blue = object.value;
+      if (object.id === "color.primary.dark") brand.colors.darkBlue = object.value;
+      continue;
+    }
+    if (object.type === "font-role") {
+      const id = assetId(object.value);
+      if (id) brand.fonts[object.role] = { assetId: id };
+      continue;
+    }
+    if (object.type === "logo") {
+      const id = assetId(object.value);
+      if (id) brand.logos[object.role] = { assetId: id };
+    }
   }
   return brand;
 }
@@ -506,8 +563,16 @@ export function migrateCampaignBrand(
   campaign: Campaign,
   release: BrandRelease,
 ): Campaign {
-  if (!campaign.brand) throw new Error("La campagne ne possède pas d’instantané de marque.");
+  if (!campaign.brand)
+    throw new Error("La campagne ne possède pas d’instantané de marque.");
   const next = clone(campaign);
-  next.brand = brandFromRelease(next.brand!, release);
+  next.brand = brandFromRelease(next.brand, release);
+  for (const support of next.supports) {
+    if (support.template.brandRef?.id === next.brand.id)
+      support.template.brandRef = {
+        id: next.brand.id,
+        revision: next.brand.revision,
+      };
+  }
   return next;
 }
