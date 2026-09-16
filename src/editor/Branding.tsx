@@ -1,7 +1,9 @@
 import { useState } from "react";
 import type { CampaignBundle } from "../storage/indexeddb.js";
+import { selectEditorial } from "../storage/editorial.js";
 import { BrandWorkspace } from "./BrandWorkspace.js";
 import { Branding as LegacyBranding } from "./LegacyBranding.js";
+import { Library } from "./Library.js";
 import "./branding-transition.css";
 
 export function Branding({
@@ -11,16 +13,25 @@ export function Branding({
   bundle: CampaignBundle;
   onApply: (next: CampaignBundle) => void;
 }) {
-  const [mode, setMode] = useState<"configuration" | "legacy">("configuration");
+  const [mode, setMode] = useState<"configuration" | "library" | "legacy">(
+    "configuration",
+  );
   return (
     <>
-      <nav className="brand-workspace-switch" aria-label="Mode de gestion de marque">
+      <nav className="brand-workspace-switch" aria-label="Espaces Marque et Bibliothèque">
         <button
           className={mode === "configuration" ? "primary" : ""}
           aria-pressed={mode === "configuration"}
           onClick={() => setMode("configuration")}
         >
-          Configuration de marque
+          Marque
+        </button>
+        <button
+          className={mode === "library" ? "primary" : ""}
+          aria-pressed={mode === "library"}
+          onClick={() => setMode("library")}
+        >
+          Bibliothèque
         </button>
         <button
           className={mode === "legacy" ? "primary" : ""}
@@ -30,11 +41,21 @@ export function Branding({
           Outils historiques
         </button>
         <span>
-          Transition 0.3 : les fonctions non encore modélisées restent disponibles dans l’éditeur historique ; leur migration vers les releases reste explicite.
+          Transition du shell : Marque et Bibliothèque utilisent déjà le nouveau modèle ;
+          les fonctions restantes restent accessibles dans l’éditeur historique.
         </span>
       </nav>
       <div hidden={mode !== "configuration"}>
         <BrandWorkspace bundle={bundle} onApply={onApply} />
+      </div>
+      <div hidden={mode !== "library"}>
+        <Library
+          active={mode === "library"}
+          bundle={bundle}
+          onUse={async (document, store) =>
+            onApply(await selectEditorial(bundle, document, store))
+          }
+        />
       </div>
       <div hidden={mode !== "legacy"}>
         <LegacyBranding bundle={bundle} onApply={onApply} />
