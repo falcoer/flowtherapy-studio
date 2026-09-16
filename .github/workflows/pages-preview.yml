@@ -88,17 +88,18 @@ jobs:
             [ -n "$number" ] || continue
             echo "Building preview for PR #${number} (${sha})"
             git -C production fetch origin "$sha" --depth=1
-            worktree="../preview-pr-${number}"
+            worktree="${GITHUB_WORKSPACE}/preview-pr-${number}"
+            target="${GITHUB_WORKSPACE}/site/previews/pr-${number}"
             git -C production worktree add --detach "$worktree" "$sha"
             if (
               cd "$worktree"
               npm ci
               npm run build
             ); then
-              mkdir -p "site/previews/pr-${number}"
-              cp -a "$worktree/dist/." "site/previews/pr-${number}/"
+              mkdir -p "$target"
+              cp -a "$worktree/dist/." "$target/"
             else
-              echo "::warning::PR #${number} could not be built; its previous preview will not be included in this deployment."
+              echo "::warning::PR #${number} could not be built; it is omitted from this deployment."
             fi
             git -C production worktree remove --force "$worktree"
           done < /tmp/open-prs.tsv
