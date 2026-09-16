@@ -6,14 +6,16 @@ import type { ResolvedScene } from "../render/scene.js";
 import type { CampaignBundle } from "../storage/indexeddb.js";
 import { SceneContent } from "./SceneContent.js";
 import { createBrowserMeasurer, useSceneFonts } from "./sceneFonts.js";
+import { downloadBlob, exportSurfaceAsPng } from "./exportPng.js";
 import "./scene.css";
 
 export function Preview({ bundle, supportId, variantId, selected, select, move }: {
   bundle: CampaignBundle; supportId: string; variantId: string; selected: string;
   select: (id: string) => void; move: (id: string, x: number, y: number) => void;
 }) {
-  const host = useRef<HTMLDivElement>(null), [width, setWidth] = useState(600);
+  const host = useRef<HTMLDivElement>(null), surfaceElement = useRef<HTMLDivElement>(null), [width, setWidth] = useState(600);
   const [page, setPage] = useState(0), [guides, setGuides] = useState(false);
+  const [exporting, setExporting] = useState(false), [exportError, setExportError] = useState("");
   const [drag, setDrag] = useState<{
     id: string; x: number; y: number; startX: number; startY: number; dx: number; dy: number;
   } | null>(null);
@@ -31,7 +33,7 @@ export function Preview({ bundle, supportId, variantId, selected, select, move }
   const scale = surface ? width / surface.width : 1;
   const pageIndex = Math.min(page, (scene?.pages.length ?? 1) - 1);
   const current = scene?.pages[pageIndex];
-  useEffect(() => { setPage(0); setDrag(null); }, [supportId, variantId]);
+  useEffect(() => { setPage(0); setDrag(null); setExportError(""); }, [supportId, variantId]);
   useEffect(() => { setPage((value) => Math.min(value, (scene?.pages.length ?? 1) - 1)); }, [scene?.pages.length]);
   useLayoutEffect(() => {
     if (!host.current) return;
@@ -49,6 +51,21 @@ export function Preview({ bundle, supportId, variantId, selected, select, move }
       warnings.push(`${node.id} : image manquante ou format non pris en charge.`);
   }
   const safe = scene?.format.zones.safeInset;
+  const exportCurrentPage = async () => {
+    if (!surface || !surfaceElement.current || exporting) return;
+    setExporting(true);
+    setExportError("");
+    try {
+      const blob = await exportSurfaceAsPng(surfaceElement.current, surface.width, surface.height);
+      const campaignName = bundle.campaign.name.trim().replace(/[^a-zA-Z0-9_-]+/g, "-").replace(/^-|-$/g, "") || "flow-therapy";
+      const suffix = scene && scene.pages.length > 1 ? `-page-${pageIndex + 1}` : "";
+      downloadBlob(blob, `${campaignName}-${variantId}${suffix}.png`);
+    } catch (e) {
+      setExportError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setExporting(false);
+    }
+  };
   return <>
     {scene && <div className="scene-toolbar" aria-label="Options de l’aperçu">
       <div className="scene-pagination" role="group" aria-label="Pages de la composition">
@@ -59,13 +76,15 @@ export function Preview({ bundle, supportId, variantId, selected, select, move }
           onClick={() => { setPage(pageIndex + 1); setDrag(null); }}>→</button>
       </div>
       <button type="button" aria-pressed={guides} onClick={() => setGuides(!guides)}>Zones de sécurité</button>
+      <button type="button" data-export-png disabled={!fonts.ready || exporting || !surface}
+        onClick={() => void exportCurrentPage()}>{exporting ? "Export PNG…" : "Exporter PNG"}</button>
     </div>}
     <div ref={host} className="preview-host" data-fonts-ready={fonts.ready}>
       {!surface || !scene || !current ? <div className="empty-preview">
         <span>FT</span><h2>Votre prochaine campagne</h2>
         <p>{error || "Saisissez un événement, puis activez un template pour composer votre premier support."}</p>
       </div> : <div className="surface-wrap" style={{ height: surface.height * scale }}>
-        <div className="surface resolved-surface" style={{ width: surface.width, height: surface.height, transform: `scale(${scale})` }}>
+        <div ref={surfaceElement} className="surface resolved-surface" style={{ width: surface.width, height: surface.height, transform: `scale(${scale})` }}>
           {current.nodes.map((node) => {
             const { layer, placement: placement, id } = node;
             const frame = placement.frame;
@@ -119,8 +138,9 @@ export function Preview({ bundle, supportId, variantId, selected, select, move }
     </div>
     <p className="preview-note">
       {fonts.ready ? "Scène résolue · polices de la campagne lorsqu’elles sont disponibles" : "Chargement des polices locales…"}
-      {" · sans export graphique. Les contenus débordants restent visibles et signalés."}
+      {" · export PNG prototype de la page affichée. Les contenus débordants restent visibles et signalés."}
     </p>
+    {exportError && <p className="warnings" role="alert">Export PNG : {exportError}</p>}
     {warnings.length > 0 && <ul className="warnings" aria-label="Avertissements de composition">
       {[...new Set(warnings)].map((warning) => <li key={warning}>{warning}</li>)}
     </ul>}
