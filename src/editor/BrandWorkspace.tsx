@@ -7,7 +7,6 @@ import {
   createDraft,
   latestRelease,
   migrateBrandV2,
-  migrateCampaignBrand,
   publishDraft,
   updateColorToken,
 } from "../domain/brand-configuration.js";
@@ -91,7 +90,8 @@ export function BrandWorkspace({
   const configStore = useRef<BrandConfigurationStore | null>(null),
     legacyStore = useRef<IndexedDBCampaignStore | null>(null),
     lock = useRef(false);
-  const [configuration, setConfiguration] = useState<BrandConfiguration | null>(null);
+  const [configuration, setConfiguration] =
+    useState<BrandConfiguration | null>(null);
   const [legacyBundle, setLegacyBundle] = useState<CampaignBundle | null>(null);
   const [expectedRevision, setExpectedRevision] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState("color.primary");
@@ -188,7 +188,8 @@ export function BrandWorkspace({
     return result;
   }, [bundle.campaign.brand, bundle.campaign.id, bundle.campaign.name]);
   const impact = draft ? analyzeImpact(draft, usages) : null,
-    hasErrors = impact?.findings.some((finding) => finding.severity === "error") ?? false;
+    hasErrors =
+      impact?.findings.some((finding) => finding.severity === "error") ?? false;
 
   function editPrimary(value: string) {
     if (!configuration || !draft) return;
@@ -226,36 +227,46 @@ export function BrandWorkspace({
       `Release ${latestRelease(saved).version} publiée. Les campagnes existantes n’ont pas été modifiées.`,
     );
   }
-  function useReleaseInCampaign() {
-    if (!configuration || !legacyBundle) return;
-    const target = latestRelease(configuration);
-    if (bundle.campaign.brand) {
-      onApply({
-        ...bundle,
-        campaign: migrateCampaignBrand(bundle.campaign, target),
-      });
-      setNotice(
-        `Campagne « ${bundle.campaign.name} » migrée dans l’éditeur. Enregistrez la campagne pour conserver ce nouvel instantané.`,
-      );
-      return;
+  async function useReleaseInCampaign() {
+    if (!configuration || !legacyBundle || !legacyStore.current) return;
+    const target = latestRelease(configuration),
+      targetBrand = brandFromRelease(legacyBundle.campaign.brand!, target),
+      storedResources = await legacyStore.current.listResources(),
+      resources = [...storedResources];
+    for (const asset of legacyBundle.campaign.assets) {
+      if (!resources.some((candidate) => candidate.id === asset.id))
+        resources.push(asset);
     }
-    const targetBrand = brandFromRelease(legacyBundle.campaign.brand!, target),
-      campaign = applyBrand(
-        bundle.campaign,
-        targetBrand,
-        legacyBundle.campaign.assets,
-      ),
-      assets = new Map(bundle.assets);
-    for (const asset of campaign.assets) {
-      const source = legacyBundle.campaign.assets.find(
-        (candidate) => candidate.sha256 === asset.sha256,
+    const campaign = applyBrand(bundle.campaign, targetBrand, resources),
+      assets = new Map(bundle.assets),
+      requiredIds = new Set(
+        [
+          ...Object.values(targetBrand.fonts),
+          ...Object.values(targetBrand.logos ?? {}),
+        ].map((reference) => reference.assetId),
       );
-      const bytes = source && legacyBundle.assets.get(source.path);
-      if (bytes) assets.set(asset.path, bytes);
+    for (const source of resources.filter((asset) => requiredIds.has(asset.id))) {
+      const applied = campaign.assets.find(
+        (asset) =>
+          asset.sha256 === source.sha256 && asset.mimeType === source.mimeType,
+      );
+      if (!applied || assets.has(applied.path)) continue;
+      try {
+        const { bytes } = await legacyStore.current.loadResource(source.sha256);
+        assets.set(applied.path, bytes);
+      } catch {
+        const legacyBytes = legacyBundle.assets.get(source.path);
+        if (!legacyBytes)
+          throw new Error(`Fichier de marque indisponible : ${source.source}.`);
+        assets.set(applied.path, legacyBytes);
+      }
     }
+    const migrating = Boolean(bundle.campaign.brand);
     onApply({ campaign, assets });
     setNotice(
-      `Release ${target.version} appliquée à la campagne dans l’éditeur. Enregistrez la campagne pour conserver cet instantané.`,
+      migrating
+        ? `Campagne « ${bundle.campaign.name} » migrée dans l’éditeur. Enregistrez la campagne pour conserver ce nouvel instantané.`
+        : `Release ${target.version} appliquée à la campagne dans l’éditeur. Enregistrez la campagne pour conserver cet instantané.`,
     );
   }
   async function importDocument(file: File) {
@@ -285,11 +296,11 @@ export function BrandWorkspace({
     basePrimary = baseRelease?.objects.find(
       (object) => object.id === "color.primary",
     ),
-    currentPrimary = bundle.campaign.brand?.colors.blue?.toUpperCase(),
-    releasePrimary = objectValue(
-      release.objects.find((object) => object.id === "color.primary"),
-    ).toUpperCase(),
-    campaignCurrent = Boolean(currentPrimary && currentPrimary === releasePrimary);
+    projectedReleaseBrand = brandFromRelease(legacyBundle.campaign.brand!, release),
+    campaignCurrent = Boolean(
+      bundle.campaign.brand &&
+        JSON.stringify(bundle.campaign.brand) === JSON.stringify(projectedReleaseBrand),
+    );
 
   return (
     <main className="brand-config-shell">
@@ -299,7 +310,11 @@ export function BrandWorkspace({
           <h1>{configuration.name}</h1>
           <div className="brand-config-statusline">
             <span className="brand-config-release">Release {release.version}</span>
-            <span className={dirty ? "brand-config-draft dirty" : "brand-config-draft"}>
+            <span
+              className={
+                dirty ? "brand-config-draft dirty" : "brand-config-draft"
+              }
+            >
               {draft.changeSet.operations.length
                 ? `${draft.changeSet.operations.length} changement(s) dans le brouillon`
                 : "Brouillon aligné sur la release"}
@@ -337,9 +352,7 @@ export function BrandWorkspace({
           </button>
           <button
             className="primary"
-            disabled={
-              busy || !draft.changeSet.operations.length || hasErrors
-            }
+            disabled={busy || !draft.changeSet.operations.length || hasErrors}
             onClick={() => void run(publish)}
           >
             Publier la release
@@ -350,12 +363,18 @@ export function BrandWorkspace({
       {(notice || error) && (
         <div className="brand-config-feedback" aria-live="polite">
           {notice && !error && <p role="status">{notice}</p>}
-          {error && <p role="alert" className="error">{error}</p>}
+          {error && (
+            <p role="alert" className="error">
+              {error}
+            </p>
+          )}
           {error.includes("autre onglet") && (
             <button
               onClick={() =>
                 void run(async () => {
-                  const fresh = await configStore.current!.load(configuration.brandId);
+                  const fresh = await configStore.current!.load(
+                    configuration.brandId,
+                  );
                   if (!fresh) throw new Error("Configuration introuvable.");
                   setConfiguration(fresh);
                   setExpectedRevision(fresh.revision);
@@ -387,7 +406,8 @@ export function BrandWorkspace({
                     aria-pressed={selectedId === object.id}
                     onClick={() => setSelectedId(object.id)}
                   >
-                    {object.type === "color-token" && typeof object.value === "string" ? (
+                    {object.type === "color-token" &&
+                    typeof object.value === "string" ? (
                       <span
                         className="brand-config-swatch"
                         style={{ background: object.value }}
@@ -413,12 +433,22 @@ export function BrandWorkspace({
             <>
               <header className="brand-config-object-heading">
                 <div>
-                  <span className="eyebrow">{typeLabel(selected.type).toUpperCase()}</span>
+                  <span className="eyebrow">
+                    {typeLabel(selected.type).toUpperCase()}
+                  </span>
                   <h2>{selected.label}</h2>
                   <code>{selected.id}</code>
                 </div>
-                <span className={selected.status === "draft" ? "state-pill draft" : "state-pill"}>
-                  {selected.status === "draft" ? "Brouillon" : `Publié · r${selected.revision}`}
+                <span
+                  className={
+                    selected.status === "draft"
+                      ? "state-pill draft"
+                      : "state-pill"
+                  }
+                >
+                  {selected.status === "draft"
+                    ? "Brouillon"
+                    : `Publié · r${selected.revision}`}
                 </span>
               </header>
 
@@ -465,13 +495,22 @@ export function BrandWorkspace({
                   {impact?.findings
                     .filter((finding) => finding.scopeId === selected.id)
                     .map((finding) => (
-                      <div className={`finding ${finding.severity}`} key={finding.id}>
-                        <span>{finding.severity === "error" ? "À corriger" : "Valide"}</span>
+                      <div
+                        className={`finding ${finding.severity}`}
+                        key={finding.id}
+                      >
+                        <span>
+                          {finding.severity === "error" ? "À corriger" : "Valide"}
+                        </span>
                         <p>{finding.message}</p>
                       </div>
                     ))}
-                  {!impact?.findings.some((finding) => finding.scopeId === selected.id) && (
-                    <p className="hint">Aucun contrôle spécifique dans cette tranche.</p>
+                  {!impact?.findings.some(
+                    (finding) => finding.scopeId === selected.id,
+                  ) && (
+                    <p className="hint">
+                      Aucun contrôle spécifique dans cette tranche.
+                    </p>
                   )}
                 </div>
               </section>
@@ -488,7 +527,11 @@ export function BrandWorkspace({
                       className="brand-config-preview-card"
                       style={{ borderColor: objectValue(before ?? basePrimary) }}
                     >
-                      <strong style={{ color: objectValue(before ?? basePrimary) }}>FLOW THERAPY</strong>
+                      <strong
+                        style={{ color: objectValue(before ?? basePrimary) }}
+                      >
+                        FLOW THERAPY
+                      </strong>
                       <span>Musique · Énergie · Émotion</span>
                     </div>
                   </div>
@@ -496,9 +539,15 @@ export function BrandWorkspace({
                     <small>Brouillon</small>
                     <div
                       className="brand-config-preview-card"
-                      style={{ borderColor: objectValue(selected) || objectValue(primary) }}
+                      style={{
+                        borderColor: objectValue(selected) || objectValue(primary),
+                      }}
                     >
-                      <strong style={{ color: objectValue(selected) || objectValue(primary) }}>FLOW THERAPY</strong>
+                      <strong
+                        style={{ color: objectValue(selected) || objectValue(primary) }}
+                      >
+                        FLOW THERAPY
+                      </strong>
                       <span>Musique · Énergie · Émotion</span>
                     </div>
                   </div>
@@ -563,7 +612,9 @@ export function BrandWorkspace({
               draft.changeSet.operations.map((operation) => (
                 <div className="impact-change" key={operation.id}>
                   <strong>{operation.objectId}</strong>
-                  <span>{String(operation.before)} → {String(operation.after)}</span>
+                  <span>
+                    {String(operation.before)} → {String(operation.after)}
+                  </span>
                 </div>
               ))
             ) : (
@@ -575,7 +626,9 @@ export function BrandWorkspace({
             <p className="impact-count">{impact?.dependentIds.length ?? 0}</p>
             <div className="brand-config-usage-chips">
               {impact?.dependentIds.map((id) => (
-                <span key={id}>{draft.objects.find((object) => object.id === id)?.label ?? id}</span>
+                <span key={id}>
+                  {draft.objects.find((object) => object.id === id)?.label ?? id}
+                </span>
               ))}
             </div>
           </section>
@@ -583,7 +636,9 @@ export function BrandWorkspace({
             <h3>Templates concernés</h3>
             {impact?.templates.length ? (
               <ul>
-                {impact.templates.map((usage) => <li key={usage.id}>{usage.label}</li>)}
+                {impact.templates.map((usage) => (
+                  <li key={usage.id}>{usage.label}</li>
+                ))}
               </ul>
             ) : (
               <p className="hint">Aucun tant que le brouillon est aligné.</p>
@@ -593,7 +648,9 @@ export function BrandWorkspace({
             <h3>Campagne courante</h3>
             {bundle.campaign.brand && impact?.campaigns.length ? (
               <ul>
-                {impact.campaigns.map((usage) => <li key={usage.id}>{usage.label}</li>)}
+                {impact.campaigns.map((usage) => (
+                  <li key={usage.id}>{usage.label}</li>
+                ))}
               </ul>
             ) : (
               <p className="hint">
@@ -604,8 +661,8 @@ export function BrandWorkspace({
             )}
             <button
               className="wide"
-              disabled={campaignCurrent}
-              onClick={useReleaseInCampaign}
+              disabled={busy || campaignCurrent}
+              onClick={() => void run(useReleaseInCampaign)}
             >
               {campaignCurrent
                 ? `Campagne alignée sur release ${release.version}`
@@ -617,7 +674,8 @@ export function BrandWorkspace({
           <section>
             <h3>Publication</h3>
             <p className="hint">
-              Enregistrer garde un brouillon local. Publier crée une release immuable et ne migre aucune campagne automatiquement.
+              Enregistrer garde un brouillon local. Publier crée une release immuable
+              et ne migre aucune campagne automatiquement.
             </p>
           </section>
         </aside>
