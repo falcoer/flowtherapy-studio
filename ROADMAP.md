@@ -7,6 +7,7 @@
 | 0.2 | Éditeur statique minimal | Créer une campagne et une variante ; saisir, déplacer, recadrer, annuler, sauvegarder | Intégré |
 | 0.2 complément | Laboratoire créatif React + Motion | Exploration et recettes locales, aperçu multiformat | Intégré et publié sur Pages |
 | 0.3 | Templates et formats multiples | Catalogue, variantes, personnalisations, débordements et pagination | En cours — Branding, scène résolue, Éditorial, médiathèque et template concert illustré intégrés |
+| 0.3b | Configuration de marque | Release initiale, lot de changements, impact couleur, campagne préservée et migration explicite | Cadré — ADR 0004 et modèle cible |
 | 0.4 | Exports | PNG/JPEG/PDF, fidélité texte, dimensions physiques, exports groupés | À faire |
 | 0.5 | Studio privé utilisable | Assets autorisés, trois templates validés, accès groupe, recette A4/A3/social | À faire |
 | 0.6 | Persistance partagée optionnelle | Adaptateur authentifié, conflits de révision, fichiers privés, autonomie locale conservée | À faire |
@@ -24,12 +25,14 @@ ZIP STORE uniquement ; SVG non acceptés.
 pas d'export graphique. Complément : [GitHub Pages](docs/github-pages.md) et
 [laboratoire](docs/creative-lab.md) publié depuis le 11 septembre 2026.
 
-## Décisions validées et priorité 0.3
+## Décisions validées et priorité 0.3b
 
-Navigation : **Branding / Éditorial / Médias / Campagnes**.
-Éditorial réunit contenus et ressources liées ; Ligne éditoriale est une sous-section.
-Médias regroupe formats, templates et canaux. Les ressources sont centralisées et
-référencées sans duplication entre les tiroirs.
+La navigation cible est désormais **Marque / Bibliothèque / Campagnes / Publications**.
+Le branding devient une configuration structurée et versionnée ; sa charte est une
+projection générée. Formats, templates et canaux restent des capacités contextuelles.
+Les ressources et contenus sont centralisés dans Bibliothèque sans duplication.
+Voir l'[ADR 0004](docs/decisions/0004-brand-configuration-management.md) et le
+[modèle cible](docs/brand-configuration.md).
 
 Tranches réalisées :
 
@@ -56,10 +59,11 @@ carré, portrait, story, A4 et A3. Restent la sélection des ressources autoris�
 l’application visuelle complète des axes créatifs, la validation graphique de chaque
 format et les exports de production du jalon 0.4.
 
-Le catalogue de templates, les variantes personnalisables et l'enrichissement de
-Branding/Éditorial se poursuivent. La persistance éditoriale partagée reste au
-jalon 0.6, après adaptateur authentifié, droits et conflits de révision ; aucune
-API cloud n'est activée.
+Le prochain incrément porte sur Brand Configuration : migration Brand v2 vers une
+release initiale, brouillon du jeton color.primary, analyse d'impact, publication
+atomique et migration explicite d'une campagne. Le catalogue de templates et les
+exports reprennent ensuite sur cette base. La persistance partagée reste au jalon
+0.6 ; aucune API cloud n'est activée.
 
 Voir [décisions détaillées](docs/studio-organization.md),
 [limites du rendu](docs/resolved-scene.md) et [prochaine étape](docs/next-step.md).

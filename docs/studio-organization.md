@@ -1,149 +1,164 @@
-# Organisation du studio — décisions validées
+# Organisation cible de Flow Therapy Studio
 
-Décisions validées avec le propriétaire le 11 septembre 2026.
-Ce document remplace l'organisation initiale à trois tiroirs et le nom provisoire
-« Moyens ». La navigation cible est : **Branding / Éditorial / Médias / Campagnes**.
-Ces choix sont pérennisés ; ils ne signifient pas que tous les écrans sont livrés.
+Décisions initiales validées le 11 septembre 2026, puis rationalisées le
+16 septembre 2026 par l'[ADR 0004](decisions/0004-brand-configuration-management.md).
 
-## 1. Branding
+Flow Therapy Studio est un système de gestion de configuration de marque et un
+studio de campagne. La navigation principale est :
 
-### Identité de marque
+**Marque / Bibliothèque / Campagnes / Publications**
 
-- Description : positionnement, mission, promesse, valeurs, publics.
-- Historique : étapes de la marque, distinctes de l'historique technique des versions.
-- Intervenants : personnes, rôles, crédits et responsabilités.
-- Voix de marque : ton, vocabulaire, formulations à privilégier ou éviter,
-  exemples par contexte.
+Le référentiel structuré est la source de vérité. Les guides, aperçus et documents
+sont des projections générées.
+
+## Principes d'interaction
+
+Le shell reste identique dans les quatre espaces :
+
+- navigation principale à gauche ;
+- liste ou catalogue contextuel ;
+- espace de travail central ;
+- inspecteur de propriétés, règles et impacts à droite ;
+- version publiée et brouillon courant toujours visibles.
+
+Les objets partagent identifiant, type, statut, révision, relations, usages et
+historique. Les éditeurs restent spécialisés : nuancier pour les couleurs,
+spécimens pour les polices, galerie pour les logos et canevas pour les productions.
+
+## 1. Marque
+
+Marque contient la configuration stable et versionnée.
+
+### Fondations
+
+- positionnement, mission, promesse, valeurs et publics ;
+- voix, vocabulaire et formulations ;
+- responsabilités et crédits ;
+- principes de composition et d'expression.
 
 ### Identité visuelle
 
-| Ressource                        | Informations et règles                                                                |
-| -------------------------------- | ------------------------------------------------------------------------------------- |
-| Logos                            | Variantes, fonds compatibles, zone de protection, taille minimale, version principale |
-| Photos                           | Sujet, crédit, droits d'utilisation, point focal, recadrages autorisés                |
-| Illustrations, icônes, ornements | Famille graphique, couleurs autorisées, recoloration et composition                   |
-| Palettes                         | Rôles fond/texte/accent/contraste, associations autorisées                            |
-| Polices                          | Fichiers, graisses, rôles typographiques, polices de remplacement                     |
-| Composants                       | Structure, paramètres, contenu attendu, variantes, contraintes                        |
-| Mises en page                    | Zones, hiérarchie, formats compatibles, règles d'adaptation                           |
+| Objet | Informations et règles |
+| --- | --- |
+| Logos | variantes, fonds compatibles, zone de protection, taille minimale |
+| Couleurs | jetons sémantiques, thèmes, associations et contrastes |
+| Typographies | fichiers, graisses, rôles, échelles et remplacements |
+| Photos | sujet, crédit, droits, point focal et recadrages |
+| Illustrations | famille, recoloration et règles de composition |
+| Composants | structure, paramètres, variantes et contraintes |
+| Mises en page | zones, hiérarchie, formats et adaptation |
 
-Les mises en page expriment la grammaire visuelle de la marque ; les templates
-les mobilisent pour une intention de communication. Droits, versions et statuts
-brouillon/validé/remplacé sont transversaux.
+Chaque modification rejoint un lot de changements. Avant publication, le système
+présente ses dépendances, contrôles et migrations. Une release publiée est immuable.
 
-## 2. Éditorial
+Le guide de marque reste disponible comme vue générée d'une release.
 
-Ce tiroir réunit la matière à communiquer et ses ressources associées :
+## 2. Bibliothèque
 
-- Vue d'ensemble : contenus et ressources, filtrables par type, thème, date et statut.
-- Contenus : événements, articles, annonces et présentations.
-- Médiathèque : photos, vidéos, audio et documents liés aux contenus.
-- Ligne éditoriale : objectifs, publics, thèmes, rythme et adaptation du ton par canal.
+Bibliothèque centralise la matière réutilisable :
 
-« Ligne éditoriale » devient une sous-section, pas le nom du tiroir.
-Formats, templates et canaux appartiennent à Médias.
+- ressources binaires : images, vidéos, sons, documents et polices ;
+- contenus : événements, articles, annonces et présentations ;
+- collections, tags, recherche et statuts ;
+- crédits, provenance, licences et droits ;
+- usages dans la marque, les campagnes et les productions.
 
-L'utilisateur peut travailler par sujet : ouvrir un événement donne accès à ses
-informations, ressources associées et campagnes utilisatrices. Ce mélange dans
-l'interface conserve des objets distincts dans le modèle.
+Une ressource est stockée une seule fois. Chaque contexte conserve ses propres
+références, recadrages et paramètres. Une campagne dépend d'un instantané explicite
+du contenu, jamais d'une lecture mutable au moment du rendu.
 
-### Ressources partagées sans duplication
+La ligne éditoriale est un ensemble de règles de marque appliquées aux contenus ;
+elle n'est pas un silo de navigation.
 
-Les fichiers, crédits et droits sont centralisés. Branding, contenus éditoriaux
-et campagnes référencent les mêmes ressources. Une photo officielle peut donc
-figurer dans l'identité visuelle, accompagner un article et servir plusieurs campagnes
-sans duplication de son fichier. Les usages et recadrages locaux restent distincts.
-La médiathèque est une vue de ces ressources, pas un silo de stockage supplémentaire.
+## 3. Campagnes
 
-L'Éditorial local, la médiathèque partagée et les instantanés de contenus dans les
-campagnes sont formalisés par l'[ADR 0003](decisions/0003-editorial-library-and-campaign-snapshots.md).
-Une campagne dépend d'une révision copiée du contenu, jamais d'une lecture mutable du
-catalogue éditorial au moment du rendu.
+Une campagne assemble un objectif, des contenus, une version de marque et des
+capacités de production.
 
-## 3. Médias
+| Onglet | Responsabilité |
+| --- | --- |
+| Brief | objectif, public, message et période |
+| Contenus | événements, articles, ordre et ressources |
+| Direction | axes créatifs, recette et références |
+| Productions | templates, formats, variantes et validation |
+| Diffusion | préparation des exports et publications |
 
-Médias regroupe les moyens transversaux : **formats, templates et canaux**.
-Ce tiroir est à côté du Branding ; il n'en est ni un parent ni un sous-ensemble.
-Le nom Médias ne désigne pas ici la collection de fichiers photo/vidéo de la médiathèque.
+Une campagne est rattachée à une release de marque ou à son instantané. La migration
+vers une release ultérieure est explicite et précédée d'une analyse d'impact.
 
-| Objet    | Rôle                                                                        | Relation à la marque                              |
-| -------- | --------------------------------------------------------------------------- | ------------------------------------------------- |
-| Format   | Dimensions, ratio, unités, zones de sécurité et contraintes de sortie       | Généralement indépendant de la marque             |
-| Template | Intention, champs attendus, composants, composition et variantes par format | Générique ou lié à une identité                   |
-| Canal    | Destination et contraintes de communication                                 | Configuration de destinations propres à la marque |
+### Direction créative
 
-Canaux envisagés : réseaux sociaux, site, mailing, impression, téléphone.
-Instagram est un canal ; le compte Flow Therapy est une destination configurée.
-Le téléphone peut utiliser un script textuel : tous les supports ne sont pas graphiques.
-Les secrets d'accès restent hors des documents client ; connecteurs futurs.
+Le laboratoire est l'éditeur de la Direction d'une campagne, pas un espace métier
+autonome.
 
-## 4. Campagnes
+| Axe | Réglage | Effets attendus |
+| --- | --- | --- |
+| Énergie | Calme → Explosive | inclinaison, contrastes de taille, rythme, ornements |
+| Expression colorée | Sobre → Vibrante | étendue et intensité de la palette autorisée |
+| Échelle graphique | Délicate → Monumentale | taille relative du titre, de la photo et du symbole |
+| Densité | Aérée → Compacte | espacements, détails et organisation des blocs |
+| Dominante | Image / Texte / Équilibrée | répartition de l'espace et priorité visuelle |
 
-Une campagne assemble des contenus, une identité, une direction créative et des
-médias pour atteindre un objectif :
+Les supports héritent de ces axes et peuvent porter des ajustements locaux,
+explicites et réinitialisables.
 
-- Brief : objectif, public, message et période.
-- Contenus : sélection d'événements/articles et ordre de présentation.
-- Supports : activation de templates dans des formats pour les canaux choisis.
-- Direction créative : laboratoire et ajustements de direction.
-- Planification : calendrier et états des actions prévues.
-- Production : aperçu, validation et exports ; publication et suivi ultérieurs.
+## 4. Publications
 
-Un support est une production de campagne. Exemple fictif :
-campagne « Saison d'automne » → support « Publication Instagram » →
-template « Agenda » → format carré → trois événements sélectionnés →
-direction créative de campagne.
+Publications rassemble les résultats produits, indépendamment de leur campagne
+d'origine :
 
-## Direction créative : modèle retenu
+- créations à valider ;
+- exports PNG, JPEG et PDF ;
+- paquets multiformats ;
+- calendrier et états de diffusion ;
+- publications futures vers les canaux connectés ;
+- lien vers la campagne, le template, les contenus et la release utilisés.
 
-Le laboratoire est **l'interface d'édition de la Direction créative d'une campagne**.
-Il n'est pas un espace métier autonome. Accès cible : Campagnes > campagne >
-Direction créative.
+Une publication conserve un instantané reproductible de sa production.
 
-| Axe                | Réglage                    | Effets attendus                                                                        |
-| ------------------ | -------------------------- | -------------------------------------------------------------------------------------- |
-| Énergie            | Calme → Explosive          | Inclinaison, contraste des tailles, rythme des espacements, intensité des ornements    |
-| Expression colorée | Sobre → Vibrante           | Étendue de palette utilisée, saturation dans les limites autorisées, place des accents |
-| Échelle graphique  | Délicate → Monumentale     | Taille relative du titre, de la photo et du symbole principal                          |
-| Densité            | Aérée → Compacte           | Espacement, détails affichés et nombre de blocs selon des règles explicites            |
-| Dominante          | Image / Texte / Équilibrée | Répartition de l'espace et priorité visuelle                                           |
+## Capacités transverses
 
-Choix de palette et expression colorée sont distincts. Les éléments obligatoires
-restent présents ; la densité ne supprime ni ne tronque arbitrairement du contenu.
-La dominante Image suppose une ressource disponible ; les capacités du template
-doivent être explicites.
+Formats, templates et canaux ne forment plus un espace principal.
 
-La campagne porte et sauvegarde ses cinq axes. Ses supports en héritent, avec des
-ajustements locaux explicites et réinitialisables. Une recette est un préréglage
-réutilisable, copié vers la direction d'une campagne ; sa modification ne doit pas
-altérer silencieusement les campagnes existantes.
-La direction doit survivre à l'enregistrement, la réouverture et aux échanges JSON/ZIP.
-Références, snapshots et versions doivent préserver la reproductibilité.
+| Objet | Rôle | Point d'accès principal |
+| --- | --- | --- |
+| Format | dimensions, ratio, unités, sécurité et sortie | production |
+| Template | champs, composants, composition et variantes | production et catalogue |
+| Canal | contraintes et destination | diffusion |
+| Recette | préréglage de direction | campagne |
+| Règle | validation et conformité | marque et inspecteur |
 
-## État réel et prochaine étape
+## État réel
 
-Le noyau 0.1, l'éditeur 0.2 et le prototype de laboratoire sont intégrés sur main.
-La PR #4 a été fusionnée et publiée sur GitHub Pages le 11 septembre 2026.
+Sont intégrés sur `main` :
 
-Disponible : campagne locale, cinq axes de direction persistés, harmonies, recettes
-v2 avec migration v1, héritage et ajustements de support réinitialisables, ressource
-image de direction et aperçu multiformat.
-Disponible également : [socle Branding](branding.md), ressources centralisées locales
-et application explicite de l’identité aux campagnes.
-Disponible désormais : scène graphique mesurée/paginée, rédaction éditoriale locale,
-médiathèque visuelle, instantanés éditoriaux sélectionnés dans les campagnes et liaisons
-vers les champs des supports. Voir [Éditorial](editorial.md).
-Non livré : partage distant, Ligne éditoriale éditable, tiroir Médias complet,
-templates artistiques de production et exports graphiques.
+- noyau de campagne et éditeur statique ;
+- direction créative persistée ;
+- Branding v2, palettes, logos, polices et ressources dédupliquées ;
+- instantanés explicites appliqués aux campagnes ;
+- scène mesurée et paginée ;
+- Éditorial local et médiathèque ;
+- template concert illustré multiformat.
 
-Le rendu du studio et des médias est provisoire : palettes exploratoires,
-polices système et compositions de prototype. Les interactions validées ne figent
-pas la finition graphique. Celle-ci s'appuiera sur l'identité et des templates
-travaillés par format.
+Ne sont pas encore livrés :
 
-Priorité : construire le template **concert illustré multiformat** à partir de la
-référence visuelle du 11 septembre 2026, en exploitant les ressources et contenus
-éditoriaux désormais disponibles. Ensuite : compléter le tiroir Médias, enrichir les
-règles Branding/Ligne éditoriale, puis préparer les exports PNG/JPEG/PDF du jalon 0.4.
-Voir [prochaine étape](next-step.md), [ADR 0003](decisions/0003-editorial-library-and-campaign-snapshots.md)
-et [limites du laboratoire actuel](creative-lab.md).
+- modèle Brand Configuration décrit par l'ADR 0004 ;
+- lots de changements et graphe de dépendances ;
+- analyse d'impact et releases immuables ;
+- nouveau shell Marque / Bibliothèque / Campagnes / Publications ;
+- exports graphiques de production ;
+- persistance partagée et publication sociale.
+
+## Priorité
+
+La première tranche est volontairement verticale :
+
+1. migrer Brand v2 vers une release initiale ;
+2. modifier le jeton `color.primary` dans un brouillon ;
+3. calculer contrastes et dépendances ;
+4. publier une nouvelle release ;
+5. préserver une campagne existante ;
+6. migrer explicitement une campagne de test.
+
+Voir [modèle cible et migration](brand-configuration.md) et la
+[roadmap](../ROADMAP.md).
