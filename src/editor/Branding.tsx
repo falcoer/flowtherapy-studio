@@ -33,11 +33,12 @@ export function Branding({
           Transition 0.3 : les fonctions non encore modélisées restent disponibles dans l’éditeur historique ; leur migration vers les releases reste explicite.
         </span>
       </nav>
-      {mode === "configuration" ? (
+      <div hidden={mode !== "configuration"}>
         <BrandWorkspace bundle={bundle} onApply={onApply} />
-      ) : (
+      </div>
+      <div hidden={mode !== "legacy"}>
         <LegacyBranding bundle={bundle} onApply={onApply} />
-      )}
+      </div>
     </>
   );
 }
