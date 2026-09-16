@@ -82,7 +82,11 @@ function validateRelease(input: unknown): BrandRelease {
   integer(value.version, "Version de release");
   text(value.createdAt, "Date de release");
   text(value.fingerprint, "Empreinte de release");
-  if (!Array.isArray(value.objects) || !Array.isArray(value.relations) || !Array.isArray(value.findings))
+  if (
+    !Array.isArray(value.objects) ||
+    !Array.isArray(value.relations) ||
+    !Array.isArray(value.findings)
+  )
     throw new Error("Contenu de release invalide.");
   validateGraph(value.objects, value.relations);
   return structuredClone(value as unknown as BrandRelease);
@@ -164,8 +168,21 @@ export class BrandConfigurationStore {
       };
       open.onerror = () => reject(open.error);
       open.onblocked = () =>
-        reject(new Error("Fermez les autres onglets pour ouvrir la configuration de marque."));
+        reject(
+          new Error(
+            "Fermez les autres onglets pour ouvrir la configuration de marque.",
+          ),
+        );
     });
+  }
+  async list(): Promise<BrandConfiguration[]> {
+    const db = await this.db;
+    const values = await request(
+      db.transaction("configurations").objectStore("configurations").getAll(),
+    );
+    return (values as unknown[])
+      .map(validateBrandConfiguration)
+      .sort((a, b) => a.name.localeCompare(b.name, "fr"));
   }
   async load(brandId: string): Promise<BrandConfiguration | null> {
     const db = await this.db;
@@ -216,7 +233,8 @@ export class BrandConfigurationStore {
       read = table.get(candidate.brandId);
     read.onsuccess = () => {
       const current = read.result as BrandConfiguration | undefined;
-      candidate.revision = Math.max(candidate.revision, current?.revision ?? 0) + 1;
+      candidate.revision =
+        Math.max(candidate.revision, current?.revision ?? 0) + 1;
       table.put(candidate);
     };
     await done;
