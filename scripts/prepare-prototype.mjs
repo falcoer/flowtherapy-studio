@@ -18,6 +18,13 @@ const resources = [
 
 const json = async (path) => JSON.parse(await readFile(new URL(path, root), "utf8"));
 const template = await json("catalog/templates/concert-illustrated.json");
+// PROTO-01 deliberately exercises the display faces already embedded in Studio.
+// The catalogue stays generic; the viability fixture proves that authored typography
+// can materially change the composition before the generic inspector lands.
+const fontByLayer = { title: "Bangers", kicker: "Kalam", agenda: "Inter" };
+for (const layer of template.layers) {
+  if (fontByLayer[layer.id]) layer.style = { ...(layer.style ?? {}), font: fontByLayer[layer.id] };
+}
 const base = await json("examples/campaign-demo.json");
 const formats = Object.fromEntries(await Promise.all(["square", "story", "a4"].map(async (id) => [id, await json(`catalog/formats/${id}.json`)])));
 
