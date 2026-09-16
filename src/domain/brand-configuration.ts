@@ -139,6 +139,7 @@ const colorLabels: Record<string, string> = {
   contrast: "Contraste orange",
   "contrast.dark": "Contraste orange · sombre",
 };
+const canonicalHex = /^#[0-9a-f]{6}$/i;
 
 function clone<T>(value: T): T {
   return structuredClone(value);
@@ -172,8 +173,29 @@ function releaseFingerprint(
   return fingerprint({ brandId, version, objects, relations });
 }
 function assertHex(value: string) {
-  if (!/^#[0-9a-f]{6}$/i.test(value))
+  if (!canonicalHex.test(value))
     throw new Error("La couleur doit être au format #RRGGBB.");
+}
+function hexByte(value: number) {
+  return Math.round(value).toString(16).padStart(2, "0").toUpperCase();
+}
+function normalizeLegacyColor(input: string) {
+  const value = input.trim();
+  if (canonicalHex.test(value)) return { value: value.toUpperCase() };
+  const short = /^#([0-9a-f])([0-9a-f])([0-9a-f])$/i.exec(value);
+  if (short)
+    return {
+      value: `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`.toUpperCase(),
+    };
+  const rgb = /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/i.exec(
+    value,
+  );
+  if (rgb) {
+    const channels = rgb.slice(1).map(Number);
+    if (channels.every((channel) => channel >= 0 && channel <= 255))
+      return { value: `#${channels.map(hexByte).join("")}` };
+  }
+  return { value, legacyColorUnparsed: value };
 }
 function channel(value: number) {
   const normalized = value / 255;
@@ -208,7 +230,7 @@ function colorValue(objects: BrandObject[], id: string) {
 }
 function findings(objects: BrandObject[]): ValidationFinding[] {
   const primary = colorValue(objects, "color.primary");
-  if (!primary) {
+  if (!primary)
     return [
       {
         id: "missing-primary",
@@ -217,14 +239,31 @@ function findings(objects: BrandObject[]): ValidationFinding[] {
         message: "Le jeton color.primary est absent.",
       },
     ];
-  }
   const result: ValidationFinding[] = [];
+  if (!canonicalHex.test(primary)) {
+    result.push({
+      id: "legacy-primary-color",
+      severity: "warning",
+      scopeId: "color.primary",
+      message: `Couleur historique non normalisée : ${primary}. Le contraste automatique n’est pas calculable.`,
+    });
+    return result;
+  }
   for (const [id, label] of [
     ["color.background", "fond clair"],
     ["color.surface", "surface claire"],
   ] as const) {
     const background = colorValue(objects, id);
     if (!background) continue;
+    if (!canonicalHex.test(background)) {
+      result.push({
+        id: `legacy-contrast:${id}`,
+        severity: "warning",
+        scopeId: "color.primary",
+        message: `Contraste avec ${label} non calculable : valeur historique ${background}.`,
+      });
+      continue;
+    }
     const ratio = contrastRatio(primary, background);
     result.push({
       id: `contrast:${id}`,
@@ -238,11 +277,12 @@ function findings(objects: BrandObject[]): ValidationFinding[] {
 
 export function migrateBrandV2(brand: Brand): BrandConfiguration {
   const colorById = new Map<string, BrandObject>();
-  for (const [legacyRole, value] of Object.entries(brand.colors).sort(([a], [b]) =>
+  for (const [legacyRole, rawValue] of Object.entries(brand.colors).sort(([a], [b]) =>
     a.localeCompare(b),
   )) {
     const role = colorRoles[legacyRole] ?? legacyRole,
       id = `color.${role}`,
+      normalized = normalizeLegacyColor(rawValue),
       candidate: BrandObject = {
         id,
         type: "color-token",
@@ -250,10 +290,13 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
         label: colorLabels[role] ?? legacyRole,
         status: "published",
         revision: brand.revision,
-        value,
+        value: normalized.value,
         metadata: {
           legacyRole,
           theme: legacyRole.startsWith("dark") ? "dark" : "light",
+          ...(normalized.legacyColorUnparsed
+            ? { legacyColorUnparsed: normalized.legacyColorUnparsed }
+            : {}),
         },
       },
       existing = colorById.get(id),
@@ -268,7 +311,7 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
     const source =
       colorObjects.find((object) => object.id === "color.accent") ??
       colorObjects.find((object) => object.metadata?.theme === "light");
-    if (source && typeof source.value === "string") {
+    if (source && typeof source.value === "string")
       colorObjects.push({
         id: "color.primary",
         type: "color-token",
@@ -282,9 +325,11 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
           sourceLegacyRole: source.metadata?.legacyRole ?? source.role,
           theme: "light",
           migratedFallback: "true",
+          ...(source.metadata?.legacyColorUnparsed
+            ? { legacyColorUnparsed: source.metadata.legacyColorUnparsed }
+            : {}),
         },
       });
-    }
   }
   const fontObjects: BrandObject[] = Object.entries(brand.fonts)
     .sort(([a], [b]) => a.localeCompare(b))
@@ -316,9 +361,7 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
       label: "Accent de marque",
       status: "published",
       revision: 1,
-      value: {
-        description: "Titres, repères et ornements utilisant le bleu principal.",
-      },
+      value: { description: "Titres, repères et ornements utilisant le bleu principal." },
     },
     {
       id: "rule.primary-contrast",
@@ -330,9 +373,9 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
       value: { minimumRatio: 3 },
     },
   ];
-  const colorIds = new Set(colorObjects.map((object) => object.id));
-  const relations: BrandRelation[] = [];
-  if (colorIds.has("color.primary")) {
+  const colorIds = new Set(colorObjects.map((object) => object.id)),
+    relations: BrandRelation[] = [];
+  if (colorIds.has("color.primary"))
     relations.push(
       {
         id: "component.brand-accent:uses:color.primary",
@@ -347,21 +390,14 @@ export function migrateBrandV2(brand: Brand): BrandConfiguration {
         type: "constrains",
       },
     );
-  }
-  if (colorIds.has("color.background")) {
+  if (colorIds.has("color.background"))
     relations.push({
       id: "rule.primary-contrast:uses:color.background",
       sourceId: "rule.primary-contrast",
       targetId: "color.background",
       type: "uses",
     });
-  }
-  const objects = [
-    ...colorObjects,
-    ...fontObjects,
-    ...logoObjects,
-    ...supportingObjects,
-  ];
+  const objects = [...colorObjects, ...fontObjects, ...logoObjects, ...supportingObjects];
   const release: BrandRelease = {
     schemaVersion: 1,
     id: `${brand.id}@1`,
@@ -395,10 +431,7 @@ export function createDraft(
     schemaVersion: 1,
     brandId: configuration.brandId,
     baseReleaseId: release.id,
-    objects: release.objects.map((object) => ({
-      ...clone(object),
-      status: "published",
-    })),
+    objects: release.objects.map((object) => ({ ...clone(object), status: "published" })),
     relations: clone(release.relations),
     changeSet: {
       id: `changes:${release.id}`,
@@ -414,14 +447,15 @@ export function updateColorToken(
   value: string,
 ): BrandDraft {
   assertHex(value);
-  const draft = clone(input);
-  const object = draft.objects.find((candidate) => candidate.id === objectId);
+  const draft = clone(input),
+    object = draft.objects.find((candidate) => candidate.id === objectId);
   if (!object || object.type !== "color-token")
     throw new Error(`Jeton de couleur introuvable : ${objectId}.`);
   const baseValue = object.value;
   object.value = value.toUpperCase();
   object.status = "draft";
   object.revision += 1;
+  if (object.metadata?.legacyColorUnparsed) delete object.metadata.legacyColorUnparsed;
   const existing = draft.changeSet.operations.find(
     (operation) => operation.objectId === objectId,
   );
@@ -440,11 +474,9 @@ export function analyzeImpact(
   draft: BrandDraft,
   usages: ImpactUsage[] = [],
 ): ImpactReport {
-  const changed = new Set(
-    draft.changeSet.operations.map((operation) => operation.objectId),
-  );
-  const dependents = new Set<string>();
-  const queue = [...changed];
+  const changed = new Set(draft.changeSet.operations.map((operation) => operation.objectId)),
+    dependents = new Set<string>(),
+    queue = [...changed];
   while (queue.length) {
     const target = queue.shift()!;
     for (const relation of draft.relations) {
@@ -458,10 +490,8 @@ export function analyzeImpact(
       queue.push(relation.sourceId);
     }
   }
-  const affected = new Set([...changed, ...dependents]);
-  const matched = usages.filter((usage) =>
-    usage.objectIds.some((id) => affected.has(id)),
-  );
+  const affected = new Set([...changed, ...dependents]),
+    matched = usages.filter((usage) => usage.objectIds.some((id) => affected.has(id)));
   return {
     complete: true,
     changedIds: [...changed].sort(),
@@ -495,34 +525,29 @@ export function publishDraft(
   if (!report.complete) throw new Error("L’analyse d’impact est incomplète.");
   if (!draft.changeSet.operations.length)
     throw new Error("Le lot de changements est vide.");
-  const changedIds = draft.changeSet.operations
-    .map((operation) => operation.objectId)
-    .sort();
-  if (
-    JSON.stringify(changedIds) !== JSON.stringify([...report.changedIds].sort())
-  )
+  const changedIds = draft.changeSet.operations.map((operation) => operation.objectId).sort();
+  if (JSON.stringify(changedIds) !== JSON.stringify([...report.changedIds].sort()))
     throw new Error("L’analyse d’impact ne correspond plus au brouillon courant.");
   const currentFindings = findings(draft.objects);
   if (currentFindings.some((finding) => finding.severity === "error"))
     throw new Error("Corrigez les contrôles en erreur avant publication.");
-  const version =
-    Math.max(0, ...input.releases.map((release) => release.version)) + 1;
-  const objects = draft.objects.map((object) => ({
-    ...clone(object),
-    status: "published" as const,
-  }));
-  const relations = clone(draft.relations);
-  const release: BrandRelease = {
-    schemaVersion: 1,
-    id: `${input.brandId}@${version}`,
-    brandId: input.brandId,
-    version,
-    createdAt,
-    objects,
-    relations,
-    findings: currentFindings,
-    fingerprint: releaseFingerprint(input.brandId, version, objects, relations),
-  };
+  const version = Math.max(0, ...input.releases.map((release) => release.version)) + 1,
+    objects = draft.objects.map((object) => ({
+      ...clone(object),
+      status: "published" as const,
+    })),
+    relations = clone(draft.relations),
+    release: BrandRelease = {
+      schemaVersion: 1,
+      id: `${input.brandId}@${version}`,
+      brandId: input.brandId,
+      version,
+      createdAt,
+      objects,
+      relations,
+      findings: currentFindings,
+      fingerprint: releaseFingerprint(input.brandId, version, objects, relations),
+    };
   return {
     ...clone(input),
     revision: input.revision + 1,
