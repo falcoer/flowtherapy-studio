@@ -56,15 +56,14 @@ Note éditoriale de travail expose titre et texte sur cinq formats.
 Campagne v3 avec migration explicite depuis v1/v2 ; IndexedDB v3 sans perte de révisions.
 Les exports de visuels, l'éditeur riche complet et la publication restent non livrés.
 
-## Organisation validée
+## Organisation cible
 
-**Branding / Éditorial / Médias / Campagnes** : voir les
-[décisions de référence](docs/studio-organization.md).
-Les ressources sont partagées sans duplication. Médias regroupe formats, templates
-et canaux. Le laboratoire est l'éditeur de la Direction créative d'une campagne.
-Le catalogue contient désormais le template de concerts illustré : fond/halo, titre,
-agenda, accent et trois emplacements d’alpagas. Les emplacements restent éditables
-et signalent les ressources manquantes jusqu’à leur import avec provenance et droits.
+**Marque / Bibliothèque / Campagnes / Publications** : voir les
+[décisions de référence](docs/studio-organization.md). Le branding évolue vers une
+configuration structurée, versionnée et analysable avant publication. Les guides
+sont générés depuis cette source de vérité. Formats, templates et canaux deviennent
+des capacités contextuelles. Le laboratoire reste l'éditeur de la Direction créative
+d'une campagne.
 
 ## Principes
 
@@ -88,6 +87,8 @@ et signalent les ressources manquantes jusqu’à leur import avec provenance et
 - [Décisions : studio statique](docs/decisions/0001-static-campaign-studio.md)
 - [Décisions : Supabase et sous-domaine](docs/decisions/0002-supabase-and-studio-domain.md)
 - [Décisions : Éditorial, ressources et instantanés](docs/decisions/0003-editorial-library-and-campaign-snapshots.md)
+- [Décision : configuration de marque versionnée](docs/decisions/0004-brand-configuration-management.md)
+- [Modèle Brand Configuration et migration](docs/brand-configuration.md)
 - [Roadmap](ROADMAP.md)
 - [Prochaine étape](docs/next-step.md)
 - [Mise en place GitHub](docs/repository-setup.md)
