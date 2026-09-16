@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { CampaignBundle } from "../storage/indexeddb.js";
 import { BrandWorkspace } from "./BrandWorkspace.js";
 import { Branding as LegacyBranding } from "./LegacyBranding.js";
+import "./branding-transition.css";
 
 export function Branding({
   bundle,
