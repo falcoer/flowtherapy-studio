@@ -561,10 +561,11 @@ export function migrateCampaignBrand(
   campaign: Campaign,
   release: BrandRelease,
 ): Campaign {
-  if (!campaign.brand)
+  const currentBrand = campaign.brand;
+  if (!currentBrand)
     throw new Error("La campagne ne possède pas d’instantané de marque.");
   const next = clone(campaign),
-    migratedBrand = brandFromRelease(next.brand, release);
+    migratedBrand = brandFromRelease(currentBrand, release);
   next.brand = migratedBrand;
   for (const support of next.supports) {
     if (support.template.brandRef?.id === migratedBrand.id)
