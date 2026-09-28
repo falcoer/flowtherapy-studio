@@ -77,8 +77,10 @@ Voir [contrat et recette](docs/graphic-editor.md).
 - [x] P2 : composition WebGL, palette, drag-and-drop, magnétisme axes/milieux et inspecteur.
 - [x] P3 : bibliothèque locale/partagée, sauvegarde, annulation, imports et exports JSON.
 - [x] P4 : PNG, séquence PNG en ZIP et vidéo détectée selon navigateur.
-- [x] P5 local : 58 tests du noyau, 21 parcours navigateur, build et contrôle visuel.
-- [ ] P5 CI : validation du commit final sur GitHub Actions.
+- [x] P5 local : 58 tests du noyau, 6 parcours du prototype, build et contrôle visuel.
+- [x] P5 CI : 58 tests du noyau et 21 parcours navigateur, dont les 15 parcours
+  existants, validés sur `6c8daa0` — [run GitHub Actions](https://github.com/falcoer/flowtherapy-studio/actions/runs/36494145787).
+  Build de prévisualisation téléchargeable dans les artefacts du run.
 
 Ce prototype ne clôture pas le jalon 0.4 du moteur de campagnes : PDF, prépresse,
 keyframes, composition adaptative et synchronisation des campagnes restent hors périmètre.
