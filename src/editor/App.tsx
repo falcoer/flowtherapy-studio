@@ -431,6 +431,7 @@ export function App() {
         </div>
       </header>
       <nav className="studio-navigation" aria-label="Espaces du studio">
+        <button onClick={() => { location.hash = "graphique"; }}>Atelier graphique <small>Prototype</small></button>
         <button
           aria-pressed={view === "branding"}
           onClick={() => {

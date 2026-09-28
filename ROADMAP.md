@@ -67,3 +67,18 @@ exports reprennent ensuite sur cette base. La persistance partagée reste au jal
 
 Voir [décisions détaillées](docs/studio-organization.md),
 [limites du rendu](docs/resolved-scene.md) et [prochaine étape](docs/next-step.md).
+
+## Prototype parallèle — éditeur graphique WebGL
+
+Branche `prototype/webgl-anchor-editor`, document indépendant des campagnes.
+Voir [contrat et recette](docs/graphic-editor.md).
+
+- [x] P1 : surfaces, ancrages, trois types de renderers et catalogues JSON versionnés.
+- [x] P2 : composition WebGL, palette, drag-and-drop, magnétisme axes/milieux et inspecteur.
+- [x] P3 : bibliothèque locale/partagée, sauvegarde, annulation, imports et exports JSON.
+- [x] P4 : PNG, séquence PNG en ZIP et vidéo détectée selon navigateur.
+- [x] P5 local : 58 tests du noyau, 21 parcours navigateur, build et contrôle visuel.
+- [ ] P5 CI : validation du commit final sur GitHub Actions.
+
+Ce prototype ne clôture pas le jalon 0.4 du moteur de campagnes : PDF, prépresse,
+keyframes, composition adaptative et synchronisation des campagnes restent hors périmètre.

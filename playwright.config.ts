@@ -5,9 +5,13 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:4173",
     headless: true,
-    launchOptions: process.env.STUDIO_CHROMIUM_PATH
-      ? { executablePath: process.env.STUDIO_CHROMIUM_PATH }
-      : {},
+    launchOptions: {
+      ...(process.env.STUDIO_CHROMIUM_PATH
+        ? { executablePath: process.env.STUDIO_CHROMIUM_PATH }
+        : {}),
+      // Software WebGL is explicit in headless CI; production uses the user's GPU.
+      args: ["--enable-unsafe-swiftshader"],
+    },
     viewport: { width: 1440, height: 1000 },
   },
   webServer: {

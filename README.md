@@ -4,6 +4,15 @@ Atelier graphique du groupe : créer une campagne, renseigner ses événements,
 décliner des templates, retoucher les compositions et exporter pour les réseaux
 sociaux et l'impression.
 
+## Prototype d’éditeur graphique WebGL
+
+Cette branche ajoute un **Atelier graphique** accessible dans la navigation ou
+via `/#graphique` : ancrages magnétiques, renderers image/texte/shader, inspection
+des attributs, catalogues JSON personnalisables et exports PNG, séquence PNG/ZIP
+et vidéo. Voir [prise en main, contrats et limites](docs/graphic-editor.md).
+Ce prototype est indépendant des campagnes ; les exports historiques ci-dessous
+restent au statut indiqué pour le moteur de campagne.
+
 ## État
 
 Le noyau 0.1 et l'éditeur statique minimal 0.2 sont intégrés sur main.

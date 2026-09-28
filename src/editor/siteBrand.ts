@@ -57,7 +57,7 @@ export const flowTherapySiteFontAssets = [
     family: "Inter",
     role: "body",
     sourcePath: new URL("./site-fonts/Inter-Variable.ttf", import.meta.url).href,
-    source: "flowtherapy-bio-website · assets-src/fonts/inter/Inter-Variable.ttf.gz (décompressé)",
+    source: "Google Fonts · ofl/inter/Inter[opsz,wght].ttf (copie locale réparée)",
     fileName: "Inter-Variable.ttf",
   },
   {

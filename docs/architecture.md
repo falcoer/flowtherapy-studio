@@ -96,3 +96,11 @@ Le domaine porte EditorialDocument v1 et les instantanés de campagne v3.
 IndexedDB v3 ajoute le catalogue éditorial ; les ressources/blobs restent centralisés.
 Les migrations des enveloppes de campagnes/identités sont transactionnelles, sans
 changer les révisions. Voir [parcours, contrats et limites](editorial.md).
+
+## Prototype graphique parallèle
+
+`src/graphics` isole un second document (`ft-graphic-project` v1), son moteur WebGL,
+son stockage IndexedDB séparé et son interface à `/#graphique`. Il référence la
+bibliothèque partagée existante par copie explicite des images dans son document.
+Le moteur de campagne et ses contrats ne changent pas. Voir [architecture,
+extension des catalogues et limites](graphic-editor.md).

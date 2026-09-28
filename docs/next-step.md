@@ -96,3 +96,11 @@ service cloud n'est activé.
 Préserver domaine indépendant, autonomie statique, révisions et JSON/ZIP.
 Exécuter `npm run check` et `npm run test:e2e`, y compris la recette de scène.
 Ne pas présenter les tiroirs ou fonctions futurs comme déjà disponibles.
+
+## Branche prototype WebGL — septembre 2026
+
+Un atelier graphique indépendant est implémenté sur `prototype/webgl-anchor-editor`.
+Recette et limites : [graphic-editor.md](graphic-editor.md). Tester `/#graphique`
+pour décider de l’ergonomie avant toute intégration au modèle de campagne.
+Les pistes suivantes sont la composition adaptative, un éditeur visuel de presets,
+les keyframes et l’intégration au référentiel de marque. Elles ne sont pas livrées.

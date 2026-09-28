@@ -1,0 +1,131 @@
+{
+  "kind": "ft-renderers",
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "aurora",
+      "name": "Aurore",
+      "description": "Dégradé fluide animé",
+      "style": {
+        "kind": "shader",
+        "width": 1080,
+        "height": 1350,
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0,
+        "opacity": 1,
+        "color": "#b9a0ff",
+        "hue": 0,
+        "saturation": 1,
+        "brightness": 1,
+        "text": "MAKE\nSOME NOISE.",
+        "font": "Bangers",
+        "fontSize": 160,
+        "shader": "aurora",
+        "speed": 1,
+        "intensity": 1,
+        "assetId": ""
+      }
+    },
+    {
+      "id": "halo",
+      "name": "Halo",
+      "description": "Lumière douce et pulsation",
+      "style": {
+        "kind": "shader",
+        "width": 900,
+        "height": 900,
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0,
+        "opacity": 1,
+        "color": "#fa916f",
+        "hue": 0,
+        "saturation": 1,
+        "brightness": 1,
+        "text": "MAKE\nSOME NOISE.",
+        "font": "Bangers",
+        "fontSize": 160,
+        "shader": "halo",
+        "speed": 1,
+        "intensity": 1,
+        "assetId": ""
+      }
+    },
+    {
+      "id": "waves",
+      "name": "Ondes",
+      "description": "Courbes et interférences",
+      "style": {
+        "kind": "shader",
+        "width": 1080,
+        "height": 1350,
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0,
+        "opacity": 1,
+        "color": "#aaf4d3",
+        "hue": 0,
+        "saturation": 1,
+        "brightness": 1,
+        "text": "MAKE\nSOME NOISE.",
+        "font": "Bangers",
+        "fontSize": 160,
+        "shader": "waves",
+        "speed": 1,
+        "intensity": 1,
+        "assetId": ""
+      }
+    },
+    {
+      "id": "image",
+      "name": "Image",
+      "description": "Une ressource de votre bibliothèque",
+      "style": {
+        "kind": "image",
+        "width": 650,
+        "height": 440,
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0,
+        "opacity": 1,
+        "color": "#ffffff",
+        "hue": 0,
+        "saturation": 1,
+        "brightness": 1,
+        "text": "MAKE\nSOME NOISE.",
+        "font": "Bangers",
+        "fontSize": 160,
+        "shader": "aurora",
+        "speed": 1,
+        "intensity": 1,
+        "assetId": ""
+      }
+    },
+    {
+      "id": "text",
+      "name": "Texte libre",
+      "description": "Typographie et contenu éditables",
+      "style": {
+        "kind": "text",
+        "width": 930,
+        "height": 430,
+        "offsetX": 0,
+        "offsetY": 0,
+        "rotation": 0,
+        "opacity": 1,
+        "color": "#fff7eb",
+        "hue": 0,
+        "saturation": 1,
+        "brightness": 1,
+        "text": "MAKE\nSOME NOISE.",
+        "font": "Bangers",
+        "fontSize": 160,
+        "shader": "aurora",
+        "speed": 1,
+        "intensity": 1,
+        "assetId": ""
+      }
+    }
+  ]
+}
